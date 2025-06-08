@@ -1,0 +1,70 @@
+import { IFailedResponse, ProcessOptions } from '@utils/response'
+
+export abstract class HttpException {
+	process: ProcessOptions.FAILED = ProcessOptions.FAILED
+	status_code: number
+	body: string
+
+	constructor(response: Pick<IFailedResponse, 'status_code' | 'body'>) {
+		this.status_code = response.status_code
+		this.body = response.body
+	}
+}
+
+export class UnauthorizedException extends HttpException {
+	constructor() {
+		super({ status_code: 401, body: 'Invalid credentials' })
+	}
+}
+
+export class BadRequestException extends HttpException {
+	constructor(message: string) {
+		super({ status_code: 400, body: message })
+	}
+}
+
+export class NotAuthorizedException extends HttpException {
+	constructor() {
+		super({ status_code: 401, body: 'Not Authorized' })
+	}
+}
+
+export class ForbiddenException extends HttpException {
+	constructor() {
+		super({ body: 'Access to this resource is blocked', status_code: 403 })
+	}
+}
+
+export class NotFoundException extends HttpException {
+	constructor(message: string) {
+		super({ body: message, status_code: 404 })
+	}
+}
+
+export class ConflictException extends HttpException {
+	constructor(message: string) {
+		super({ body: message, status_code: 409 })
+	}
+}
+
+export class FailedDependencyException extends HttpException {
+	constructor(message: string) {
+		super({ body: message, status_code: 424 })
+	}
+}
+
+export class RateLimitException extends HttpException {
+	constructor(message: string) {
+		super({ body: message, status_code: 429 })
+	}
+}
+
+export class ServerErrorException extends HttpException {
+	constructor(message: string) {
+		super({ body: message, status_code: 500 })
+	}
+}
+
+export const isHttpException = (arg: object): arg is HttpException => {
+	return arg && 'process' in arg && 'body' in arg && 'status_code' in arg
+}
