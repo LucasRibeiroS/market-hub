@@ -1,8 +1,8 @@
 CREATE TABLE "api_keys" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
-	"name" text NOT NULL,
 	"public_key" text NOT NULL,
+	"name" text NOT NULL,
 	"permissions" text[] NOT NULL,
 	"created_at" timestamp (3) DEFAULT now() NOT NULL,
 	"updated_at" timestamp (3) DEFAULT now() NOT NULL,

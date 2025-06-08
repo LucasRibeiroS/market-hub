@@ -33,11 +33,11 @@
 			"@entities/*": ["src/application/entities/*"],
 			"@repositories/*": ["src/application/repositories/*"],
 			"@use-cases/*": ["src/application/use-cases/*"],
-			"@drizzle": ["src/database/drizzle/index.ts"],
-            "@drizzle/*": ["src/database/drizzle/*"],
 			"@utils/*": ["src/shared/utils/*"],
 			"@clients/*": ["src/shared/clients/*"],
 			"@http/*": ["src/servers/http/*"],
+			"@drizzle": ["database/drizzle/index.ts"],
+            "@drizzle/*": ["database/drizzle/*"]
 		},
 		// views
 		"jsx": "react"
@@ -51,6 +51,7 @@
 	],
 	"include": [
 		"./src/**/*.ts",
+		"./database/**/*.ts",
 		"drizzle.config.ts"
 	]
 }
