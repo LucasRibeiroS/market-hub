@@ -67,8 +67,6 @@ class HttpServer {
 					.send({ process: error.process, body: error.body })
 			}
 
-			console.log(error)
-
 			return reply.status(500).send({
 				process: 'failed',
 				body: 'Internal server error'

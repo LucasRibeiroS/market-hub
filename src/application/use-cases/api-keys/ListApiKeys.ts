@@ -13,18 +13,15 @@ type ListApiKeysRequest = { user_id: string } & IPaginator
 type T = ListApiKeysRequest
 type ListApiKeysResponse = {
 	api_keys: IApiKey[]
-	pagination?: IPagination
+	pagination: IPagination
 }
 type K = ListApiKeysResponse
 
 export class ListApiKeys implements IUseCase<T, K> {
 	constructor(private apiKeysRepository: IApiKeysRepository) {}
 
-	async execute({ user_id, ...paginator }: T): Promise<K> {
-		const { data, pagination } = await this.apiKeysRepository.findMany({
-			...paginator,
-			user_id
-		})
+	async execute(params: T): Promise<K> {
+		const { data, pagination } = await this.apiKeysRepository.findMany(params)
 		return { api_keys: data, pagination }
 	}
 
