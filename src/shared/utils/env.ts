@@ -14,10 +14,18 @@ type IEnv = {
 	REDIS_HOST: string
 	REDIS_PORT: number
 	// Authentication
-	AUTH_ACCESS_SECRET: string
-	AUTH_ACCESS_EXPIRES: string
-	AUTH_REFRESH_SECRET: string
-	AUTH_REFRESH_EXPIRES: string
+	ACCESS_TOKEN_SECRET: string
+	ACCESS_TOKEN_EXPIRES: string
+	REFRESH_TOKEN_SECRET: string
+	REFRESH_TOKEN_EXPIRES: string
+	PASSWORD_RESET_EXPIRES: number // in minutes
+	// Send email
+	SMTP_HOST: string
+	SMTP_PORT: number
+	SMTP_USE_SSL: string
+	SMTP_USER: string
+	SMTP_PASS: string
+	SMTP_SOURCE: string
 }
 
 const schema = Type.Object({
@@ -29,10 +37,18 @@ const schema = Type.Object({
 	REDIS_HOST: Type.String(),
 	REDIS_PORT: Type.Number(),
 	// Authentication
-	AUTH_ACCESS_SECRET: Type.String(),
-	AUTH_ACCESS_EXPIRES: Type.String({ default: '15m' }),
-	AUTH_REFRESH_SECRET: Type.String(),
-	AUTH_REFRESH_EXPIRES: Type.String({ default: '30d' })
+	ACCESS_TOKEN_SECRET: Type.String(),
+	ACCESS_TOKEN_EXPIRES: Type.String({ default: '15m' }),
+	REFRESH_TOKEN_SECRET: Type.String(),
+	REFRESH_TOKEN_EXPIRES: Type.String({ default: '30d' }),
+	PASSWORD_RESET_EXPIRES: Type.Number({ default: 5 }),
+	// Send email
+	SMTP_HOST: Type.String(),
+	SMTP_PORT: Type.Number({ default: 587 }),
+	SMTP_USE_SSL: Type.String({ default: 'false' }),
+	SMTP_USER: Type.String(),
+	SMTP_PASS: Type.String(),
+	SMTP_SOURCE: Type.String()
 })
 
 assertTypes<Static<typeof schema>, IEnv>()

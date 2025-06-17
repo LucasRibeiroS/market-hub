@@ -1,4 +1,4 @@
-import { index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
+import { boolean, index, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 
 import { generateId } from '@utils/helpers'
 
@@ -21,6 +21,15 @@ export const apiKeys = pgTable('api_keys', {
 	uniqueIndex().using('btree', table.public_key),
 	index().using('btree', table.user_id)
 ])
+
+export const passwordResets = pgTable('password_resets', {
+	id: text().primaryKey().notNull().$defaultFn(() => generateId()),
+	user_id: text().references(() => users.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+	code: text().notNull(),
+	expiration: timestamp(timestampConfig).notNull(),
+	is_used: boolean().default(false).notNull(),
+	...timestamps
+}, (table) => [index().using('btree', table.user_id)])
 
 export const users = pgTable('users', {
 	id: text().primaryKey().notNull().$defaultFn(() => generateId()),

@@ -6,13 +6,13 @@ import { env } from '@utils/env'
 // Default signers for generating access and refresh tokens
 const algorithm = 'HS256'
 const signAccessToken = createSigner({
-	key: env.AUTH_ACCESS_SECRET,
-	expiresIn: env.AUTH_ACCESS_EXPIRES,
+	key: env.ACCESS_TOKEN_SECRET,
+	expiresIn: env.ACCESS_TOKEN_EXPIRES,
 	algorithm
 })
 const signRefreshToken = createSigner({
-	key: env.AUTH_REFRESH_SECRET,
-	expiresIn: env.AUTH_REFRESH_EXPIRES,
+	key: env.REFRESH_TOKEN_SECRET,
+	expiresIn: env.REFRESH_TOKEN_EXPIRES,
 	algorithm
 })
 
@@ -31,7 +31,7 @@ export const generateAppTokens = ({
 	const data = { id }
 
 	const accessToken = expiresIn !== undefined
-		? createSigner({ key: env.AUTH_ACCESS_SECRET, expiresIn, algorithm })(data)
+		? createSigner({ key: env.ACCESS_TOKEN_EXPIRES, expiresIn, algorithm })(data)
 		: signAccessToken(data)
 	const refreshToken = signRefreshToken({ id })
 
@@ -40,10 +40,10 @@ export const generateAppTokens = ({
 
 // Default verifier for decoding access tokens
 export const verifyAccessToken = createVerifier({
-	key: env.AUTH_ACCESS_SECRET,
+	key: env.ACCESS_TOKEN_EXPIRES,
 	algorithms: [algorithm]
 })
 export const verifyRefreshToken = createVerifier<string>({
-	key: env.AUTH_REFRESH_SECRET,
+	key: env.REFRESH_TOKEN_EXPIRES,
 	algorithms: [algorithm]
 }) as (token: string) => { id: string }

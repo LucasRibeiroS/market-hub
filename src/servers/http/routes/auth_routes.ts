@@ -4,7 +4,7 @@ import { getFullSchema } from '@utils/fastify/schema'
 
 import { applyUseCase } from '@http/middlewares/apply_use_case'
 
-import { generateAccessToken, login, register } from '@use-cases/auth'
+import { createPasswordReset, generateAccessToken, login, register, resetPassword } from '@use-cases/auth'
 
 export const authRoutes = async(fastify: FastifyInstance) => {
 	fastify.addSchema(register.documentation.request)
@@ -47,5 +47,25 @@ export const authRoutes = async(fastify: FastifyInstance) => {
 			}
 		}),
 		applyUseCase(generateAccessToken)
+	)
+
+	fastify.addSchema(createPasswordReset.documentation.request)
+	fastify.post(
+		'/auth/password/code',
+		getFullSchema({
+			...createPasswordReset.documentation,
+			schemas: { body: createPasswordReset.documentation.request?.$id }
+		}),
+		applyUseCase(createPasswordReset)
+	)
+
+	fastify.addSchema(resetPassword.documentation.request)
+	fastify.post(
+		'/auth/password/reset',
+		getFullSchema({
+			...resetPassword.documentation,
+			schemas: { body: resetPassword.documentation.request?.$id }
+		}),
+		applyUseCase(resetPassword)
 	)
 }
