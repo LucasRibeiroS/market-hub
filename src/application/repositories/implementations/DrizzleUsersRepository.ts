@@ -3,7 +3,7 @@ import { users } from '@drizzle/schema'
 import { drizzleClient } from '@clients/drizzle'
 
 import { IUser } from '@entities'
-import { ICreateParams, IFindFirstParams, IUsersRepository } from '@repositories/IUsersRepository'
+import { ICreateParams, IFindFirstParams, IUpdateParams, IUsersRepository } from '@repositories/IUsersRepository'
 
 export class DrizzleUsersRepository implements IUsersRepository {
 	private findByIdQuery = drizzleClient.query.users
@@ -30,6 +30,15 @@ export class DrizzleUsersRepository implements IUsersRepository {
 		return drizzleClient
 			.insert(users)
 			.values(data)
+			.returning()
+			.then(([result]) => result)
+	}
+
+	async update({ id, data }: IUpdateParams): Promise<IUser> {
+		return drizzleClient
+			.update(users)
+			.set(data)
+			.where(eq(users.id, id))
 			.returning()
 			.then(([result]) => result)
 	}

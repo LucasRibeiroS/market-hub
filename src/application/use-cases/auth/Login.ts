@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import { compare } from 'bcrypt'
 import { Static, Type } from '@sinclair/typebox'
 
 import { IUsersRepository } from '@repositories/IUsersRepository'
@@ -31,7 +31,7 @@ export class Login implements IUseCase<T, K> {
 		if (user === null) {
 			throw new UnauthorizedException()
 		}
-		if (!await bcrypt.compare(password, user.password)) {
+		if (!await compare(password, user.password)) {
 			throw new UnauthorizedException()
 		}
 

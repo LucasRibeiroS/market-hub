@@ -42,15 +42,6 @@ export const createSchema = <T extends TSchema>(
 }
 
 // Models
-
-export const userJsonSchema = createSchema(Type.Object({
-	id: Type.String({ readOnly: true }),
-	email: Type.String({ format: 'email' }),
-	created_at: DateType({ readOnly: true }),
-	updated_at: DateType({ readOnly: true })
-}), 'entities/IUser')
-assertTypes<Static<typeof userJsonSchema>, SetDateAsString<IUser, 'created_at' | 'updated_at'>>()
-
 export const apiKeyJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
 	user_id: Type.String({ readOnly: true }),
@@ -61,6 +52,15 @@ export const apiKeyJsonSchema = createSchema(Type.Object({
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IApiKey')
 assertTypes<Static<typeof apiKeyJsonSchema>, SetDateAsString<IApiKey, 'created_at' | 'updated_at'>>()
+
+export const userJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	name: Type.String(),
+	email: Type.String({ format: 'email' }),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IUser')
+assertTypes<Static<typeof userJsonSchema>, SetDateAsString<IUser, 'created_at' | 'updated_at'>>()
 
 // Objects
 export const paginatorJsonSchema = createSchema(Type.Object({

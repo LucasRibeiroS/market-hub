@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import { genSalt, hash } from 'bcrypt'
 import { Static, Type } from '@sinclair/typebox'
 
 import { IUsersRepository } from '@repositories/IUsersRepository'
@@ -11,6 +11,7 @@ import { BaseValidator } from '@utils/validator'
 import { appTokensJsonSchema, createSchema } from '@utils/typebox/schema'
 
 type RegisterRequest = {
+	name: string
 	email: string
 	password: string
 }
@@ -26,15 +27,16 @@ type K = RegisterResponse
 export class Register implements IUseCase<T, K> {
 	constructor(private usersRepository: IUsersRepository) {}
 
-	async execute({ email, password }: T): Promise<K> {
+	async execute({ name, email, password }: T): Promise<K> {
 		const userExists = await this.usersRepository.findFirst({ email })
 		if (userExists !== null) {
 			throw new ConflictException('Email already in use')
 		}
 
-		const passwordHash = await bcrypt.hash(password, await bcrypt.genSalt(12))
+		const passwordHash = await hash(password, await genSalt(12))
 
 		const user = await this.usersRepository.create({
+			name,
 			email,
 			password: passwordHash
 		})
@@ -61,6 +63,7 @@ export class Register implements IUseCase<T, K> {
 
 export class RegisterValidator extends BaseValidator<T> {
 	protected schema = createSchema(Type.Object({
+		name: Type.String({ minLength: 3, maxLength: 255 }),
 		email: Type.String({ format: 'email' }),
 		password: Type.String({ minLength: 8, maxLength: 128 })
 	}), 'auth/RegisterValidator')

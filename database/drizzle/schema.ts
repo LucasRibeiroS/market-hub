@@ -24,6 +24,7 @@ export const apiKeys = pgTable('api_keys', {
 
 export const users = pgTable('users', {
 	id: text().primaryKey().notNull().$defaultFn(() => generateId()),
+	name: text().notNull(),
 	email: text().notNull().unique(),
 	password: text().notNull(),
 	...timestamps
