@@ -10,7 +10,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "lint": "eslint '**/src/**/*.{ts,tsx}' --fix",
-    "test": "exit 0"
+    "test": "exit 0",
+    "email:dev": "email dev --dir src/views --port 7652"
   },
   "type": "module",
   "keywords": [],
@@ -21,6 +22,7 @@
     "@fastify/cors": "^11.0.1",
     "@fastify/swagger": "^9.5.1",
     "@fastify/type-provider-typebox": "^5.1.0",
+    "@react-email/components": "0.1.0",
     "@scalar/fastify-api-reference": "^1.31.2",
     "@sinclair/typebox": "^0.34.33",
     "@specter-labs/fastify-cache": "^1.0.3",
@@ -37,14 +39,20 @@
     "fastify-plugin": "^5.0.1",
     "ioredis": "^5.6.1",
     "nanoid": "^5.1.5",
-    "postgres": "^3.4.7"
+    "nodemailer": "^7.0.3",
+    "postgres": "^3.4.7",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@specter-labs/eslint-config": "^1.0.9",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "20.12",
+    "@types/nodemailer": "^6.4.17",
+    "@types/react": "^19.1.8",
     "concurrently": "^9.1.2",
     "drizzle-kit": "^0.31.1",
+    "react-email": "^4.0.16",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3"
   }

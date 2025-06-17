@@ -36,11 +36,11 @@
 			"@utils/*": ["src/shared/utils/*"],
 			"@clients/*": ["src/shared/clients/*"],
 			"@http/*": ["src/servers/http/*"],
+			"@views/*": ["src/views/*"],
 			"@drizzle": ["database/drizzle/index.ts"],
-            "@drizzle/*": ["database/drizzle/*"]
+            "@drizzle/*": ["database/drizzle/*"],
 		},
-		// views
-		"jsx": "react"
+		"jsx": "react-jsx",
 	},
 	"tsc-alias": {
 		"resolveFullPaths": true,
@@ -51,6 +51,7 @@
 	],
 	"include": [
 		"./src/**/*.ts",
+		"./src/views/**/*.tsx",
 		"./database/**/*.ts",
 		"drizzle.config.ts"
 	]
