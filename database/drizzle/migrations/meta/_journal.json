@@ -15,6 +15,13 @@
       "when": 1750199261001,
       "tag": "20250617222741_add_name_to_users_table",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1750200243151,
+      "tag": "20250617224403_add_missing_user_id_constraint_to_api_keys_table",
+      "breakpoints": true
     }
   ]
 }

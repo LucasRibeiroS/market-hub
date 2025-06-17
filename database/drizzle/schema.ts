@@ -12,7 +12,7 @@ const timestamps = {
 // Tables
 export const apiKeys = pgTable('api_keys', {
 	id: text().primaryKey().notNull().$defaultFn(() => generateId()),
-	user_id: text().notNull(),
+	user_id: text().notNull().references(() => users.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
 	public_key: text().notNull().unique(),
 	name: text().notNull(),
 	permissions: text().array().notNull(),
