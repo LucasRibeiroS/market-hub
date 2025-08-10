@@ -40,10 +40,10 @@ export const generateAppTokens = ({
 
 // Default verifier for decoding access tokens
 export const verifyAccessToken = createVerifier({
-	key: env.ACCESS_TOKEN_EXPIRES,
+	key: env.ACCESS_TOKEN_SECRET,
 	algorithms: [algorithm]
 })
 export const verifyRefreshToken = createVerifier<string>({
-	key: env.REFRESH_TOKEN_EXPIRES,
+	key: env.REFRESH_TOKEN_SECRET,
 	algorithms: [algorithm]
 }) as (token: string) => { id: string }
