@@ -1,10 +1,9 @@
-import { UseCaseHandler } from '@utils/use_case'
+import { UseCaseFactory } from '@utils/use_case'
 
 import { DrizzleUsersRepository } from '@repositories/implementations'
 
-import { GetUser, GetUserValidator } from './GetUser'
+import { GetUser } from './GetUser'
 
-export const getUser = new UseCaseHandler(
-	new GetUser(new DrizzleUsersRepository()),
-	new GetUserValidator()
+export const getUser = UseCaseFactory.create(
+	new GetUser(new DrizzleUsersRepository())
 )

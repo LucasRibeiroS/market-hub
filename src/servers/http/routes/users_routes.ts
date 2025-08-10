@@ -1,25 +1,12 @@
-import { FastifyInstance } from 'fastify'
-
-import { getFullSchema } from '@utils/fastify/schema'
-
-import { applyUseCase } from '@http/middlewares/apply_use_case'
+import { registerRoutes } from '@utils/fastify/routes'
 
 import { getUser } from '@use-cases/users'
 
-export const usersRoutes = async(fastify: FastifyInstance) => {
-	fastify.addSchema(getUser.documentation.response)
-
-	fastify.get(
-		'/users/me',
-		{
-			config: { authMethod: 'any' },
-			...getFullSchema({
-				...getUser.documentation,
-				schemas: {
-					response: getUser.documentation.response?.$id
-				}
-			})
-		},
-		applyUseCase(getUser)
-	)
-}
+export const usersRoutes = registerRoutes([
+	{
+		method: 'get',
+		path: '/users/me',
+		auth_method: 'any',
+		use_case: getUser
+	}
+])

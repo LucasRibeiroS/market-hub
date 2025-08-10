@@ -1,7 +1,7 @@
-import { CustomOmit } from '@utils/types'
 import { IResponse, SuccessResponse } from '@utils/response'
 import { isHttpException, ServerErrorException } from '@utils/exception'
 import { IValidator } from '@utils/validator'
+import { getMetadata, MetadataKeys } from '@utils/decorators'
 import { IDocumentation } from '@utils/documentation'
 
 /**
@@ -10,11 +10,6 @@ import { IDocumentation } from '@utils/documentation'
  * @template K - The output data type.
  */
 export interface IUseCase<T, K> {
-	/**
-	 * (Optional) The documentation for the use case, including tags, summary, description, and schemas.
-	 */
-	documentation: CustomOmit<IDocumentation, 'request'>
-
 	/**
      * Executes the use case by processing the input data and returning a response.
      * @param data - The input data.
@@ -37,7 +32,7 @@ export interface IUseCase<T, K> {
  * @template K - The type of response that the use case returns.
  */
 export interface IWrappedUseCase<T, K> {
-	documentation: IDocumentation
+	documentation?: IDocumentation
 
 	handle(data: T): Promise<IResponse<K>>
 }
@@ -53,12 +48,7 @@ export class UseCaseHandler<T, K> implements IWrappedUseCase<T, K> {
 	constructor(
 		private useCase: IUseCase<T, K>,
 		private validator?: IValidator<T>
-	) {
-		this.documentation = {
-			...this.useCase.documentation,
-			...this.validator?.documentation
-		}
-	}
+	) {}
 
 	/**
      * Handles the internal calls of the use case.
@@ -84,5 +74,36 @@ export class UseCaseHandler<T, K> implements IWrappedUseCase<T, K> {
 				await this.useCase.defer()
 			}
 		}
+	}
+}
+
+/**
+ * Factory class for creating wrapped use cases with optional validation.
+ * Provides a standardized way to instantiate use cases with their associated validators,
+ * ensuring type safety and proper error handling.
+ */
+export class UseCaseFactory {
+	/**
+   * Creates a wrapped use case with optional validation
+   * @param useCase - The use case to wrap
+   * @returns Wrapped use case instance
+   * @throws Error if use case is null or undefined
+   */
+	static create<T, K>(use_case: IUseCase<T, K>): IWrappedUseCase<T, K> {
+		// Get validator constructor with proper typing
+		const getValidatorClass = getMetadata(MetadataKeys.VALIDATE_WITH)<T>(use_case.constructor)
+		// Safely retrieve validator constructor
+		const ValidatorClass = getValidatorClass?.()
+		// Create validator instance only if ValidatorClass exists
+		const validator = ValidatorClass ? new ValidatorClass() : undefined
+
+		const documentation = getMetadata(MetadataKeys.DOCUMENTATION)<T>(use_case.constructor)
+		if (validator && documentation) {
+			documentation.request = getMetadata(MetadataKeys.DOCUMENTATION)<T>(validator.constructor)?.request
+		}
+
+		const handler = new UseCaseHandler(use_case, validator)
+		handler.documentation = documentation
+		return handler
 	}
 }

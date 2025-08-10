@@ -8,7 +8,7 @@ import { verifyAccessToken } from '@utils/jwt'
 
 import { DrizzleApiKeysRepository, DrizzleUsersRepository } from '@repositories/implementations'
 
-type AuthenticationMethods = 'jwt' | 'api_key' | 'any'
+export type AuthenticationMethods = 'jwt' | 'api_key' | 'any'
 
 declare module 'fastify' {
 	interface FastifyInstance {

@@ -1,16 +1,19 @@
-import { UseCaseHandler } from '@utils/use_case'
+import { UseCaseFactory } from '@utils/use_case'
 
 import { DrizzleApiKeysRepository } from '@repositories/implementations'
 
-import { ListApiKeys, ListApiKeysValidator } from './ListApiKeys'
-import { CreateApiKey, CreateApiKeyValidator } from './CreateApiKey'
+import { ListApiKeys } from './ListApiKeys'
+import { CreateApiKey } from './CreateApiKey'
+import { DeleteApiKey } from './DeleteApiKey'
 
-export const listApiKeys = new UseCaseHandler(
-	new ListApiKeys(new DrizzleApiKeysRepository()),
-	new ListApiKeysValidator()
+export const listApiKeys = UseCaseFactory.create(
+	new ListApiKeys(new DrizzleApiKeysRepository())
 )
 
-export const createApiKey = new UseCaseHandler(
-	new CreateApiKey(new DrizzleApiKeysRepository()),
-	new CreateApiKeyValidator()
+export const createApiKey = UseCaseFactory.create(
+	new CreateApiKey(new DrizzleApiKeysRepository())
+)
+
+export const deleteApiKey = UseCaseFactory.create(
+	new DeleteApiKey(new DrizzleApiKeysRepository())
 )

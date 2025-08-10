@@ -1,42 +1,35 @@
-import { UseCaseHandler } from '@utils/use_case'
+import { UseCaseFactory } from '@utils/use_case'
 
 import { DrizzlePasswordResetsRepository, DrizzleUsersRepository } from '@repositories/implementations'
 import { SmtpEmailAdapter } from '@adapters/implementations'
 
-import { Register, RegisterValidator } from './Register'
-import { Login, LoginValidator } from './Login'
-import { GenerateAccessToken, GenerateAccessTokenValidator } from './GenerateAccessToken'
-import { CreatePasswordReset, CreatePasswordResetValidator } from './CreatePasswordReset'
-import { ResetPassword, ResetPasswordValidator } from './ResetPassword'
+import { Register } from './Register'
+import { Login } from './Login'
+import { GenerateAccessToken } from './GenerateAccessToken'
+import { CreatePasswordReset } from './CreatePasswordReset'
+import { ResetPassword } from './ResetPassword'
 
-export const register = new UseCaseHandler(
-	new Register(new DrizzleUsersRepository()),
-	new RegisterValidator()
+export const register = UseCaseFactory.create(
+	new Register(new DrizzleUsersRepository())
 )
 
-export const login = new UseCaseHandler(
-	new Login(new DrizzleUsersRepository()),
-	new LoginValidator()
+export const login = UseCaseFactory.create(
+	new Login(new DrizzleUsersRepository())
 )
 
-export const generateAccessToken = new UseCaseHandler(
-	new GenerateAccessToken(),
-	new GenerateAccessTokenValidator()
-)
+export const generateAccessToken = UseCaseFactory.create(new GenerateAccessToken())
 
-export const createPasswordReset = new UseCaseHandler(
+export const createPasswordReset = UseCaseFactory.create(
 	new CreatePasswordReset(
 		new DrizzlePasswordResetsRepository(),
 		new DrizzleUsersRepository(),
 		new SmtpEmailAdapter()
-	),
-	new CreatePasswordResetValidator()
+	)
 )
 
-export const resetPassword = new UseCaseHandler(
+export const resetPassword = UseCaseFactory.create(
 	new ResetPassword(
 		new DrizzlePasswordResetsRepository(),
 		new DrizzleUsersRepository()
-	),
-	new ResetPasswordValidator()
+	)
 )

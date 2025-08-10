@@ -1,7 +1,7 @@
 import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import { asc, desc, is, sql, SQL } from 'drizzle-orm'
-import { PgSelect, PgTableWithColumns, PgTimestampString, SelectedFields } from 'drizzle-orm/pg-core'
+import { PgSelect, PgTimestampString, SelectedFields } from 'drizzle-orm/pg-core'
 import { SelectResultFields } from 'drizzle-orm/query-builders/select.types'
 
 import * as schema from '@drizzle'
@@ -41,8 +41,6 @@ export const jsonAggBuildObject = <T extends SelectedFields>(shape: T, filter?: 
 
 type PaginatedQueryParams<T> = {
 	query: T
-	// eslint-disable-next-line typescript/no-explicit-any
-	table: PgTableWithColumns<any> // Represents an table or enum of the schema
 	counter: Promise<number>
 	paginator: IPaginator
 }
@@ -54,16 +52,18 @@ type PaginatedQueryResult<T extends PgSelect> = Promise<{
 export abstract class DrizzleBaseRepository {
 	protected async paginatedQuery<T extends PgSelect>({
 		query,
-		table,
 		counter,
 		paginator
 	}: PaginatedQueryParams<T>): PaginatedQueryResult<T> {
 		const { limit, offset } = paginate(paginator.page, paginator.page_size)
-		if (limit !== undefined) query.limit(limit)
-		if (offset !== undefined) query.offset(offset)
-		if (paginator.order_by && paginator.order_direction && paginator.order_by in table) {
-			const column = table[paginator.order_by]
-			query.orderBy(paginator.order_direction === 'asc' ? asc(column) : desc(column))
+		query.limit(limit)
+		query.offset(offset)
+
+		if (paginator.order_by && paginator.order_direction) {
+			const orderByField = paginator.order_by
+			query.orderBy(fields => paginator.order_direction === 'asc'
+				? asc(fields[orderByField])
+				: desc(fields[orderByField]))
 		}
 
 		const [data, pagination] = await Promise.all([

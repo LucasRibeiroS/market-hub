@@ -1,11 +1,11 @@
-import { Static, Type } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
-import { assertTypes } from '@utils/types'
 import { generateAppTokens, verifyRefreshToken } from '@utils/jwt'
 import { isHttpException, UnauthorizedException } from '@utils/exception'
 import { IUseCase } from '@utils/use_case'
-import { BaseValidator } from '@utils/validator'
-import { appTokensJsonSchema, createSchema } from '@utils/typebox/schema'
+import { BaseValidator, ValidateWith } from '@utils/validator'
+import { Documentation } from '@utils/documentation'
+import { appTokensJsonSchema } from '@utils/typebox/schema'
 
 type GenerateAccessTokenRequest = {
 	refresh_token: string
@@ -18,6 +18,16 @@ type GenerateAccessTokenResponse = {
 }
 type K = GenerateAccessTokenResponse
 
+@ValidateWith(() => Validator)
+@Documentation({
+	tags: ['Authentication'],
+	summary: 'Generate Access Token',
+	description: 'Generate a new access token using a valid refresh token',
+	is_public: true,
+	response: Type.Object({
+		tokens: Type.Pick(appTokensJsonSchema, ['access_token'])
+	}, { $id: 'auth/GenerateAccessTokenResponse' })
+})
 export class GenerateAccessToken implements IUseCase<T, K> {
 	async execute({ refresh_token }: T): Promise<K> {
 		try {
@@ -36,28 +46,14 @@ export class GenerateAccessToken implements IUseCase<T, K> {
 
 		throw new UnauthorizedException()
 	}
-
-	documentation = {
-		tags: ['Authentication'],
-		summary: 'Generate Access Token',
-		description: 'Generate a new access token using a valid refresh token',
-		response: Type.Object({
-			tokens: Type.Pick(appTokensJsonSchema, ['access_token'])
-		}, { $id: 'auth/GenerateAccessTokenResponse' })
-	}
 }
 
-export class GenerateAccessTokenValidator extends BaseValidator<T> {
-	protected schema = createSchema(Type.Object({
-		refresh_token: Type.String()
-	}), 'auth/GenerateAccessTokenRequest')
+@Documentation({
+	request: Type.Pick(Validator.schema, ['refresh_token'], { $id: 'auth/GenerateAccessTokenRequest' })
+})
+export class Validator extends BaseValidator<T, typeof Validator.schema> {
+	static schema = Type.Object({ refresh_token: Type.String() })
 
-	constructor() {
-		super()
-		assertTypes<T, Static<typeof this.schema>>()
-	}
-
-	documentation = {
-		request: Type.Pick(this.schema, ['refresh_token'], { $id: 'auth/GenerateAccessTokenRequest' })
-	}
+	protected $id = 'auth/GenerateAccessTokenValidator'
+	protected schema = Validator.schema
 }

@@ -1,13 +1,13 @@
-import { Static, Type } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 import { IApiKey } from '@entities'
 import { IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
-import { assertTypes } from '@utils/types'
 import { IUseCase } from '@utils/use_case'
-import { BaseValidator } from '@utils/validator'
+import { BaseValidator, ValidateWith } from '@utils/validator'
 import { IPagination, IPaginator } from '@utils/pagination'
-import { apiKeyJsonSchema, createSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox/schema'
+import { Documentation } from '@utils/documentation'
+import { apiKeyJsonSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox/schema'
 
 type ListApiKeysRequest = { user_id: string } & IPaginator
 type T = ListApiKeysRequest
@@ -17,6 +17,16 @@ type ListApiKeysResponse = {
 }
 type K = ListApiKeysResponse
 
+@ValidateWith(() => Validator)
+@Documentation({
+	tags: ['Api Keys'],
+	summary: 'List Api keys',
+	description: 'List all API keys for a user',
+	response: Type.Object({
+		api_keys: Type.Array(Type.Ref(apiKeyJsonSchema.$id)),
+		pagination: Type.Ref(paginationJsonSchema.$id)
+	}, { $id: 'api-keys/ListApiKeysResponse' })
+})
 export class ListApiKeys implements IUseCase<T, K> {
 	constructor(private apiKeysRepository: IApiKeysRepository) {}
 
@@ -24,30 +34,17 @@ export class ListApiKeys implements IUseCase<T, K> {
 		const { data, pagination } = await this.apiKeysRepository.findMany(params)
 		return { api_keys: data, pagination }
 	}
-
-	documentation = {
-		tags: ['Api Keys'],
-		summary: 'List Api keys',
-		description: 'List all API keys for a user',
-		response: Type.Object({
-			api_keys: Type.Array(Type.Ref(apiKeyJsonSchema.$id)),
-			pagination: Type.Ref(paginationJsonSchema.$id)
-		}, { $id: 'api-keys/ListApiKeysResponse' })
-	}
 }
 
-export class ListApiKeysValidator extends BaseValidator<T> {
-	protected schema = createSchema(Type.Composite([
+@Documentation({
+	request: Type.Omit(Validator.schema, ['user_id'], { $id: 'api-keys/ListApiKeysRequest' })
+})
+export class Validator extends BaseValidator<T, typeof Validator.schema> {
+	static schema = Type.Composite([
 		Type.Object({ user_id: Type.String() }),
 		paginatorJsonSchema
-	]), 'api-keys/ListApiKeysValidator')
+	])
 
-	constructor() {
-		super()
-		assertTypes<T, Static<typeof this.schema>>()
-	}
-
-	documentation = {
-		request: Type.Omit(this.schema, ['user_id'], { $id: 'api-keys/ListApiKeysRequest' })
-	}
+	protected $id = 'api-keys/ListApiKeysValidator'
+	protected schema = Validator.schema
 }

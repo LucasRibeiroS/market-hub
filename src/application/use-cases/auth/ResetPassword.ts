@@ -1,15 +1,15 @@
 import { genSalt, hash } from 'bcrypt'
 import { isAfter } from 'date-fns'
-import { Static, Type } from '@sinclair/typebox'
+import { Type } from '@sinclair/typebox'
 
 import { IPasswordResetsRepository } from '@repositories/IPasswordResetsRepository'
 import { IUsersRepository } from '@repositories/IUsersRepository'
 
-import { assertTypes, EmptyObject } from '@utils/types'
+import { EmptyObject } from '@utils/types'
 import { ConflictException, NotFoundException } from '@utils/exception'
 import { IUseCase } from '@utils/use_case'
-import { BaseValidator } from '@utils/validator'
-import { createSchema } from '@utils/typebox/schema'
+import { BaseValidator, ValidateWith } from '@utils/validator'
+import { Documentation } from '@utils/documentation'
 
 type ResetPasswordRequest = {
 	email: string
@@ -20,6 +20,13 @@ type T = ResetPasswordRequest
 type ResetPasswordResponse = EmptyObject
 type K = ResetPasswordResponse
 
+@ValidateWith(() => Validator)
+@Documentation({
+	tags: ['Authentication'],
+	summary: 'Password Reset',
+	description: 'Reset user password using a code sent via email',
+	is_public: true
+})
 export class ResetPassword implements IUseCase<T, K> {
 	constructor(
 		private passwordResetsRepository: IPasswordResetsRepository,
@@ -59,27 +66,17 @@ export class ResetPassword implements IUseCase<T, K> {
 
 		return {}
 	}
-
-	documentation = {
-		tags: ['Authentication'],
-		summary: 'Password Reset',
-		description: 'Reset user password using a code sent via email'
-	}
 }
-
-export class ResetPasswordValidator extends BaseValidator<T> {
-	protected schema = createSchema(Type.Object({
+@Documentation({
+	request: { ...Validator.schema, $id: 'auth/ResetPasswordRequest' }
+})
+export class Validator extends BaseValidator<T, typeof Validator.schema> {
+	static schema = Type.Object({
 		email: Type.String({ format: 'email' }),
 		code: Type.String({ minLength: 6, maxLength: 6 }),
 		password: Type.String({ minLength: 8, maxLength: 128 })
-	}), 'auth/ResetPasswordValidator')
+	})
 
-	constructor() {
-		super()
-		assertTypes<T, Static<typeof this.schema>>()
-	}
-
-	documentation = {
-		request: { ...this.schema, $id: 'auth/ResetPasswordRequest' }
-	}
+	protected $id = 'auth/ResetPasswordValidator'
+	protected schema = Validator.schema
 }

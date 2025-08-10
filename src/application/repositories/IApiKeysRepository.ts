@@ -25,4 +25,5 @@ export interface IApiKeysRepository {
 	findFirst(params: IFindFirstParams): Promise<IApiKey | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IApiKey>
+	delete(id: string): Promise<void>
 }
