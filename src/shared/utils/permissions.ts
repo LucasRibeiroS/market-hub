@@ -4,11 +4,11 @@ type UserSections =
 
 type UserPermissions = `user.${UserSections}`
 type _UserPermissionsPermissionsTypeObject = {
-	[key in UserSections]: `producer.${key}`
+	[key in UserSections]: `user.${key}`
 }
 const UserPermissions: _UserPermissionsPermissionsTypeObject = {
-	'products': 'producer.products',
-	'webhooks': 'producer.webhooks'
+	'products': 'user.products',
+	'webhooks': 'user.webhooks'
 }
 
 type _PermissionsObject = {
@@ -18,4 +18,4 @@ export const Permissions: _PermissionsObject = {
 	user: UserPermissions
 }
 
-export type Permissions = UserPermissions
+export type IPermissions = UserPermissions
