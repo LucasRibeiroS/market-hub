@@ -2,7 +2,7 @@ import cluster from 'node:cluster'
 import process from 'node:process'
 import { cpus } from 'node:os'
 
-import { env } from '@utils/env'
+import { env } from '@config/env'
 
 import HttpServer from '@http/app'
 

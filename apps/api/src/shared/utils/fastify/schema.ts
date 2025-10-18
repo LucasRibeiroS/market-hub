@@ -2,6 +2,8 @@ import { FastifyInstance, FastifySchema } from 'fastify'
 import fp from 'fastify-plugin'
 import { Type } from '@sinclair/typebox'
 
+import { IDocumentation } from '@integrator-packages/use-case/documentation/types'
+
 import {
 	apiKeyJsonSchema,
 	appTokensJsonSchema,
@@ -10,7 +12,6 @@ import {
 	userJsonSchema
 } from '@utils/typebox/schema'
 import { CustomOmit } from '@utils/types'
-import { IDocumentation } from '@utils/documentation'
 
 type IAvailableSchemas = {
 	querystring?: string

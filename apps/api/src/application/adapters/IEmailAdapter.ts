@@ -7,3 +7,5 @@ export type ISendEmailParams = {
 export interface IEmailAdapter {
 	sendEmail(params: ISendEmailParams): Promise<string>
 }
+
+export const EmailAdapterSymbol = 'EmailAdapter'

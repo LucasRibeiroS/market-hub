@@ -33,6 +33,7 @@
 			"@entities/*": ["src/application/entities/*"],
 			"@repositories/*": ["src/application/repositories/*"],
 			"@use-cases/*": ["src/application/use-cases/*"],
+			"@config/*": ["src/config/*"],
 			"@utils/*": ["src/shared/utils/*"],
 			"@clients/*": ["src/shared/clients/*"],
 			"@http/*": ["src/servers/http/*"],

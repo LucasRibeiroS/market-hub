@@ -1,13 +1,15 @@
+import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
 import { IApiKey } from '@integrator-packages/database/entities'
 
-import { IApiKeysRepository } from '@repositories/IApiKeysRepository'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
 
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
+import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
+
 import { IPagination, IPaginator } from '@utils/pagination'
-import { Documentation } from '@utils/documentation'
 import { apiKeyJsonSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox/schema'
 
 type ListApiKeysRequest = { user_id: string } & IPaginator
@@ -18,6 +20,7 @@ type ListApiKeysResponse = {
 }
 type K = ListApiKeysResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Api Keys'],
@@ -29,7 +32,7 @@ type K = ListApiKeysResponse
 	}, { $id: 'api-keys/ListApiKeysResponse' })
 })
 export class ListApiKeys implements IUseCase<T, K> {
-	constructor(private apiKeysRepository: IApiKeysRepository) {}
+	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
 	async execute(params: T): Promise<K> {
 		const { data, pagination } = await this.apiKeysRepository.findMany(params)

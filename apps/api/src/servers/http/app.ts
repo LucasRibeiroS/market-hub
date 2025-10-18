@@ -12,14 +12,17 @@ import logger from '@specter-labs/fastify-logger'
 import swagger from '@fastify/swagger'
 import scalar from '@scalar/fastify-api-reference'
 
+import { isHttpException, RateLimitException } from '@integrator-packages/use-case/exceptions'
+
+import '@config/bootstrap'
+import { env } from '@config/env'
+
 import { authenticate } from '@http/middlewares/authenticate'
 
 import { authRoutes } from '@http/routes/auth_routes'
 import { apiKeysRoutes } from '@http/routes/api_keys_routes'
 import { usersRoutes } from '@http/routes/users_routes'
 
-import { env } from '@utils/env'
-import { isHttpException, RateLimitException } from '@utils/exception'
 import { defaultSchemas } from '@utils/fastify/schema'
 
 import { RedisCacheAdapter } from '@adapters/implementations'
@@ -29,7 +32,7 @@ class HttpServer {
 	private port = env.PORT
 
 	constructor() {
-		this.app = fastify({ ignoreTrailingSlash: true }).withTypeProvider<TypeBoxTypeProvider>()
+		this.app = fastify().withTypeProvider<TypeBoxTypeProvider>()
 		this.addPlugins()
 		this.addMiddlewares()
 		this.addRoutes()

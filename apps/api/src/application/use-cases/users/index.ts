@@ -1,9 +1,7 @@
-import { UseCaseFactory } from '@utils/use_case'
+import { container } from 'tsyringe'
 
-import { DrizzleUsersRepository } from '@repositories/implementations'
+import { UseCaseFactory } from '@integrator-packages/use-case'
 
 import { GetUser } from './GetUser'
 
-export const getUser = UseCaseFactory.create(
-	new GetUser(new DrizzleUsersRepository())
-)
+export const getUser = UseCaseFactory.create(container.resolve(GetUser))

@@ -1,7 +1,7 @@
 // This file contains the JWT signing and verification logic.
 import { createSigner, createVerifier } from 'fast-jwt'
 
-import { env } from '@utils/env'
+import { env } from '@config/env'
 
 // Default signers for generating access and refresh tokens
 const algorithm = 'HS256'

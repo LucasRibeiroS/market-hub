@@ -1,9 +1,10 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 
+import { isHttpException, UnauthorizedException } from '@integrator-packages/use-case/exceptions'
+
 import { GenericMiddleware, GenericRequest } from '@utils/fastify/types'
 import { Permissions } from '@utils/permissions'
-import { isHttpException, UnauthorizedException } from '@utils/exception'
 import { verifyAccessToken } from '@utils/jwt'
 
 import { DrizzleApiKeysRepository, DrizzleUsersRepository } from '@repositories/implementations'
@@ -62,9 +63,9 @@ const authenticateJwt = async(req: FastifyRequest<GenericRequest>): Promise<void
 		req.user = data
 
 		return
-	} catch (e) {
-		if (isHttpException(e)) {
-			throw e
+	} catch(error) {
+		if (isHttpException(error)) {
+			throw error
 		}
 	}
 
@@ -117,8 +118,8 @@ export const authenticate = fp((fastify: FastifyInstance) => {
 				return Promise.any([
 					fastify.authenticateJwt(typedReq, res),
 					fastify.authenticateApiKey(typedReq, res)
-				]).catch((e) => {
-					console.log(e)
+				]).catch((error) => {
+					console.log(error)
 
 					throw new UnauthorizedException()
 				})

@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe'
 import { eq, sql } from 'drizzle-orm'
 
 import { apiKeys } from '@integrator-packages/database/drizzle/tables'
@@ -6,6 +7,7 @@ import { IApiKey } from '@integrator-packages/database/entities'
 
 import { IApiKeysRepository, ICountParams, ICreateParams, IFindFirstParams, IFindManyParams, IFindManyResponse } from '@repositories/IApiKeysRepository'
 
+@injectable()
 export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements IApiKeysRepository {
 	private findFirstQuery = drizzleClient.query.apiKeys
 		.findFirst({

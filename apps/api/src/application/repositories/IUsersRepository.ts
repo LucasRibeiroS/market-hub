@@ -19,3 +19,5 @@ export interface IUsersRepository {
 	create(data: ICreateParams): Promise<IUser>
 	update(data: IUpdateParams): Promise<IUser>
 }
+
+export const UsersRepositorySymbol = 'UsersRepository'

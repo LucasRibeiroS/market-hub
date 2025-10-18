@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe'
 import { desc, eq, sql } from 'drizzle-orm'
 
 import { passwordResets } from '@integrator-packages/database/drizzle/tables'
@@ -11,6 +12,7 @@ import {
 	IUpdateParams
 } from '@repositories/IPasswordResetsRepository'
 
+@injectable()
 export class DrizzlePasswordResetsRepository implements IPasswordResetsRepository {
 	private createQuery = drizzleClient
 		.insert(passwordResets)

@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe'
 import { eq, sql } from 'drizzle-orm'
 
 import { users } from '@integrator-packages/database/drizzle/tables'
@@ -6,6 +7,7 @@ import { IUser } from '@integrator-packages/database/entities'
 
 import { ICreateParams, IFindFirstParams, IUpdateParams, IUsersRepository } from '@repositories/IUsersRepository'
 
+@injectable()
 export class DrizzleUsersRepository implements IUsersRepository {
 	private findByIdQuery = drizzleClient.query.users
 		.findFirst({

@@ -1,9 +1,12 @@
-import { smtpClient } from '@clients/nodemailer'
+import { injectable } from 'tsyringe'
 
-import { env } from '@utils/env'
+import { env } from '@config/env'
+
+import { smtpClient } from '@clients/nodemailer'
 
 import { IEmailAdapter, ISendEmailParams } from '@adapters/IEmailAdapter'
 
+@injectable()
 export class SmtpEmailAdapter implements IEmailAdapter {
 	async sendEmail({ destination, subject, message }: ISendEmailParams): Promise<string> {
 		const { messageId } = await smtpClient.sendMail({

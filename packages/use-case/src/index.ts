@@ -1,8 +1,11 @@
+import 'reflect-metadata'
+
+import { IValidator } from '@modules/validator/types'
+import { IDocumentation } from '@modules/documentation/types'
+
 import { IResponse, SuccessResponse } from '@utils/response'
-import { isHttpException, ServerErrorException } from '@utils/exception'
-import { IValidator } from '@utils/validator'
+import { isHttpException, ServerErrorException } from '@utils/exceptions'
 import { getMetadata, MetadataKeys } from '@utils/decorators'
-import { IDocumentation } from '@utils/documentation'
 
 /**
  * Represents a generic use case interface.
@@ -63,7 +66,7 @@ export class UseCaseHandler<T, K> implements IWrappedUseCase<T, K> {
 			const result = await this.useCase.execute(validated)
 
 			return new SuccessResponse(result)
-		} catch (error) {
+		} catch(error) {
 			if (isHttpException(error)) {
 				return error
 			}

@@ -1,0 +1,82 @@
+{
+    "name": "@integrator-packages/use-case",
+    "version": "1.0.0",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc && tsc-alias",
+        "watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+        "lint": "eslint '**/src/**/*.{ts,tsx}' --fix"
+    },
+    "type": "module",
+    "keywords": [],
+    "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
+    "license": "ISC",
+    "dependencies": {
+        "@sinclair/typebox": "^0.34.41",
+        "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1",
+        "reflect-metadata": "^0.2.2"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "concurrently": "*",
+        "tsc-alias": "*",
+        "typescript": "*"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./documentation/*": {
+            "types": "./dist/modules/documentation/*.d.ts",
+            "default": "./dist/modules/documentation/*.js"
+        },
+        "./documentation": {
+            "types": "./dist/modules/documentation/index.d.ts",
+            "default": "./dist/modules/documentation/index.js"
+        },
+        "./validator/*": {
+            "types": "./dist/modules/validator/*.d.ts",
+            "default": "./dist/modules/validator/*.js"
+        },
+        "./validator": {
+            "types": "./dist/modules/validator/index.d.ts",
+            "default": "./dist/modules/validator/index.js"
+        },
+        "./response": {
+            "types": "./dist/shared/utils/response.d.ts",
+            "default": "./dist/shared/utils/response.js"
+        },
+        "./exceptions": {
+            "types": "./dist/shared/utils/exceptions.d.ts",
+            "default": "./dist/shared/utils/exceptions.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            ".": [
+                "./dist/index.d.ts"
+            ],
+            "documentation/*": [
+                "./dist/modules/documentation/*.d.ts"
+            ],
+            "documentation": [
+                "./dist/modules/documentation/index.d.ts"
+            ],
+            "validator/*": [
+                "./dist/modules/validator/*.d.ts"
+            ],
+            "validator": [
+                "./dist/modules/validator/index.d.ts"
+            ],
+            "response": [
+                "./dist/shared/utils/response.d.ts"
+            ],
+            "exceptions": [
+                "./dist/shared/utils/exceptions.d.ts"
+            ]
+        }
+    }
+}

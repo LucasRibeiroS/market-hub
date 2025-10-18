@@ -1,20 +1,11 @@
 import { Static, TSchema } from '@sinclair/typebox'
 
+import { IValidator } from '@modules/validator/types'
+import { ValidatorMetadataKeys } from '@modules/validator/decorator'
+
 import { ajv, formatValidationError } from '@clients/ajv'
 
-import { BadRequestException } from '@utils/exception'
-import { MetadataKeys } from '@utils/decorators'
-
-export interface IValidator<T> {
-	validate(data: T): Promise<T>
-	/**
-	 * Optionally performs additional processing on the data after initial validation.
-	 *
-	 * @param data - The data to process
-	 * @returns A Promise resolving to the processed data
-	 */
-	include?(data: T): Promise<T>
-}
+import { BadRequestException } from '@utils/exceptions'
 
 export abstract class BaseValidator<
 	T extends Static<S>,
@@ -40,5 +31,5 @@ export abstract class BaseValidator<
 export const ValidateWith = <T>(
 	validator_class: () => new () => IValidator<T>
 ) => (target: object) => {
-	return Reflect.defineMetadata(MetadataKeys.VALIDATE_WITH, validator_class, target)
+	return Reflect.defineMetadata(ValidatorMetadataKeys.VALIDATE_WITH, validator_class, target)
 }

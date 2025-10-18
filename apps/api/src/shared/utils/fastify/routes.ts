@@ -1,11 +1,12 @@
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
+import { IWrappedUseCase } from '@integrator-packages/use-case'
+
 import { AuthenticationMethods } from '@http/middlewares/authenticate'
 import { applyUseCase, IApplyUseCaseOptions } from '@http/middlewares/apply_use_case'
 
 import { getFullSchema } from '@utils/fastify/schema'
-import { IWrappedUseCase } from '@utils/use_case'
 
 type IRoute = {
 	method: 'post' | 'get' | 'put' | 'delete' | 'patch'

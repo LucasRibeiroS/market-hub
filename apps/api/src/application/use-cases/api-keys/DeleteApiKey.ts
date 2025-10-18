@@ -1,12 +1,14 @@
+import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { IApiKeysRepository } from '@repositories/IApiKeysRepository'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { ForbiddenException, NotFoundException } from '@integrator-packages/use-case/exceptions'
+
+import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 import { EmptyObject } from '@utils/types'
-import { IUseCase } from '@utils/use_case'
-import { ForbiddenException, NotFoundException } from '@utils/exception'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 
 type DeleteApiKeyRequest = {
 	public_key: string
@@ -16,6 +18,7 @@ type T = DeleteApiKeyRequest
 type DeleteApiKeyResponse = EmptyObject
 type K = DeleteApiKeyResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Api Keys'],
@@ -23,7 +26,7 @@ type K = DeleteApiKeyResponse
 	description: 'Delete an existing API key for a user'
 })
 export class DeleteApiKey implements IUseCase<T, K> {
-	constructor(private apiKeysRepository: IApiKeysRepository) {}
+	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
 	async execute({ public_key, user_id }: T): Promise<K> {
 		const apiKey = await this.apiKeysRepository.findFirst({ public_key })

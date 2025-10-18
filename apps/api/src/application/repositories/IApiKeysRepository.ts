@@ -28,3 +28,5 @@ export interface IApiKeysRepository {
 	create(params: ICreateParams): Promise<IApiKey>
 	delete(id: string): Promise<void>
 }
+
+export const ApiKeysRepositorySymbol = 'ApiKeysRepository'

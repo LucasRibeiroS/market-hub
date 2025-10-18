@@ -7,7 +7,7 @@ import { ajv } from '@clients/ajv'
 
 type IEnv = {
 	TZ: string
-	NODE_ENV: 'local' | 'production'
+	NODE_ENV: 'local' | 'production' | 'test'
 	APPLICATION_NAME: string
 	PORT: number
 	DATABASE_URL: string
@@ -30,7 +30,11 @@ type IEnv = {
 
 const schema = Type.Object({
 	TZ: Type.String({ default: 'America/Sao_Paulo' }),
-	NODE_ENV: Type.Union([Type.Literal('production'), Type.Literal('local')], { default: 'local' }),
+	NODE_ENV: Type.Union([
+		Type.Literal('production'),
+		Type.Literal('local'),
+		Type.Literal('test')
+	], { default: 'local' }),
 	APPLICATION_NAME: Type.String({ default: 'integrator' }),
 	PORT: Type.Number({ default: 3000 }),
 	DATABASE_URL: Type.String(),

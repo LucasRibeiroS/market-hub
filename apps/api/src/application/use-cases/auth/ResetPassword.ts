@@ -1,15 +1,17 @@
-import { genSalt, hash } from 'bcrypt'
 import { isAfter } from 'date-fns'
+import { inject, injectable } from 'tsyringe'
+import { genSalt, hash } from 'bcrypt'
 import { Type } from '@sinclair/typebox'
 
-import { IPasswordResetsRepository } from '@repositories/IPasswordResetsRepository'
-import { IUsersRepository } from '@repositories/IUsersRepository'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { ConflictException, NotFoundException } from '@integrator-packages/use-case/exceptions'
+
+import { IPasswordResetsRepository, PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
+import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 
 import { EmptyObject } from '@utils/types'
-import { ConflictException, NotFoundException } from '@utils/exception'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 
 type ResetPasswordRequest = {
 	email: string
@@ -20,6 +22,7 @@ type T = ResetPasswordRequest
 type ResetPasswordResponse = EmptyObject
 type K = ResetPasswordResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Authentication'],
@@ -29,8 +32,8 @@ type K = ResetPasswordResponse
 })
 export class ResetPassword implements IUseCase<T, K> {
 	constructor(
-		private passwordResetsRepository: IPasswordResetsRepository,
-		private usersRepository: IUsersRepository
+		@inject(PasswordResetsRepositorySymbol) private passwordResetsRepository: IPasswordResetsRepository,
+		@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository
 	) {}
 
 	async execute({ code, email, password }: T): Promise<K> {
@@ -67,6 +70,7 @@ export class ResetPassword implements IUseCase<T, K> {
 		return {}
 	}
 }
+
 @Documentation({
 	request: { ...Validator.schema, $id: 'auth/ResetPasswordRequest' }
 })

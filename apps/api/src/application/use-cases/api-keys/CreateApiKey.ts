@@ -1,14 +1,15 @@
 import { randomUUID } from 'node:crypto'
+import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
 import { IApiKey } from '@integrator-packages/database/entities'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
 
-import { IApiKeysRepository } from '@repositories/IApiKeysRepository'
+import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 import { Permissions, UserPermissions } from '@utils/permissions'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 import { apiKeyJsonSchema, TEnumObject } from '@utils/typebox/schema'
 
 type CreateApiKeyRequest = { permissions: UserPermissions[] } & Pick<IApiKey, 'user_id' | 'name'>
@@ -18,6 +19,7 @@ type CreateApiKeyResponse = {
 }
 type K = CreateApiKeyResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Api Keys'],
@@ -28,7 +30,7 @@ type K = CreateApiKeyResponse
 	}, { $id: 'api-keys/CreateApiKeyResponse' })
 })
 export class CreateApiKey implements IUseCase<T, K> {
-	constructor(private apiKeysRepository: IApiKeysRepository) {}
+	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
 	async execute(data: T): Promise<K> {
 		const apiKey = await this.apiKeysRepository.create({

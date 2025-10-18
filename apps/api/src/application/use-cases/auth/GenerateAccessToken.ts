@@ -1,10 +1,12 @@
+import { injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { isHttpException, UnauthorizedException } from '@integrator-packages/use-case/exceptions'
+
 import { generateAppTokens, verifyRefreshToken } from '@utils/jwt'
-import { isHttpException, UnauthorizedException } from '@utils/exception'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 import { appTokensJsonSchema } from '@utils/typebox/schema'
 
 type GenerateAccessTokenRequest = {
@@ -18,6 +20,7 @@ type GenerateAccessTokenResponse = {
 }
 type K = GenerateAccessTokenResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Authentication'],

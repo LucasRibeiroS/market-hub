@@ -1,19 +1,11 @@
-import { UseCaseFactory } from '@utils/use_case'
+import { container } from 'tsyringe'
 
-import { DrizzleApiKeysRepository } from '@repositories/implementations'
+import { UseCaseFactory } from '@integrator-packages/use-case'
 
 import { ListApiKeys } from './ListApiKeys'
 import { CreateApiKey } from './CreateApiKey'
 import { DeleteApiKey } from './DeleteApiKey'
 
-export const listApiKeys = UseCaseFactory.create(
-	new ListApiKeys(new DrizzleApiKeysRepository())
-)
-
-export const createApiKey = UseCaseFactory.create(
-	new CreateApiKey(new DrizzleApiKeysRepository())
-)
-
-export const deleteApiKey = UseCaseFactory.create(
-	new DeleteApiKey(new DrizzleApiKeysRepository())
-)
+export const listApiKeys = UseCaseFactory.create(container.resolve(ListApiKeys))
+export const createApiKey = UseCaseFactory.create(container.resolve(CreateApiKey))
+export const deleteApiKey = UseCaseFactory.create(container.resolve(DeleteApiKey))

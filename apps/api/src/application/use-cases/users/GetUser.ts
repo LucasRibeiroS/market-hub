@@ -1,14 +1,16 @@
+import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
 import { IUser } from '@integrator-packages/database/entities'
 
-import { IUsersRepository } from '@repositories/IUsersRepository'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { NotFoundException } from '@integrator-packages/use-case/exceptions'
+
+import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 
 import { CustomOmit } from '@utils/types'
-import { NotFoundException } from '@utils/exception'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 import { userJsonSchema } from '@utils/typebox/schema'
 
 type GetUserRequest = { user_id: string }
@@ -18,6 +20,7 @@ type GetUserResponse = {
 }
 type K = GetUserResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Users'],
@@ -28,7 +31,7 @@ type K = GetUserResponse
 	}, { $id: 'users/GetUserResponse' })
 })
 export class GetUser implements IUseCase<T, K> {
-	constructor(private usersRepository: IUsersRepository) {}
+	constructor(@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository) {}
 
 	async execute({ user_id }: T): Promise<K> {
 		const user = await this.usersRepository.findById(user_id)

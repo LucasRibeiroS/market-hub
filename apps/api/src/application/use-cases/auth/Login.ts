@@ -1,13 +1,15 @@
+import { inject, injectable } from 'tsyringe'
 import { compare } from 'bcrypt'
 import { Type } from '@sinclair/typebox'
 
-import { IUsersRepository } from '@repositories/IUsersRepository'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { UnauthorizedException } from '@integrator-packages/use-case/exceptions'
+
+import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 
 import { generateAppTokens } from '@utils/jwt'
-import { UnauthorizedException } from '@utils/exception'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 import { appTokensJsonSchema } from '@utils/typebox/schema'
 
 type LoginRequest = {
@@ -23,6 +25,7 @@ type LoginResponse = {
 }
 type K = LoginResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Authentication'],
@@ -34,7 +37,7 @@ type K = LoginResponse
 	}, { $id: 'auth/LoginResponse' })
 })
 export class Login implements IUseCase<T, K> {
-	constructor(private usersRepository: IUsersRepository) {}
+	constructor(@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository) {}
 
 	async execute({ email, password }: T): Promise<K> {
 		const user = await this.usersRepository.findFirst({ email })

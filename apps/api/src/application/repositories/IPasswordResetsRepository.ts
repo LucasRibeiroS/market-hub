@@ -23,3 +23,5 @@ export interface IPasswordResetsRepository {
 	findLast(params: IFindLastParams): Promise<IPasswordReset | null>
 	update(params: IUpdateParams): Promise<IPasswordReset>
 }
+
+export const PasswordResetsRepositorySymbol = 'PasswordResetsRepository'

@@ -1,17 +1,20 @@
 import crypto from 'node:crypto'
 import { addMinutes, isBefore } from 'date-fns'
+import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { IPasswordResetsRepository } from '@repositories/IPasswordResetsRepository'
-import { IUsersRepository } from '@repositories/IUsersRepository'
-import { IEmailAdapter } from '@adapters/IEmailAdapter'
+import { IUseCase } from '@integrator-packages/use-case'
+import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
+import { Documentation } from '@integrator-packages/use-case/documentation'
+import { ConflictException, NotFoundException } from '@integrator-packages/use-case/exceptions'
+
+import { env } from '@config/env'
+
+import { IPasswordResetsRepository, PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
+import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
+import { EmailAdapterSymbol, IEmailAdapter } from '@adapters/IEmailAdapter'
 
 import { EmptyObject } from '@utils/types'
-import { env } from '@utils/env'
-import { ConflictException, NotFoundException } from '@utils/exception'
-import { IUseCase } from '@utils/use_case'
-import { BaseValidator, ValidateWith } from '@utils/validator'
-import { Documentation } from '@utils/documentation'
 
 import { getResetPasswordEmail } from '@views/reset-password'
 
@@ -22,6 +25,7 @@ type T = CreatePasswordResetRequest
 type CreatePasswordResetResponse = EmptyObject
 type K = CreatePasswordResetResponse
 
+@injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Authentication'],
@@ -31,9 +35,9 @@ type K = CreatePasswordResetResponse
 })
 export class CreatePasswordReset implements IUseCase<T, K> {
 	constructor(
-		private passwordResetsRepository: IPasswordResetsRepository,
-		private usersRepository: IUsersRepository,
-		private emailAdapter: IEmailAdapter
+		@inject(PasswordResetsRepositorySymbol) private passwordResetsRepository: IPasswordResetsRepository,
+		@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository,
+		@inject(EmailAdapterSymbol) private emailAdapter: IEmailAdapter
 	) {}
 
 	async execute({ email }: T): Promise<K> {
