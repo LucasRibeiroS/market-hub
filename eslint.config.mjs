@@ -1,3 +1,3 @@
-import specterLabsConfig from '@specter-labs/eslint-config'
+import { lintConfig } from '@specter-labs/eslint-config'
 
-export default specterLabsConfig()
+export default lintConfig()

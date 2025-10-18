@@ -1,0 +1,68 @@
+{
+    "name": "@integrator-packages/database",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc && tsc-alias",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "lint": "eslint '**/src/**/*.{ts,tsx}' --fix"
+    },
+    "type": "module",
+    "keywords": [],
+    "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
+    "license": "ISC",
+    "dependencies": {
+        "drizzle-kit": "^0.31.4",
+        "drizzle-orm": "^0.44.6",
+        "nanoid": "^5.1.5",
+        "postgres": "^3.4.7"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "tsc-alias": "*",
+        "typescript": "*"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/src/index.d.ts",
+            "default": "./dist/src/index.js"
+        },
+        "./drizzle/*": {
+            "types": "./dist/src/modules/drizzle/*.d.ts",
+            "default": "./dist/src/modules/drizzle/*.js"
+        },
+        "./drizzle": {
+            "types": "./dist/src/modules/drizzle/index.d.ts",
+            "default": "./dist/src/modules/drizzle/index.js"
+        },
+        "./entities/*": {
+            "types": "./dist/src/modules/entities/*.d.ts",
+            "default": "./dist/src/modules/entities/*.js"
+        },
+        "./entities/enum": {
+            "types": "./dist/src/modules/entities/enum/index.d.ts",
+            "default": "./dist/src/modules/entities/enum/index.js"
+        },
+        "./entities": {
+            "types": "./dist/src/modules/entities/index.d.ts",
+            "default": "./dist/src/modules/entities/index.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "drizzle/*": [
+                "./dist/src/modules/drizzle/*.d.ts"
+            ],
+            "entities": [
+                "./dist/src/modules/entities/index.d.ts"
+            ],
+            "entities/*": [
+                "./dist/src/modules/entities/*.d.ts"
+            ],
+            "entities/enum": [
+                "./dist/src/modules/entities/enum/index.d.ts"
+            ]
+        }
+    }
+}
