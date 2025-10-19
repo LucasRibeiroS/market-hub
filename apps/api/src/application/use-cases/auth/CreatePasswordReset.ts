@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { addMinutes, isBefore } from 'date-fns'
+import { addMinutes, isAfter } from 'date-fns'
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
@@ -49,7 +49,7 @@ export class CreatePasswordReset implements IUseCase<T, K> {
 		const lastReset = await this.passwordResetsRepository.findLast({ user_id: user.id })
 		if (
 			lastReset !== null &&
-            isBefore(lastReset.expiration, new Date()) &&
+            isAfter(lastReset.expiration, new Date()) &&
 			!lastReset.is_used
 		) {
 			throw new ConflictException('Your code has not expired yet')
