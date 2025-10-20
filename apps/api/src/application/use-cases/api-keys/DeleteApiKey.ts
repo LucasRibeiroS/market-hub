@@ -43,7 +43,7 @@ export class DeleteApiKey implements IUseCase<T, K> {
 	}
 }
 
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Composite([
 		Type.Object({
 			public_key: Type.String(),

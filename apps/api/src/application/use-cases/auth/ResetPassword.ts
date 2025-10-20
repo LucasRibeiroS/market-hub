@@ -74,7 +74,7 @@ export class ResetPassword implements IUseCase<T, K> {
 @Documentation({
 	request: { ...Validator.schema, $id: 'auth/ResetPasswordRequest' }
 })
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		email: Type.String({ format: 'email' }),
 		code: Type.String({ minLength: 6, maxLength: 6 }),

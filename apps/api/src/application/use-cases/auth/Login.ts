@@ -62,7 +62,7 @@ export class Login implements IUseCase<T, K> {
 @Documentation({
 	request: { ...Validator.schema, $id: 'auth/LoginRequest' }
 })
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		email: Type.String({ format: 'email' }),
 		password: Type.String({ minLength: 8, maxLength: 128 })

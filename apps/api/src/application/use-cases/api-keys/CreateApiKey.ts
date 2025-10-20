@@ -45,7 +45,7 @@ export class CreateApiKey implements IUseCase<T, K> {
 @Documentation({
 	request: Type.Omit(Validator.schema, ['user_id'], { $id: 'api-keys/CreateApiKeyRequest' })
 })
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Composite([
 		Type.Object({
 			user_id: Type.String(),

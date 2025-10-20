@@ -43,7 +43,7 @@ export class GetUser implements IUseCase<T, K> {
 	}
 }
 
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		user_id: Type.String()
 	})

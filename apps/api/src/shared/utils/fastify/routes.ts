@@ -1,3 +1,4 @@
+import { container } from 'tsyringe'
 import { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
 
@@ -7,7 +8,6 @@ import { AuthenticationMethods } from '@http/middlewares/authenticate'
 import { applyUseCase, IApplyUseCaseOptions } from '@http/middlewares/apply_use_case'
 
 import { getFullSchema } from '@utils/fastify/schema'
-import { container } from 'tsyringe'
 
 type IRoute = {
 	method: 'post' | 'get' | 'put' | 'delete' | 'patch'

@@ -54,7 +54,7 @@ export class GenerateAccessToken implements IUseCase<T, K> {
 @Documentation({
 	request: Type.Pick(Validator.schema, ['refresh_token'], { $id: 'auth/GenerateAccessTokenRequest' })
 })
-export class Validator extends BaseValidator<T, typeof Validator.schema> {
+class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({ refresh_token: Type.String() })
 
 	protected $id = 'auth/GenerateAccessTokenValidator'
