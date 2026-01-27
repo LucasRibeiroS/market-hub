@@ -12,6 +12,8 @@ import logger from '@specter-labs/fastify-logger'
 import swagger from '@fastify/swagger'
 import scalar from '@scalar/fastify-api-reference'
 
+import { RedisCacheAdapter } from '@integrator-packages/adapters/cache'
+
 import { isHttpException, RateLimitException } from '@integrator-packages/use-case/exceptions'
 
 import '@config/bootstrap'
@@ -24,8 +26,6 @@ import { apiKeysRoutes } from '@http/routes/api_keys_routes'
 import { usersRoutes } from '@http/routes/users_routes'
 
 import { defaultSchemas } from '@utils/fastify/schema'
-
-import { RedisCacheAdapter } from '@adapters/implementations'
 
 class HttpServer {
 	private app: FastifyInstance

@@ -1,0 +1,63 @@
+{
+    "name": "@integrator-packages/adapters",
+    "version": "1.0.0",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "license": "ISC",
+    "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
+    "scripts": {
+        "build": "tsc && tsc-alias",
+        "watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+        "lint": "eslint '**/src/**/*.{ts,tsx}' --fix"
+    },
+    "dependencies": {
+        "@aws-sdk/client-s3": "^3.891.0",
+        "@aws-sdk/lib-storage": "^3.891.0",
+        "ioredis": "^5.7.0"
+    },
+    "devDependencies": {
+        "@types/node": "*",
+        "concurrently": "*",
+        "tsc-alias": "*",
+        "typescript": "*"
+    },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./cache": {
+            "types": "./dist/modules/cache/index.d.ts",
+            "default": "./dist/modules/cache/index.js"
+        },
+        "./lock": {
+            "types": "./dist/modules/lock/index.d.ts",
+            "default": "./dist/modules/lock/index.js"
+        },
+        "./logger": {
+            "types": "./dist/modules/logger/index.d.ts",
+            "default": "./dist/modules/logger/index.js"
+        },
+        "./storage": {
+            "types": "./dist/modules/storage/index.d.ts",
+            "default": "./dist/modules/storage/index.js"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "cache": [
+                "./dist/modules/cache/index.d.ts"
+            ],
+            "lock": [
+                "./dist/modules/lock/index.d.ts"
+            ],
+            "logger": [
+                "./dist/modules/logger/index.d.ts"
+            ],
+            "storage": [
+                "./dist/modules/storage/index.d.ts"
+            ]
+        }
+    }
+}

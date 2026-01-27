@@ -1,5 +1,12 @@
 import { redisClient } from '@clients/redis'
-import { ICacheAdapter, IGetParams, IPushParams, IRemoveParams, ISetParams } from '@adapters/ICacheAdapter'
+import {
+	ICacheAdapter,
+	IGetParams,
+	ILengthParams,
+	IPushParams,
+	IRemoveParams,
+	ISetParams
+} from '@cache/ICacheAdapter'
 
 type IMountKeyParams = {
 	key: string
@@ -7,7 +14,11 @@ type IMountKeyParams = {
 }
 
 export class RedisCacheAdapter implements ICacheAdapter {
-	async get<T>(path: IGetParams): Promise<T> {
+	constructor() {
+		this.validateEnv()
+	}
+
+	async get<T>(path: IGetParams): Promise<T | null> {
 		return await redisClient
 			.get(this.mountKey(path))
 			.then(data => data !== null ? JSON.parse(data) : null)
@@ -36,10 +47,23 @@ export class RedisCacheAdapter implements ICacheAdapter {
 		return len
 	}
 
+	async length({ path }: ILengthParams): Promise<number> {
+		return await redisClient.llen(path)
+	}
+
 	private mountKey({ key, path }: IMountKeyParams): string {
 		if (path !== undefined) {
 			return `${path}:${key}`
 		}
 		return key
+	}
+
+	private validateEnv(): void {
+		if (!process.env.REDIS_HOST) {
+			throw new Error('Invalid environment variables: "REDIS_HOST" is required')
+		}
+		if (!process.env.REDIS_PORT) {
+			throw new Error('Invalid environment variables: "REDIS_PORT" is required')
+		}
 	}
 }
