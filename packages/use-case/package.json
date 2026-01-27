@@ -3,15 +3,14 @@
     "version": "1.0.0",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
+    "type": "module",
+    "license": "ISC",
+    "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
     "scripts": {
         "build": "tsc && tsc-alias",
         "watch": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
         "lint": "eslint '**/src/**/*.{ts,tsx}' --fix"
     },
-    "type": "module",
-    "keywords": [],
-    "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
-    "license": "ISC",
     "dependencies": {
         "@sinclair/typebox": "^0.34.41",
         "ajv": "^8.17.1",
