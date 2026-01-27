@@ -18,7 +18,13 @@ type IRoute = {
 	handler_options?: IApplyUseCaseOptions
 }
 
-export const registerRoutes = (routes: IRoute[]) => fp((fastify: FastifyInstance) => {
+type IRouteOptions = {
+	group?: string
+}
+
+export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) => fp((fastify: FastifyInstance) => {
+	const { group } = options
+
 	for (const route of routes) {
 		const { method, path, use_case_class, handler_options } = route
 
@@ -51,7 +57,7 @@ export const registerRoutes = (routes: IRoute[]) => fp((fastify: FastifyInstance
 		// Register the route
 		fastify.route({
 			method,
-			url: path,
+			url: (group || '') + path,
 			config: { authMethod: route.auth_method },
 			schema: use_case.documentation
 				? getFullSchema({ ...use_case.documentation, schemas }).schema

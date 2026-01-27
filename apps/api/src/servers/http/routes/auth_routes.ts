@@ -5,28 +5,28 @@ import { CreatePasswordReset, GenerateAccessToken, Login, Register, ResetPasswor
 export const authRoutes = registerRoutes([
 	{
 		method: 'post',
-		path: '/auth/register',
+		path: '/register',
 		use_case_class: Register
 	},
 	{
 		method: 'post',
-		path: '/auth/login',
+		path: '/login',
 		use_case_class: Login
 	},
 	{
 		method: 'post',
-		path: '/auth/generate-access-token',
+		path: '/generate-access-token',
 		use_case_class: GenerateAccessToken
 
 	},
 	{
 		method: 'post',
-		path: '/auth/password/code',
+		path: '/password/code',
 		use_case_class: CreatePasswordReset
 	},
 	{
 		method: 'post',
-		path: '/auth/password/reset',
+		path: '/password/reset',
 		use_case_class: ResetPassword
 	}
-])
+], { group: '/auth' })
