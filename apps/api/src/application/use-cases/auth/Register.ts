@@ -2,6 +2,8 @@ import { inject, injectable } from 'tsyringe'
 import { genSalt, hash } from 'bcrypt'
 import { Type } from '@sinclair/typebox'
 
+import { Transactional } from '@integrator-packages/database/transaction'
+
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -40,6 +42,7 @@ type K = RegisterResponse
 export class Register implements IUseCase<T, K> {
 	constructor(@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository) {}
 
+	@Transactional()
 	async execute({ name, email, password }: T): Promise<K> {
 		const userExists = await this.usersRepository.findFirst({ email })
 		if (userExists !== null) {

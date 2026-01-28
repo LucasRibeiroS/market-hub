@@ -35,6 +35,8 @@
 			"@utils/*": ["src/shared/utils/*"],
 			"@drizzle": ["src/modules/drizzle/index.ts"],
             "@drizzle/*": ["src/modules/drizzle/*"],
+			"@transaction": ["src/modules/transaction/index.ts"],
+			"@transaction/*": ["src/modules/transaction/*"],
 		},
 	},
 	"tsc-alias": {

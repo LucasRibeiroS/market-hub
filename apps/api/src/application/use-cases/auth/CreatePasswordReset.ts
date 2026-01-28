@@ -3,6 +3,8 @@ import { addMinutes, isAfter } from 'date-fns'
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
+import { Transactional } from '@integrator-packages/database/transaction'
+
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -40,6 +42,7 @@ export class CreatePasswordReset implements IUseCase<T, K> {
 		@inject(EmailAdapterSymbol) private emailAdapter: IEmailAdapter
 	) {}
 
+	@Transactional()
 	async execute({ email }: T): Promise<K> {
 		const user = await this.usersRepository.findFirst({ email })
 		if (user === null) {

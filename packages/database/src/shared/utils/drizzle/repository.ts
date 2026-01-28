@@ -1,6 +1,8 @@
 import { asc, desc } from 'drizzle-orm'
 import { PgSelect } from 'drizzle-orm/pg-core'
 
+import { getDatabaseClient } from '@transaction/context'
+
 import { createPaginationResult, IPagination, IPaginator, paginate } from '@utils/pagination'
 
 type PaginatedQueryParams<T> = {
@@ -14,6 +16,10 @@ type PaginatedQueryResult<T extends PgSelect> = Promise<{
 }>
 
 export abstract class DrizzleBaseRepository {
+	protected get drizzleClient() {
+		return getDatabaseClient()
+	}
+
 	protected async paginatedQuery<T extends PgSelect>({
 		query,
 		counter,

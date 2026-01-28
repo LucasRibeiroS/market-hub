@@ -1,6 +1,8 @@
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
+import { Transactional } from '@integrator-packages/database/transaction'
+
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -28,6 +30,7 @@ type K = DeleteApiKeyResponse
 export class DeleteApiKey implements IUseCase<T, K> {
 	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
+	@Transactional()
 	async execute({ public_key, user_id }: T): Promise<K> {
 		const apiKey = await this.apiKeysRepository.findFirst({ public_key })
 		if (apiKey === null) {

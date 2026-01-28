@@ -3,6 +3,8 @@ import { inject, injectable } from 'tsyringe'
 import { genSalt, hash } from 'bcrypt'
 import { Type } from '@sinclair/typebox'
 
+import { Transactional } from '@integrator-packages/database/transaction'
+
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -36,6 +38,7 @@ export class ResetPassword implements IUseCase<T, K> {
 		@inject(UsersRepositorySymbol) private usersRepository: IUsersRepository
 	) {}
 
+	@Transactional()
 	async execute({ code, email, password }: T): Promise<K> {
 		const user = await this.usersRepository.findFirst({ email })
 		if (user === null) {

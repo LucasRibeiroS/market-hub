@@ -3,6 +3,8 @@ import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
 import { IApiKey } from '@integrator-packages/database/entities'
+import { Transactional } from '@integrator-packages/database/transaction'
+
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -32,6 +34,7 @@ type K = CreateApiKeyResponse
 export class CreateApiKey implements IUseCase<T, K> {
 	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
+	@Transactional()
 	async execute(data: T): Promise<K> {
 		const apiKey = await this.apiKeysRepository.create({
 			...data,
@@ -46,13 +49,11 @@ export class CreateApiKey implements IUseCase<T, K> {
 	request: Type.Omit(Validator.schema, ['user_id'], { $id: 'api-keys/CreateApiKeyRequest' })
 })
 class Validator extends BaseValidator<T, typeof Validator.schema> {
-	static schema = Type.Composite([
-		Type.Object({
-			user_id: Type.String(),
-			name: Type.String({ minLength: 3, maxLength: 100 }),
-			permissions: Type.Array(TEnumObject(Permissions.user), { minItems: 1 })
-		})
-	])
+	static schema = Type.Object({
+		user_id: Type.String(),
+		name: Type.String({ minLength: 3, maxLength: 100 }),
+		permissions: Type.Array(TEnumObject(Permissions.user), { minItems: 1 })
+	})
 
 	protected $id = 'api-keys/CreateApiKeyValidator'
 	protected schema = Validator.schema

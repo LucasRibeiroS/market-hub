@@ -46,6 +46,10 @@
         "./entities": {
             "types": "./dist/src/modules/entities/index.d.ts",
             "default": "./dist/src/modules/entities/index.js"
+        },
+        "./transaction": {
+            "types": "./dist/src/modules/transaction/index.d.ts",
+            "default": "./dist/src/modules/transaction/index.js"
         }
     },
     "typesVersions": {
@@ -61,6 +65,9 @@
             ],
             "entities/enum": [
                 "./dist/src/modules/entities/enum/index.d.ts"
+            ],
+            "transaction": [
+                "./dist/src/modules/transaction/index.d.ts"
             ]
         }
     }

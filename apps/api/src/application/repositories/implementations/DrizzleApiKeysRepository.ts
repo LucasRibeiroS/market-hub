@@ -1,50 +1,48 @@
-import { injectable } from 'tsyringe'
 import { eq, sql } from 'drizzle-orm'
 
 import { apiKeys } from '@integrator-packages/database/drizzle/tables'
-import { DrizzleBaseRepository, drizzleClient } from '@integrator-packages/database/drizzle/client'
+import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
 import { IApiKey } from '@integrator-packages/database/entities'
 
 import { IApiKeysRepository, ICountParams, ICreateParams, IFindFirstParams, IFindManyParams, IFindManyResponse } from '@repositories/IApiKeysRepository'
 
-@injectable()
 export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements IApiKeysRepository {
-	private findFirstQuery = drizzleClient.query.apiKeys
+	private findFirstQuery = this.drizzleClient.query.apiKeys
 		.findFirst({
 			where: eq(apiKeys.public_key, sql.placeholder('public_key'))
 		})
 		.prepare('findApiKeyByPublicKey')
 
 	async findMany({ user_id, ...paginator }: IFindManyParams): Promise<IFindManyResponse> {
-		return this.paginatedQuery({
-			query: drizzleClient
+		return await this.paginatedQuery({
+			query: this.drizzleClient
 				.select()
 				.from(apiKeys)
 				.where(eq(apiKeys.user_id, user_id))
 				.$dynamic(),
 			counter: this.count({ user_id }),
 			paginator
-		}) as Promise<IFindManyResponse>
+		})
 	}
 
 	async findFirst({ public_key }: IFindFirstParams): Promise<IApiKey | null> {
-		return this.findFirstQuery.execute({ public_key }).then(result => result as IApiKey || null)
+		return await this.findFirstQuery.execute({ public_key }) || null
 	}
 
 	async count(where: ICountParams): Promise<number> {
-		return drizzleClient.$count(apiKeys, eq(apiKeys.user_id, where.user_id))
+		return await this.drizzleClient.$count(apiKeys, eq(apiKeys.user_id, where.user_id))
 	}
 
 	async create(data: ICreateParams): Promise<IApiKey> {
-		return drizzleClient
+		return await this.drizzleClient
 			.insert(apiKeys)
 			.values(data)
 			.returning()
-			.then(([result]) => result as IApiKey)
+			.then(([result]) => result)
 	}
 
 	async delete(id: string): Promise<void> {
-		await drizzleClient
+		await this.drizzleClient
 			.delete(apiKeys)
 			.where(eq(apiKeys.id, id))
 			.execute()
