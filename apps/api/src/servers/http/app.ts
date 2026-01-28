@@ -24,6 +24,7 @@ import { authenticate } from '@http/middlewares/authenticate'
 import { authRoutes } from '@http/routes/auth_routes'
 import { apiKeysRoutes } from '@http/routes/api_keys_routes'
 import { usersRoutes } from '@http/routes/users_routes'
+import { productsRoutes } from '@http/routes/products_routes'
 
 import { defaultSchemas } from '@utils/fastify/schema'
 
@@ -120,6 +121,7 @@ class HttpServer {
 		this.app.register(authRoutes)
 		this.app.register(apiKeysRoutes)
 		this.app.register(usersRoutes)
+		this.app.register(productsRoutes)
 	}
 
 	start() {

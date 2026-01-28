@@ -1,3 +1,5 @@
 export * from './IApiKey'
 export * from './IPasswordReset'
+export * from './IProduct'
 export * from './IUser'
+export * from './IVariant'

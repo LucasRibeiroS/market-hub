@@ -6,7 +6,9 @@ import { container } from 'tsyringe'
 import { ApiKeysRepositorySymbol } from '@repositories/IApiKeysRepository'
 import { PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
 import { UsersRepositorySymbol } from '@repositories/IUsersRepository'
-import { DrizzleApiKeysRepository, DrizzlePasswordResetsRepository, DrizzleUsersRepository } from '@repositories/implementations'
+import { ProductsRepositorySymbol } from '@repositories/IProductsRepository'
+import { VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
+import { DrizzleApiKeysRepository, DrizzlePasswordResetsRepository, DrizzleUsersRepository, DrizzleVariantsRepository } from '@repositories/implementations'
 
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
 import { SmtpEmailAdapter } from '@adapters/implementations'
@@ -15,6 +17,8 @@ import { SmtpEmailAdapter } from '@adapters/implementations'
 container.register(ApiKeysRepositorySymbol, DrizzleApiKeysRepository)
 container.register(PasswordResetsRepositorySymbol, DrizzlePasswordResetsRepository)
 container.register(UsersRepositorySymbol, DrizzleUsersRepository)
+container.register(ProductsRepositorySymbol, DrizzleVariantsRepository)
+container.register(VariantsRepositorySymbol, DrizzleVariantsRepository)
 
 // Register adapters dependencies
 container.register(EmailAdapterSymbol, SmtpEmailAdapter)

@@ -1,6 +1,6 @@
-import { Static, TSchema, Type } from '@sinclair/typebox'
+import { SchemaOptions, Static, TSchema, TString, Type } from '@sinclair/typebox'
 
-import { IApiKey, IUser } from '@integrator-packages/database/entities'
+import { IApiKey, IProduct, IUser, IVariant } from '@integrator-packages/database/entities'
 
 import { assertTypes, SetDateAsString } from '@utils/types'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
@@ -20,11 +20,72 @@ export const TNullable = <T extends TSchema>(T: T) => {
 	return Type.Union([Type.Null(), T])
 }
 
-export const TEnumObject = <T extends Record<string, string>>(enumObj: T) => {
+export const TEnumObject = <T extends Record<string, string>>(
+	enumObj: T,
+	descriptions?: Partial<Record<keyof T, string>>
+) => {
 	const values = Object.values(enumObj) as [T[keyof T], ...T[keyof T][]]
 	return Type.Union(
-		values.map(value => Type.Literal(value))
+		values.map(value => {
+			if (!descriptions) {
+				return Type.Literal(value)
+			}
+			const key = Object.keys(enumObj).find(k => enumObj[k] === value) as keyof T
+			const description = descriptions[key]
+			return description ? Type.Literal(value, { description, title: key as string }) : Type.Literal(value)
+		})
 	)
+}
+
+type NumericOptions = {
+	precision?: number
+	scale?: number
+	minimum?: number
+	maximum?: number
+} & SchemaOptions
+
+/**
+ * Creates a TypeBox schema for PostgreSQL numeric type.
+ * Validates as string to preserve precision, but accepts numbers in input.
+ *
+ * @param options - Configuration options
+ * @param options.precision - Total number of digits (default: 10)
+ * @param options.scale - Number of decimal places (default: 2)
+ * @param options.minimum - Minimum value (optional)
+ * @param options.maximum - Maximum value (optional)
+ *
+ * @example
+ * ```typescript
+ * // For weight: numeric(10, 3)
+ * TNumeric({ precision: 10, scale: 3, minimum: 0.001 })
+ *
+ * // For dimensions: numeric(10, 2)
+ * TNumeric({ precision: 10, scale: 2, minimum: 0.1 })
+ * ```
+ */
+export function TNumeric(options: NumericOptions = {}): TString {
+	const {
+		precision = 10,
+		scale = 2,
+		minimum,
+		maximum,
+		...schemaOptions
+	} = options
+
+	// Calculate max integer digits
+	const integerDigits = precision - scale
+
+	// Build regex pattern: optional sign, integer part, optional decimal part
+	// Example for scale=2: ^\d{1,8}(\.\d{1,2})?$
+	const pattern = scale > 0
+		? `^\\d{1,${integerDigits}}(\\.\\d{1,${scale}})?$`
+		: `^\\d{1,${precision}}$`
+
+	return Type.String({
+		pattern,
+		...schemaOptions,
+		description: `Numeric value with up to ${precision} total digits and ${scale} decimal places${minimum !== undefined ? `, minimum: ${minimum}` : ''}${maximum !== undefined ? `, maximum: ${maximum}` : ''}`
+	})
 }
 
 /**
@@ -62,6 +123,35 @@ export const userJsonSchema = createSchema(Type.Object({
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IUser')
 assertTypes<Static<typeof userJsonSchema>, SetDateAsString<IUser, 'created_at' | 'updated_at'>>()
+
+export const productJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	user_id: Type.String({ readOnly: true }),
+	name: Type.String(),
+	description: Type.String(),
+	attributes: Type.Record(Type.String(), Type.Any()),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IProduct')
+assertTypes<Static<typeof productJsonSchema>, SetDateAsString<IProduct, 'created_at' | 'updated_at'>>()
+
+export const variantJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	user_id: Type.String({ readOnly: true }),
+	product_id: Type.String({ readOnly: true }),
+	sku: Type.String(),
+	ean: TNullable(Type.String()),
+	price: Type.Integer(),
+	weight_kg: TNumeric({ precision: 10, scale: 3, minimum: 0.001 }),
+	height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
+	width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
+	depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
+	images: Type.Array(Type.String()),
+	attributes: Type.Record(Type.String(), Type.Any()),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IVariant')
+assertTypes<Static<typeof variantJsonSchema>, SetDateAsString<IVariant, 'created_at' | 'updated_at'>>()
 
 // Objects
 export const paginatorJsonSchema = createSchema(Type.Object({

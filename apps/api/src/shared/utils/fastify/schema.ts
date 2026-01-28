@@ -9,7 +9,9 @@ import {
 	appTokensJsonSchema,
 	paginationJsonSchema,
 	paginatorJsonSchema,
-	userJsonSchema
+	productJsonSchema,
+	userJsonSchema,
+	variantJsonSchema
 } from '@utils/typebox/schema'
 import { CustomOmit } from '@utils/types'
 
@@ -86,9 +88,13 @@ export const defaultSchemas = fp((fastify: FastifyInstance) => {
 		description: 'Error response'
 	}))
 
-	// Entities
+	// Models
 	fastify.addSchema(userJsonSchema)
 	fastify.addSchema(apiKeyJsonSchema)
+	fastify.addSchema(productJsonSchema)
+	fastify.addSchema(variantJsonSchema)
+
+	// Objects
 	fastify.addSchema(paginatorJsonSchema)
 	fastify.addSchema(paginationJsonSchema)
 	fastify.addSchema(appTokensJsonSchema)

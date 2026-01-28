@@ -29,6 +29,13 @@
       "when": 1750200264681,
       "tag": "20250617224424_create_password_resets_table",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769636535021,
+      "tag": "20260128214215_create_products_and_variants_tables",
+      "breakpoints": true
     }
   ]
 }

@@ -1,3 +1,5 @@
 export * from './DrizzleApiKeysRepository'
 export * from './DrizzlePasswordResetsRepository'
+export * from './DrizzleProductsRepository'
 export * from './DrizzleUsersRepository'
+export * from './DrizzleVariantsRepository'
