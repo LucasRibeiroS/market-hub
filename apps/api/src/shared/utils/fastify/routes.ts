@@ -54,10 +54,14 @@ export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) =>
 			schemas.response = use_case.documentation.response.$id
 		}
 
+		let url = (group || '') + path
+		if (url.endsWith('/')) {
+			url = url.slice(0, -1)
+		}
 		// Register the route
 		fastify.route({
 			method,
-			url: (group || '') + path,
+			url,
 			config: { authMethod: route.auth_method },
 			schema: use_case.documentation
 				? getFullSchema({ ...use_case.documentation, schemas }).schema
