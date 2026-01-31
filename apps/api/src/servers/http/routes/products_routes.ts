@@ -18,8 +18,11 @@ export const productsRoutes = registerRoutes([
 	},
 	{
 		method: 'post',
-		path: '/:product_id/variants',
+		path: '/:id/variants',
 		auth_method: 'any',
-		use_case_class: CreateManyVariants
+		use_case_class: CreateManyVariants,
+		handler_options: {
+			map_params: (params) => ({ product_id: params.id })
+		}
 	}
 ], { group: '/products' })

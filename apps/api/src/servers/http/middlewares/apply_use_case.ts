@@ -14,11 +14,12 @@ declare module 'fastify' {
 
 export type IApplyUseCaseOptions = Partial<{
 	separate_request_data: boolean
+	map_params: (params: Record<string, unknown>) => Record<string, unknown>
 }>
 
 export const applyUseCase = (
 	useCase: IWrappedUseCase<unknown, unknown>,
-	{ separate_request_data }: IApplyUseCaseOptions = {}
+	{ separate_request_data, map_params }: IApplyUseCaseOptions = {}
 ) => async(req: FastifyRequest<GenericRequest>, res: FastifyReply) => {
 	let data = { ...req.query, ...req.body }
 
@@ -34,7 +35,11 @@ export const applyUseCase = (
 		}
 	}
 
-	data = { ...data, ...req.params }
+	if (map_params !== undefined) {
+		data = { ...data, ...map_params(req.params) }
+	} else {
+		data = { ...data, ...req.params }
+	}
 
 	const { status_code, process, body } = await useCase.handle(data)
 
