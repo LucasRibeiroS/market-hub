@@ -14,7 +14,7 @@ import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IPr
 
 import { TNullable, TNumeric } from '@utils/typebox/schema'
 
-type CreateManyVariantsRequest = {
+type BulkCreateVariantsRequest = {
 	user_id: string
 	product_id: string
 	variants: Array<Pick<
@@ -29,23 +29,23 @@ type CreateManyVariantsRequest = {
         | 'images'
 	>>
 }
-type T = CreateManyVariantsRequest
-type CreateManyVariantsResponse = {
+type T = BulkCreateVariantsRequest
+type BulkCreateVariantsResponse = {
 	variants: Array<Pick<IVariant, 'id' | 'sku'>>
 }
-type K = CreateManyVariantsResponse
+type K = BulkCreateVariantsResponse
 
 @injectable()
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Products', 'Variants'],
-	summary: 'Create many variants',
-	description: 'Create new variants for a product',
+	summary: 'Bulk create variants',
+	description: 'Create multiple variants for a product',
 	response: Type.Object({
 		variants: Type.Array(Type.Object({ id: Type.String(), sku: Type.String() }))
-	}, { $id: 'variants/CreateManyVariantsResponse' })
+	}, { $id: 'variants/BulkCreateVariantsResponse' })
 })
-export class CreateManyVariants implements IUseCase<T, K> {
+export class BulkCreateVariants implements IUseCase<T, K> {
 	constructor(
 		@inject(VariantsRepositorySymbol) private variantsRepository: IVariantsRepository,
 		@inject(ProductsRepositorySymbol) private productsRepository: IProductsRepository
@@ -83,7 +83,7 @@ export class CreateManyVariants implements IUseCase<T, K> {
 }
 
 @Documentation({
-	request: Type.Omit(Validator.schema, ['user_id', 'product_id'], { $id: 'variants/CreateManyVariantsRequest' })
+	request: Type.Omit(Validator.schema, ['user_id', 'product_id'], { $id: 'variants/BulkCreateVariantsRequest' })
 })
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
@@ -103,7 +103,7 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		)
 	})
 
-	protected $id = 'variants/CreateManyVariantsValidator'
+	protected $id = 'variants/BulkCreateVariantsValidator'
 	protected schema = Validator.schema
 }
 

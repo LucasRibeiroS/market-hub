@@ -1,7 +1,7 @@
 import { registerRoutes } from '@utils/fastify/routes'
 
 import { CreateProduct, GetProduct, ListProducts } from '@use-cases/products'
-import { CreateManyVariants } from '@use-cases/variants'
+import { BulkCreateVariants, BulkDeleteVariants } from '@use-cases/variants'
 
 export const productsRoutes = registerRoutes([
 	{
@@ -24,9 +24,18 @@ export const productsRoutes = registerRoutes([
 	},
 	{
 		method: 'post',
-		path: '/:id/variants',
+		path: '/:id/variants/bulk',
 		auth_method: 'any',
-		use_case_class: CreateManyVariants,
+		use_case_class: BulkCreateVariants,
+		handler_options: {
+			map_params: (params) => ({ product_id: params.id })
+		}
+	},
+	{
+		method: 'post',
+		path: '/:id/variants/bulk/delete',
+		auth_method: 'any',
+		use_case_class: BulkDeleteVariants,
 		handler_options: {
 			map_params: (params) => ({ product_id: params.id })
 		}

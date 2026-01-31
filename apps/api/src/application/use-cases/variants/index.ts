@@ -1,1 +1,2 @@
-export { CreateManyVariants } from './CreateManyVariants'
+export { BulkCreateVariants } from './BulkCreateVariants'
+export { BulkDeleteVariants } from './BulkDeleteVariants'
