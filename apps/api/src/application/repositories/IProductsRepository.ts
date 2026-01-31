@@ -11,7 +11,9 @@ export type IFindManyResponse = {
 	pagination: IPagination
 }
 
-export type IFindByIdResponse = Pick<IProduct, 'id' | 'user_id'>
+export type IFindByIdResponse = { variants: IVariant[] } & IProduct
+
+export type IFindByIdSimplifiedResponse = Pick<IProduct, 'id' | 'user_id'>
 
 export type ICountParams = { user_id: string }
 
@@ -20,6 +22,7 @@ export type ICreateParams = CustomOmit<IProduct, 'id' | 'created_at' | 'updated_
 export interface IProductsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
+	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IProduct>
 }

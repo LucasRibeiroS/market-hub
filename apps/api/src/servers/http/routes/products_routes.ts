@@ -1,6 +1,6 @@
 import { registerRoutes } from '@utils/fastify/routes'
 
-import { CreateProduct, ListProducts } from '@use-cases/products'
+import { CreateProduct, GetProduct, ListProducts } from '@use-cases/products'
 import { CreateManyVariants } from '@use-cases/variants'
 
 export const productsRoutes = registerRoutes([
@@ -15,6 +15,12 @@ export const productsRoutes = registerRoutes([
 		path: '/',
 		auth_method: 'any',
 		use_case_class: CreateProduct
+	},
+	{
+		method: 'get',
+		path: '/:id',
+		auth_method: 'any',
+		use_case_class: GetProduct
 	},
 	{
 		method: 'post',

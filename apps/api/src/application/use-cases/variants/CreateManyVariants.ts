@@ -53,7 +53,7 @@ export class CreateManyVariants implements IUseCase<T, K> {
 
 	@Transactional()
 	async execute({ user_id, product_id, ...data }: T): Promise<K> {
-		const productExists = await this.productsRepository.findById(product_id)
+		const productExists = await this.productsRepository.findByIdSimplified(product_id)
 		if (productExists === null || productExists.user_id !== user_id) {
 			throw new NotFoundException('Product not found')
 		}

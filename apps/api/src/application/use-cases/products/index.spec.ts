@@ -7,6 +7,7 @@ describe('products use-cases', () => {
 	test('products use-cases should instantiate without throwing', () => {
 		// The mere import below will throw if construction failed.
 		expect(() => container.resolve(useCases.CreateProduct)).not.toThrow()
+		expect(() => container.resolve(useCases.GetProduct)).not.toThrow()
 		expect(() => container.resolve(useCases.ListProducts)).not.toThrow()
 	})
 })

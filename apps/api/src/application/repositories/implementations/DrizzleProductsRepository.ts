@@ -4,10 +4,17 @@ import { products, variants } from '@integrator-packages/database/drizzle/tables
 import { DrizzleBaseRepository, jsonAggBuildObject } from '@integrator-packages/database/drizzle/client'
 import { IProduct } from '@integrator-packages/database/entities'
 
-import { ICountParams, ICreateParams, IFindByIdResponse, IFindManyParams, IFindManyResponse, IProductsRepository } from '@repositories/IProductsRepository'
+import { ICountParams, ICreateParams, IFindByIdResponse, IFindByIdSimplifiedResponse, IFindManyParams, IFindManyResponse, IProductsRepository } from '@repositories/IProductsRepository'
 
 export class DrizzleProductsRepository extends DrizzleBaseRepository implements IProductsRepository {
 	private findByIdQuery = this.drizzleClient.query.products
+		.findFirst({
+			with: { variants: true },
+			where: eq(products.id, sql.placeholder('id'))
+		})
+		.prepare('findProductById')
+
+	private findByIdSimplifiedQuery = this.drizzleClient.query.products
 		.findFirst({
 			columns: {
 				id: true,
@@ -15,7 +22,7 @@ export class DrizzleProductsRepository extends DrizzleBaseRepository implements 
 			},
 			where: eq(products.id, sql.placeholder('id'))
 		})
-		.prepare('findProductById')
+		.prepare('findProductByIdSimplified')
 
 	async findMany({ user_id, ...paginator }: IFindManyParams): Promise<IFindManyResponse> {
 		const variantsSq = this.drizzleClient
@@ -43,6 +50,10 @@ export class DrizzleProductsRepository extends DrizzleBaseRepository implements 
 
 	async findById(id: string): Promise<IFindByIdResponse | null> {
 		return await this.findByIdQuery.execute({ id }) || null
+	}
+
+	async findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null> {
+		return await this.findByIdSimplifiedQuery.execute({ id }) || null
 	}
 
 	async count({ user_id }: ICountParams): Promise<number> {
