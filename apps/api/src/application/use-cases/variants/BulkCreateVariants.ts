@@ -38,7 +38,7 @@ type K = BulkCreateVariantsResponse
 @injectable()
 @ValidateWith(() => Validator)
 @Documentation({
-	tags: ['Products', 'Variants'],
+	tags: ['Variants'],
 	summary: 'Bulk create variants',
 	description: 'Create multiple variants for a product',
 	response: Type.Object({

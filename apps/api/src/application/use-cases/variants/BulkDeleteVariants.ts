@@ -26,7 +26,7 @@ type K = BulkDeleteVariantsResponse
 @injectable()
 @ValidateWith(() => Validator)
 @Documentation({
-	tags: ['Products', 'Variants'],
+	tags: ['Variants'],
 	summary: 'Bulk delete variants',
 	description: 'Delete multiple variants of a product'
 })
