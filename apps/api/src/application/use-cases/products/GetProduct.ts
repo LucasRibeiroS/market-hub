@@ -29,7 +29,7 @@ type K = GetProductResponse
 	summary: 'Get product',
 	description: 'Get a product by ID',
 	response: Type.Object({
-		product: Type.Composite([
+		product: Type.Intersect([
 			Type.Ref(productJsonSchema.$id),
 			Type.Object({
 				variants: Type.Array(Type.Ref(variantJsonSchema.$id))
