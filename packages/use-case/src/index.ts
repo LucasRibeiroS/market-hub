@@ -70,8 +70,8 @@ export class UseCaseHandler<T, K> implements IWrappedUseCase<T, K> {
 			if (isHttpException(error)) {
 				return error
 			}
-
-			return new ServerErrorException(error.message)
+			console.error(`${this.useCase.constructor.name} error:`, error)
+			return new ServerErrorException('Internal server error')
 		} finally {
 			if (this.useCase.defer !== undefined) {
 				await this.useCase.defer()

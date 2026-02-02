@@ -65,6 +65,9 @@ export class ServerErrorException extends HttpException {
 	}
 }
 
-export const isHttpException = (arg: object): arg is HttpException => {
-	return arg && 'process' in arg && 'body' in arg && 'status_code' in arg
+export const isHttpException = (arg: unknown): arg is HttpException => {
+	return typeof arg === 'object' && arg != null &&
+		'process' in arg &&
+		'body' in arg &&
+		'status_code' in arg
 }
