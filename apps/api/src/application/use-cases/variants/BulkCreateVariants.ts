@@ -98,7 +98,7 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 				height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 				width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 				depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-				images: Type.Array(Type.String({ format: 'uri', maxLength: 20 }))
+				images: Type.Array(Type.String({ format: 'uri' }))
 			}), { minItems: 1, maxItems: 100 }
 		)
 	})

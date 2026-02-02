@@ -28,7 +28,7 @@ type K = ListProductResponse
 	description: 'List all products for a user',
 	response: Type.Object({
 		products: Type.Array(
-			Type.Composite([
+			Type.Intersect([
 				Type.Ref(productJsonSchema.$id),
 				Type.Object({
 					variants: Type.Array(Type.Ref(variantJsonSchema.$id))
