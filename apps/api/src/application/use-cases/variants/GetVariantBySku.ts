@@ -25,7 +25,7 @@ type K = GetVariantBySkuResponse
 @ValidateWith(() => Validator)
 @Documentation({
 	tags: ['Variants'],
-	summary: 'Get Variant by SKU',
+	summary: 'Get variant by SKU',
 	description: 'Retrieves a variant based on the provided SKU.',
 	response: Type.Object({
 		variant: Type.Ref(variantJsonSchema.$id)
@@ -46,9 +46,6 @@ export class GetVariantBySku implements IUseCase<T, K> {
 	}
 }
 
-@Documentation({
-	request: Type.Omit(Validator.schema, ['user_id'], { $id: 'variants/GetVariantBySkuRequest' })
-})
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		user_id: Type.String(),

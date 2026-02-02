@@ -51,7 +51,7 @@ export class BulkDeleteVariants implements IUseCase<T, K> {
 		if (productExists === null || productExists.user_id !== user_id) {
 			throw new NotFoundException('Product not found')
 		}
-		if (variantsExisting.some(v => !skusToDelete.includes(v.sku))) {
+		if (skusToDelete.some(sku => !variantsExisting.find(v => v.sku === sku))) {
 			throw new NotFoundException('One or more variants were not found')
 		}
 
