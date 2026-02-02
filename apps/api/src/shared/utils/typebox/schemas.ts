@@ -1,92 +1,10 @@
-import { SchemaOptions, Static, TSchema, TString, Type } from '@sinclair/typebox'
+import { Static, TSchema, Type } from '@sinclair/typebox'
 
-import { IApiKey, IProduct, IUser, IVariant } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IApiKey, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
 
 import { assertTypes, SetDateAsString } from '@utils/types'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
-
-// Define a custom typeS
-type DateTypeOptions = {
-	readOnly?: boolean
-}
-export const DateType = (options?: DateTypeOptions) => Type.String({
-	...options,
-	format: 'date-time'
-})
-
-// The usage of Type.Union(T, Type.Null()) may differ from Type.Union([Type.Null(), T]).
-// The former represents the desired behavior, and this utility function ensures that
-export const TNullable = <T extends TSchema>(T: T) => {
-	return Type.Union([Type.Null(), T])
-}
-
-export const TEnumObject = <T extends Record<string, string>>(
-	enumObj: T,
-	descriptions?: Partial<Record<keyof T, string>>
-) => {
-	const values = Object.values(enumObj) as [T[keyof T], ...T[keyof T][]]
-	return Type.Union(
-		values.map(value => {
-			if (!descriptions) {
-				return Type.Literal(value)
-			}
-			const key = Object.keys(enumObj).find(k => enumObj[k] === value) as keyof T
-			const description = descriptions[key]
-			return description ? Type.Literal(value, { description, title: key as string }) : Type.Literal(value)
-		})
-	)
-}
-
-type NumericOptions = {
-	precision?: number
-	scale?: number
-	minimum?: number
-	maximum?: number
-} & SchemaOptions
-
-/**
- * Creates a TypeBox schema for PostgreSQL numeric type.
- * Validates as string to preserve precision, but accepts numbers in input.
- *
- * @param options - Configuration options
- * @param options.precision - Total number of digits (default: 10)
- * @param options.scale - Number of decimal places (default: 2)
- * @param options.minimum - Minimum value (optional)
- * @param options.maximum - Maximum value (optional)
- *
- * @example
- * ```typescript
- * // For weight: numeric(10, 3)
- * TNumeric({ precision: 10, scale: 3, minimum: 0.001 })
- *
- * // For dimensions: numeric(10, 2)
- * TNumeric({ precision: 10, scale: 2, minimum: 0.1 })
- * ```
- */
-export function TNumeric(options: NumericOptions = {}): TString {
-	const {
-		precision = 10,
-		scale = 2,
-		minimum,
-		maximum,
-		...schemaOptions
-	} = options
-
-	// Calculate max integer digits
-	const integerDigits = precision - scale
-
-	// Build regex pattern: optional sign, integer part, optional decimal part
-	// Example for scale=2: ^\d{1,8}(\.\d{1,2})?$
-	const pattern = scale > 0
-		? `^\\d{1,${integerDigits}}(\\.\\d{1,${scale}})?$`
-		: `^\\d{1,${precision}}$`
-
-	return Type.String({
-		pattern,
-		...schemaOptions,
-		description: `Numeric value with up to ${precision} total digits and ${scale} decimal places${minimum !== undefined ? `, minimum: ${minimum}` : ''}${maximum !== undefined ? `, maximum: ${maximum}` : ''}`
-	})
-}
+import { DateType, TEnumObject, TNullable, TNumeric } from '@utils/typebox/types'
 
 /**
  * Creates a schema with a guaranteed $id property
@@ -94,7 +12,7 @@ export function TNumeric(options: NumericOptions = {}): TString {
  * @param id The schema $id
  * @returns Schema with guaranteed $id type
  */
-export const createSchema = <T extends TSchema>(
+const createSchema = <T extends TSchema>(
 	schema: T,
 	id: string
 ): { $id: string } & T => {
@@ -103,7 +21,27 @@ export const createSchema = <T extends TSchema>(
 	return schema as { $id: string } & T
 }
 
+// Enums
+export const accountStatusEnumSchema = createSchema(TEnumObject(AccountStatusEnum, {
+	active: 'The account is active and connected',
+	disconnected: 'The account has been disconnected by the user',
+	expired: 'The account connection has expired and needs re-authorization',
+	revoked: 'The account access has been revoked by the marketplace',
+	error: 'There was an error with the account connection'
+}), 'enums/AccountStatusEnum')
+export const listingStatusEnumSchema = createSchema(TEnumObject(ListingStatusEnum, {
+	pending: 'The listing is pending synchronization',
+	active: 'The listing is active on the marketplace',
+	paused: 'The listing is paused on the marketplace',
+	error: 'There was an error with the listing synchronization'
+}), 'enums/ListingStatusEnum')
+export const providerEnumSchema = createSchema(TEnumObject(ProviderEnum, {
+	mercado_livre: 'Mercado Livre - Marketplace de vendas online',
+	magalu: 'Magazine Luiza - Marketplace de vendas online'
+}), 'enums/ProviderEnum')
+
 // Models
+// User management
 export const apiKeyJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
 	user_id: Type.String({ readOnly: true }),
@@ -124,6 +62,7 @@ export const userJsonSchema = createSchema(Type.Object({
 }), 'entities/IUser')
 assertTypes<Static<typeof userJsonSchema>, SetDateAsString<IUser, 'created_at' | 'updated_at'>>()
 
+// Product management
 export const productJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
 	user_id: Type.String({ readOnly: true }),
@@ -152,6 +91,19 @@ export const variantJsonSchema = createSchema(Type.Object({
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IVariant')
 assertTypes<Static<typeof variantJsonSchema>, SetDateAsString<IVariant, 'created_at' | 'updated_at'>>()
+
+// Marketplace management
+export const marketplaceListingJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	variant_id: Type.String({ readOnly: true }),
+	provider: Type.Ref(providerEnumSchema.$id, { readOnly: true }),
+	external_id: Type.String({ readOnly: true }),
+	status: Type.Ref(listingStatusEnumSchema.$id),
+	last_sync_at: TNullable(DateType({ readOnly: true })),
+	sync_message: TNullable(Type.String({ readOnly: true })),
+	metadata: Type.Record(Type.String(), Type.Any())
+}), 'entities/IMarketplaceListing')
+assertTypes<Static<typeof marketplaceListingJsonSchema>, SetDateAsString<IMarketplaceListing, 'last_sync_at'>>()
 
 // Objects
 export const paginatorJsonSchema = createSchema(Type.Object({

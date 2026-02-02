@@ -36,6 +36,27 @@
       "when": 1769636535021,
       "tag": "20260128214215_create_products_and_variants_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770075381001,
+      "tag": "20260202233621_create_marketplace_configuration_related_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770075417731,
+      "tag": "20260202233657_create_marketplace_listings_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770076648093,
+      "tag": "20260202235728_add_unique_index_on_account_id_to_marketplace_credentials_table",
+      "breakpoints": true
     }
   ]
 }

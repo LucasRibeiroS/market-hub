@@ -15,7 +15,13 @@ export type EmptyObject = Record<string, never>
 export type UnknownObject = Record<string, unknown>
 
 export type SetDateAsString<T, K extends keyof T> = {
-	[P in K]: T[P] extends Date ? string : T[P]
+	[P in K]: T[P] extends Date | null
+		? T[P] extends null
+			? null
+			: T[P] extends Date
+				? string
+				: string | null
+		: T[P]
 } & Omit<T, K>
 
 // Function used to assert that two types extend each other at compile time

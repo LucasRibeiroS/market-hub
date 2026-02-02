@@ -1,5 +1,7 @@
 import { boolean, index, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 
+import { accountStatus, listingStatus, provider } from '@drizzle/enums'
+
 import { generateId } from '@utils/helpers'
 
 const timestampConfig = { precision: 3, mode: 'date' } as const
@@ -61,3 +63,60 @@ export const variants = pgTable('variants', {
 	attributes: jsonb().$type<Record<string, string>>().notNull().default({}), // Specific attributes. Ex: { "Color": "Red", "Size": "42", "Voltage": "220V" }
 	...timestamps
 }, (table) => [uniqueIndex().on(table.user_id, table.sku), index().on(table.product_id)])
+
+// Marketplace management
+export const marketplaceProviders = pgTable('marketplace_providers', {
+	id: text().primaryKey().$defaultFn(() => `mktp_${generateId()}`),
+	provider: provider().notNull().unique(),
+	display_name: text().notNull(),
+	auth_url: text().notNull(),
+	token_url: text().notNull(),
+	client_id: text().notNull(),
+	client_secret: text().notNull(),
+	is_active: boolean().default(true)
+})
+
+export const marketplaceAccounts = pgTable('marketplace_accounts', {
+	id: text().primaryKey().$defaultFn(() => `mktacc_${generateId()}`),
+	user_id: text().notNull().references(() => users.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	provider: provider().notNull().references(() => marketplaceProviders.provider, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	external_id: text().notNull(),
+	external_email: text(),
+	status: accountStatus().notNull().default('active'),
+	...timestamps
+}, table => [index().using('btree', table.user_id, table.provider)])
+
+export const marketplaceCredentials = pgTable('marketplace_credentials', {
+	id: text().primaryKey().$defaultFn(() => `mktcred_${generateId()}`),
+	account_id: text().references(() => marketplaceAccounts.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+	access_token: text().notNull(),
+	refresh_token: text().notNull(),
+	access_token_expires_at: timestamp(timestampConfig).notNull(),
+	refresh_token_expires_at: timestamp(timestampConfig).notNull(),
+	scopes: jsonb('scopes'),
+	token_type: text('token_type').default('Bearer')
+}, table => [uniqueIndex().using('btree', table.account_id)])
+
+export const marketplaceWebhooks = pgTable('marketplace_webhooks', {
+	id: text().primaryKey().$defaultFn(() => `mktweb_${generateId()}`),
+	account_id: text().references(() => marketplaceAccounts.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+	external_webhook_id: text().notNull(),
+	topic: text().notNull(),
+	is_active: boolean().notNull().default(true),
+	...timestamps
+}, (table) => [uniqueIndex().on(table.account_id, table.topic)])
+
+// The listings represent the variants listed on different marketplace accounts
+export const marketplaceListings = pgTable('marketplace_listings', {
+	id: text().primaryKey().$defaultFn(() => `lis_${generateId()}`),
+	variant_id: text().references(() => variants.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+	account_id: text().references(() => marketplaceAccounts.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
+	external_id: text().notNull(),
+	status: listingStatus().notNull().default('pending'),
+	last_sync_at: timestamp(timestampConfig),
+	sync_message: text(),
+	metadata: jsonb().$type<Record<string, unknown>>().default({}) // Provider-specific metadata. Ex: { listing_type_id: "gold_pro", category_id: "MLB123" }
+}, (table) => [
+	uniqueIndex().on(table.variant_id, table.account_id),
+	index().on(table.external_id)
+])
