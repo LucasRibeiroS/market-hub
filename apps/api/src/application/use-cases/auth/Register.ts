@@ -12,7 +12,7 @@ import { ConflictException } from '@integrator-packages/use-case/exceptions'
 import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 
 import { generateAppTokens } from '@utils/jwt'
-import { appTokensJsonSchema } from '@utils/typebox/schema'
+import { appTokensJsonSchema } from '@utils/typebox'
 
 type RegisterRequest = {
 	name: string

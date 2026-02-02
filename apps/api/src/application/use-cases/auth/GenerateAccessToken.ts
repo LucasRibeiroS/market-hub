@@ -7,7 +7,7 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { isHttpException, UnauthorizedException } from '@integrator-packages/use-case/exceptions'
 
 import { generateAppTokens, verifyRefreshToken } from '@utils/jwt'
-import { appTokensJsonSchema } from '@utils/typebox/schema'
+import { appTokensJsonSchema } from '@utils/typebox'
 
 type GenerateAccessTokenRequest = {
 	refresh_token: string

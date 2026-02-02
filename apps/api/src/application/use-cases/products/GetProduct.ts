@@ -10,7 +10,7 @@ import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 
-import { productJsonSchema, variantJsonSchema } from '@utils/typebox/schema'
+import { productJsonSchema, variantJsonSchema } from '@utils/typebox'
 
 type GetProductRequest = {
 	id: string

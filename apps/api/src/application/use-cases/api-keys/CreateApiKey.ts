@@ -12,7 +12,7 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 import { Permissions, UserPermissions } from '@utils/permissions'
-import { apiKeyJsonSchema, TEnumObject } from '@utils/typebox/schema'
+import { apiKeyJsonSchema, TEnumObject } from '@utils/typebox'
 
 type CreateApiKeyRequest = { permissions: UserPermissions[] } & Pick<IApiKey, 'user_id' | 'name'>
 type T = CreateApiKeyRequest

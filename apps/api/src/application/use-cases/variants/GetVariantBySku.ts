@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe'
+import { Type } from '@sinclair/typebox'
 
 import { IVariant } from '@integrator-packages/database/entities'
 
@@ -8,8 +9,8 @@ import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/valid
 import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
-import { Type } from '@sinclair/typebox'
-import { variantJsonSchema } from '@utils/typebox/schema'
+
+import { variantJsonSchema } from '@utils/typebox'
 
 type GetVariantBySkuRequest = {
 	sku: string

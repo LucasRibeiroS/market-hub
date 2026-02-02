@@ -10,7 +10,7 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 
 import { IPagination, IPaginator } from '@utils/pagination'
-import { paginationJsonSchema, paginatorJsonSchema, productJsonSchema, variantJsonSchema } from '@utils/typebox/schema'
+import { paginationJsonSchema, paginatorJsonSchema, productJsonSchema, variantJsonSchema } from '@utils/typebox'
 
 type ListProductRequest = { user_id: string } & IPaginator
 type T = ListProductRequest

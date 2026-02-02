@@ -12,7 +12,7 @@ import { ConflictException } from '@integrator-packages/use-case/exceptions'
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
 
-import { TNullable, TNumeric } from '@utils/typebox/schema'
+import { TNullable, TNumeric } from '@utils/typebox'
 
 type CreateProductRequest = {
 	user_id: string

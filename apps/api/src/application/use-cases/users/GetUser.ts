@@ -11,7 +11,7 @@ import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 
 import { CustomOmit } from '@utils/types'
-import { userJsonSchema } from '@utils/typebox/schema'
+import { userJsonSchema } from '@utils/typebox'
 
 type GetUserRequest = { user_id: string }
 type T = GetUserRequest

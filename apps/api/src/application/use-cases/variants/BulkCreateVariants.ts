@@ -12,7 +12,7 @@ import { ConflictException, NotFoundException } from '@integrator-packages/use-c
 import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 
-import { TNullable, TNumeric } from '@utils/typebox/schema'
+import { TNullable, TNumeric } from '@utils/typebox'
 
 type BulkCreateVariantsRequest = {
 	user_id: string

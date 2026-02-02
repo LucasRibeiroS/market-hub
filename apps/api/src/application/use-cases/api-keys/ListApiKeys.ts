@@ -10,7 +10,7 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 import { IPagination, IPaginator } from '@utils/pagination'
-import { apiKeyJsonSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox/schema'
+import { apiKeyJsonSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox'
 
 type ListApiKeysRequest = { user_id: string } & IPaginator
 type T = ListApiKeysRequest
