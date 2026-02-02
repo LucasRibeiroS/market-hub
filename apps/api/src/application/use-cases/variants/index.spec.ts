@@ -8,5 +8,6 @@ describe('variants use-cases', () => {
 		// The mere import below will throw if construction failed.
 		expect(() => container.resolve(useCases.BulkCreateVariants)).not.toThrow()
 		expect(() => container.resolve(useCases.BulkDeleteVariants)).not.toThrow()
+		expect(() => container.resolve(useCases.GetVariantBySku)).not.toThrow()
 	})
 })
