@@ -29,6 +29,7 @@ type IAvailableSchemas = {
 type GetFullSchemaOptions = {
 	schemas?: IAvailableSchemas
 	is_public?: boolean
+	hide?: boolean
 	summary: string
 	description?: string
 	tags?: string[]
@@ -37,6 +38,7 @@ type GetFullSchemaOptions = {
 export const getFullSchema = ({
 	schemas,
 	is_public,
+	hide,
 	summary,
 	description,
 	tags
@@ -60,6 +62,7 @@ export const getFullSchema = ({
 			'4xx': { $ref: 'default/error' },
 			'5xx': { $ref: 'default/error' }
 		},
+		hide,
 		security: !is_public ? [{ apiKey: [] }] : [],
 		summary,
 		description,

@@ -16,6 +16,7 @@ type IRoute = {
 	// eslint-disable-next-line typescript/no-explicit-any
 	use_case_class: new (...args: any[]) => IUseCase<unknown, unknown>
 	handler_options?: IApplyUseCaseOptions
+	swagger_options?: Partial<{ hide: true }>
 }
 
 type IRouteOptions = {
@@ -26,7 +27,7 @@ export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) =>
 	const { group } = options
 
 	for (const route of routes) {
-		const { method, path, use_case_class, handler_options } = route
+		const { method, path, use_case_class, handler_options, swagger_options } = route
 
 		const use_case = UseCaseFactory.create(container.resolve(use_case_class))
 
@@ -64,7 +65,11 @@ export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) =>
 			url,
 			config: { authMethod: route.auth_method },
 			schema: use_case.documentation
-				? getFullSchema({ ...use_case.documentation, schemas }).schema
+				? getFullSchema({
+					...swagger_options,
+					...use_case.documentation,
+					schemas
+				}).schema
 				: undefined,
 			handler: applyUseCase(use_case, handler_options)
 		})
