@@ -4,19 +4,7 @@ import { Type } from '@sinclair/typebox'
 
 import { IDocumentation } from '@integrator-packages/use-case/documentation/types'
 
-import {
-	accountStatusEnumSchema,
-	apiKeyJsonSchema,
-	appTokensJsonSchema,
-	listingStatusEnumSchema,
-	marketplaceListingJsonSchema,
-	paginationJsonSchema,
-	paginatorJsonSchema,
-	productJsonSchema,
-	providerEnumSchema,
-	userJsonSchema,
-	variantJsonSchema
-} from '@utils/typebox/schemas'
+import { getAllSchemas } from '@utils/typebox/schemas'
 import { CustomOmit } from '@utils/types'
 
 type IAvailableSchemas = {
@@ -95,20 +83,7 @@ export const defaultSchemas = fp((fastify: FastifyInstance) => {
 		description: 'Error response'
 	}))
 
-	// Enums
-	fastify.addSchema(accountStatusEnumSchema)
-	fastify.addSchema(listingStatusEnumSchema)
-	fastify.addSchema(providerEnumSchema)
-
-	// Models
-	fastify.addSchema(userJsonSchema)
-	fastify.addSchema(apiKeyJsonSchema)
-	fastify.addSchema(productJsonSchema)
-	fastify.addSchema(variantJsonSchema)
-	fastify.addSchema(marketplaceListingJsonSchema)
-
-	// Objects
-	fastify.addSchema(paginatorJsonSchema)
-	fastify.addSchema(paginationJsonSchema)
-	fastify.addSchema(appTokensJsonSchema)
+	getAllSchemas().forEach(schema => {
+		fastify.addSchema(schema)
+	})
 })

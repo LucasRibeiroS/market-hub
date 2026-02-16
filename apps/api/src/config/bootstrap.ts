@@ -3,6 +3,10 @@ import 'reflect-metadata'
 
 import { container } from 'tsyringe'
 
+import { schemas } from '@integrator-packages/use-case/schemas'
+
+import { getAllSchemas } from '@utils/typebox'
+
 import { ApiKeysRepositorySymbol } from '@repositories/IApiKeysRepository'
 import { PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
 import { UsersRepositorySymbol } from '@repositories/IUsersRepository'
@@ -12,6 +16,9 @@ import { DrizzleApiKeysRepository, DrizzlePasswordResetsRepository, DrizzleProdu
 
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
 import { SmtpEmailAdapter } from '@adapters/implementations'
+
+// Register common schemas in the use-case layer
+schemas.register(getAllSchemas())
 
 // Register repositories dependencies
 container.register(ApiKeysRepositorySymbol, DrizzleApiKeysRepository)

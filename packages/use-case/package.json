@@ -15,10 +15,12 @@
         "@sinclair/typebox": "^0.34.41",
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
+        "object-hash": "^3.0.0",
         "reflect-metadata": "^0.2.2"
     },
     "devDependencies": {
         "@types/node": "*",
+        "@types/object-hash": "^3.0.6",
         "concurrently": "*",
         "tsc-alias": "*",
         "typescript": "*"
@@ -51,6 +53,10 @@
         "./exceptions": {
             "types": "./dist/shared/utils/exceptions.d.ts",
             "default": "./dist/shared/utils/exceptions.js"
+        },
+        "./schemas": {
+            "types": "./dist/shared/utils/schemas.d.ts",
+            "default": "./dist/shared/utils/schemas.js"
         }
     },
     "typesVersions": {
@@ -75,6 +81,9 @@
             ],
             "exceptions": [
                 "./dist/shared/utils/exceptions.d.ts"
+            ],
+            "schemas": [
+                "./dist/shared/utils/schemas.d.ts"
             ]
         }
     }

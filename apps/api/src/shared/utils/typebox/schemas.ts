@@ -57,7 +57,7 @@ export const apiKeyJsonSchema = createSchema(Type.Object({
 	user_id: Type.String({ readOnly: true }),
 	name: Type.String(),
 	key_preview: Type.String({ readOnly: true }),
-	permissions: Type.Array(Type.String()),
+	permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { readOnly: true }),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IApiKey')
@@ -139,3 +139,19 @@ export const appTokensJsonSchema = createSchema(Type.Object({
 	access_token: Type.String({ readOnly: true }),
 	refresh_token: Type.String({ readOnly: true })
 }), 'objects/IAppTokens')
+
+// Simple function to export all schemas as an array for easy registration
+export const getAllSchemas = () => [
+	accountStatusEnumSchema,
+	listingStatusEnumSchema,
+	providerEnumSchema,
+	permissionsEnumSchema,
+	userJsonSchema,
+	apiKeyJsonSchema,
+	productJsonSchema,
+	variantJsonSchema,
+	marketplaceListingJsonSchema,
+	paginatorJsonSchema,
+	paginationJsonSchema,
+	appTokensJsonSchema
+]

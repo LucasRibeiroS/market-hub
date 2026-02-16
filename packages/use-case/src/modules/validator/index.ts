@@ -1,3 +1,4 @@
+import hash from 'object-hash'
 import { Static, TSchema } from '@sinclair/typebox'
 
 import { IValidator } from '@modules/validator/types'
@@ -11,21 +12,28 @@ export abstract class BaseValidator<
 	T extends Static<S>,
 	S extends TSchema
 > implements IValidator<T> {
-	protected abstract $id: string
+	protected $id?: string
+
 	protected abstract schema: S
 
-	include?(data: T): Promise<T>
+	private get schemaId(): string {
+		if (this.$id) return this.$id
+		// Generates a unique string based on the structure of the schema itself
+		return hash(this.schema)
+	}
 
 	async validate(data: T): Promise<T> {
-		const validator = ajv.getSchema(this.$id) || ajv.compile({ ...this.schema, $id: this.$id })
+		// Use the private getter instead of this.$id
+		const id = this.schemaId
+		const validator = ajv.getSchema(id) || ajv.compile({ ...this.schema, $id: id })
+
 		if (validator(data)) {
-			if (this.include !== undefined) {
-				return this.include(data)
-			}
-			return data
+			return this.include ? this.include(data) : data
 		}
 		throw new BadRequestException(formatValidationError(validator.errors))
 	}
+
+	include?(data: T): Promise<T>
 }
 
 export const ValidateWith = <T>(
