@@ -1,6 +1,6 @@
 import { registerRoutes } from '@utils/fastify/routes'
 
-import { CreateApiKey, DeleteApiKey, ListApiKeys } from '@use-cases/api-keys'
+import { CreateApiKey, DeleteApiKey, ListApiKeys, UpdateApiKey } from '@use-cases/api-keys'
 
 export const apiKeysRoutes = registerRoutes([
 	{
@@ -16,8 +16,15 @@ export const apiKeysRoutes = registerRoutes([
 		use_case_class: CreateApiKey
 	},
 	{
+		method: 'patch',
+		path: '/:id',
+		auth_method: 'jwt',
+		use_case_class: UpdateApiKey,
+		handler_options: { separate_request_data: true }
+	},
+	{
 		method: 'delete',
-		path: '/:public_key',
+		path: '/:id',
 		auth_method: 'jwt',
 		use_case_class: DeleteApiKey
 	}
