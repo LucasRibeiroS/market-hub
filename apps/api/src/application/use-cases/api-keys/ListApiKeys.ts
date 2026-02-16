@@ -55,6 +55,5 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		paginatorJsonSchema
 	])
 
-	protected $id = 'api-keys/ListApiKeysValidator'
 	protected schema = Validator.schema
 }

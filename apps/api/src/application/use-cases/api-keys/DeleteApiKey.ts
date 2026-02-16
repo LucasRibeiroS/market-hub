@@ -6,7 +6,7 @@ import { Transactional } from '@integrator-packages/database/transaction'
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
-import { ForbiddenException, NotFoundException } from '@integrator-packages/use-case/exceptions'
+import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
@@ -33,11 +33,8 @@ export class DeleteApiKey implements IUseCase<T, K> {
 	@Transactional()
 	async execute({ id, user_id }: T): Promise<K> {
 		const apiKey = await this.apiKeysRepository.findById(id)
-		if (apiKey === null) {
+		if (apiKey === null || apiKey.user_id !== user_id) {
 			throw new NotFoundException('API key not found')
-		}
-		if (apiKey.user_id !== user_id) {
-			throw new ForbiddenException()
 		}
 
 		await this.apiKeysRepository.delete(apiKey.id)
@@ -54,6 +51,5 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		})
 	])
 
-	protected $id = 'api-keys/DeleteApiKeyValidator'
 	protected schema = Validator.schema
 }
