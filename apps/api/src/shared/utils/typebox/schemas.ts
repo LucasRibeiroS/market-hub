@@ -2,9 +2,10 @@ import { Static, TSchema, Type } from '@sinclair/typebox'
 
 import { AccountStatusEnum, IApiKey, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
 
-import { assertTypes, CustomOmit, SetDateAsString } from '@utils/types'
+import { Permissions } from '@utils/permissions'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
 import { DateType, TEnumObject, TNullable, TNumeric } from '@utils/typebox/types'
+import { assertTypes, CustomOmit, SetDateAsString } from '@utils/types'
 
 /**
  * Creates a schema with a guaranteed $id property
@@ -44,6 +45,10 @@ export const providerEnumSchema = createSchema(TEnumObject(ProviderEnum, {
 	mercado_livre: 'Mercado Livre - Marketplace de vendas online',
 	magalu: 'Magazine Luiza - Marketplace de vendas online'
 }), 'enums/ProviderEnum')
+export const permissionsEnumSchema = createSchema(TEnumObject(Permissions.user, {
+	products: 'Manage products and variants',
+	webhooks: 'Manage webhooks'
+}), 'enums/PermissionsEnum')
 
 // Models
 // User management

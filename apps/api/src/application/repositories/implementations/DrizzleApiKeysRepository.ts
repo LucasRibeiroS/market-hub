@@ -4,7 +4,7 @@ import { apiKeys } from '@integrator-packages/database/drizzle/tables'
 import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
 import { IApiKey } from '@integrator-packages/database/entities'
 
-import { IApiKeysRepository, ICountParams, ICreateParams, IFindByIdResponse, IFindFirstParams, IFindManyParams, IFindManyResponse } from '@repositories/IApiKeysRepository'
+import { IApiKeysRepository, ICountParams, ICreateParams, IFindByIdResponse, IFindFirstParams, IFindManyParams, IFindManyResponse, IUpdateParams } from '@repositories/IApiKeysRepository'
 
 export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements IApiKeysRepository {
 	private findByIdQuery = this.drizzleClient.query.apiKeys
@@ -51,6 +51,15 @@ export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements I
 		return await this.drizzleClient
 			.insert(apiKeys)
 			.values(data)
+			.returning()
+			.then(([result]) => result)
+	}
+
+	async update(id: string, data: IUpdateParams): Promise<IApiKey> {
+		return await this.drizzleClient
+			.update(apiKeys)
+			.set(data)
+			.where(eq(apiKeys.id, id))
 			.returning()
 			.then(([result]) => result)
 	}

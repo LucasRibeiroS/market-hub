@@ -12,9 +12,9 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 import { omitKeys } from '@utils/objects'
-import { Permissions, UserPermissions } from '@utils/permissions'
+import { UserPermissions } from '@utils/permissions'
 import { encrypt, hash } from '@utils/cryptography'
-import { apiKeyJsonSchema, TEnumObject } from '@utils/typebox'
+import { apiKeyJsonSchema, permissionsEnumSchema } from '@utils/typebox'
 import { CustomOmit } from '@utils/types'
 
 type CreateApiKeyRequest = { permissions: UserPermissions[] } & Pick<IApiKey, 'user_id' | 'name'>
@@ -67,7 +67,7 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		user_id: Type.String(),
 		name: Type.String({ minLength: 3, maxLength: 100 }),
-		permissions: Type.Array(TEnumObject(Permissions.user), { minItems: 1 })
+		permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { minItems: 1 })
 	})
 
 	protected $id = 'api-keys/CreateApiKeyValidator'

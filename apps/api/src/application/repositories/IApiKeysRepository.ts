@@ -21,12 +21,15 @@ export type ICountParams = {
 
 export type ICreateParams = CustomOmit<IApiKey, 'id' | 'created_at' | 'updated_at'>
 
+export type IUpdateParams = Partial<CustomOmit<IApiKey, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
+
 export interface IApiKeysRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
 	findFirst(params: IFindFirstParams): Promise<IApiKey | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IApiKey>
+	update(id: string, data: IUpdateParams): Promise<IApiKey>
 	delete(id: string): Promise<void>
 }
 
