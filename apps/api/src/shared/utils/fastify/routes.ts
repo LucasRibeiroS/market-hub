@@ -6,6 +6,7 @@ import { IUseCase, UseCaseFactory } from '@integrator-packages/use-case'
 
 import { AuthenticationMethods } from '@http/middlewares/authenticate'
 import { applyUseCase, IApplyUseCaseOptions } from '@http/middlewares/apply_use_case'
+import { applyAuthUseCase, IApplyAuthUseCaseOptions } from '@http/middlewares/apply_auth_use_case'
 
 import { getFullSchema } from '@utils/fastify/schema'
 
@@ -15,7 +16,7 @@ type IRoute = {
 	auth_method?: AuthenticationMethods
 	// eslint-disable-next-line typescript/no-explicit-any
 	use_case_class: new (...args: any[]) => IUseCase<unknown, unknown>
-	handler_options?: IApplyUseCaseOptions
+	handler_options?: IApplyUseCaseOptions | IApplyAuthUseCaseOptions
 	swagger_options?: Partial<{ hide: true }>
 }
 
@@ -59,6 +60,9 @@ export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) =>
 		if (url.endsWith('/')) {
 			url = url.slice(0, -1)
 		}
+
+		const isAuthUseCase = 'manage_auth_cookies' in (handler_options || {})
+
 		// Register the route
 		fastify.route({
 			method,
@@ -71,7 +75,9 @@ export const registerRoutes = (routes: IRoute[], options: IRouteOptions = {}) =>
 					schemas
 				}).schema
 				: undefined,
-			handler: applyUseCase(use_case, handler_options)
+			handler: isAuthUseCase
+				? applyAuthUseCase(use_case, handler_options)
+				: applyUseCase(use_case, handler_options)
 		})
 	}
 })

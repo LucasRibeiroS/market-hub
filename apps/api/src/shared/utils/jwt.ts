@@ -4,6 +4,7 @@ import { addDays, addMinutes, addYears } from 'date-fns'
 import { DateArg } from 'date-fns/types'
 
 import { env } from '@config/env'
+import { isRecord } from '@utils/types'
 
 // Default signers for generating access and refresh tokens
 const algorithm = 'HS256'
@@ -62,4 +63,24 @@ export const determineTokenExpiration = (token: string): Date => {
 	const suffixExpires = token.slice(-1) as 'd' | 'm' | 'y'
 
 	return expiration[suffixExpires](new Date(), parseInt(accessExpires))
+}
+
+// Utility function to extract tokens from a response generic object, ensuring they are in the expected format
+type Tokens = { access_token: string, refresh_token?: string }
+
+export const getTokens = (response: unknown): Tokens | null => {
+	if (!isRecord(response)) return null
+
+	const tokens = response.tokens
+	if (!isRecord(tokens)) return null
+
+	if (typeof tokens.access_token !== 'string') return null
+
+	return {
+		access_token: tokens.access_token,
+		refresh_token:
+			typeof tokens.refresh_token === 'string'
+				? tokens.refresh_token
+				: undefined
+	}
 }
