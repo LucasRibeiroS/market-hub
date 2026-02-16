@@ -57,6 +57,13 @@
       "when": 1770076648093,
       "tag": "20260202235728_add_unique_index_on_account_id_to_marketplace_credentials_table",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771263959628,
+      "tag": "20260216174559_alter_key_fields_on_api_keys_table",
+      "breakpoints": true
     }
   ]
 }

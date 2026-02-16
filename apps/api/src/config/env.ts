@@ -26,6 +26,10 @@ type IEnv = {
 	SMTP_USER: string
 	SMTP_PASS: string
 	SMTP_SOURCE: string
+	// Encryption
+	ENCRYPTION_SALT: string
+	ENCRYPTION_KEY: string
+	HASH_KEY: string
 }
 
 const schema = Type.Object({
@@ -52,7 +56,11 @@ const schema = Type.Object({
 	SMTP_USE_SSL: Type.String({ default: 'false' }),
 	SMTP_USER: Type.String(),
 	SMTP_PASS: Type.String(),
-	SMTP_SOURCE: Type.String()
+	SMTP_SOURCE: Type.String(),
+	// Encryption
+	ENCRYPTION_SALT: Type.String({ minLength: 32, maxLength: 32 }),
+	ENCRYPTION_KEY: Type.String({ minLength: 32, maxLength: 32 }),
+	HASH_KEY: Type.String({ minLength: 32, maxLength: 32 })
 })
 
 assertTypes<Static<typeof schema>, IEnv>()

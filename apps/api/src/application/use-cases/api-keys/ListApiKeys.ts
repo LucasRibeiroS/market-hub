@@ -9,13 +9,15 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
+import { omitKeys } from '@utils/objects'
 import { IPagination, IPaginator } from '@utils/pagination'
+import { CustomOmit } from '@utils/types'
 import { apiKeyJsonSchema, paginationJsonSchema, paginatorJsonSchema } from '@utils/typebox'
 
 type ListApiKeysRequest = { user_id: string } & IPaginator
 type T = ListApiKeysRequest
 type ListApiKeysResponse = {
-	api_keys: IApiKey[]
+	api_keys: Array<CustomOmit<IApiKey, 'encrypted_key' | 'key_lookup'>>
 	pagination: IPagination
 }
 type K = ListApiKeysResponse
@@ -36,7 +38,11 @@ export class ListApiKeys implements IUseCase<T, K> {
 
 	async execute(params: T): Promise<K> {
 		const { data, pagination } = await this.apiKeysRepository.findMany(params)
-		return { api_keys: data, pagination }
+
+		return {
+			api_keys: data.map(apiKey => omitKeys(apiKey, ['encrypted_key', 'key_lookup'])),
+			pagination
+		}
 	}
 }
 

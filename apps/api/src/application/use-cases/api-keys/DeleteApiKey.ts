@@ -13,7 +13,7 @@ import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiK
 import { EmptyObject } from '@utils/types'
 
 type DeleteApiKeyRequest = {
-	public_key: string
+	id: string
 	user_id: string
 }
 type T = DeleteApiKeyRequest
@@ -31,8 +31,8 @@ export class DeleteApiKey implements IUseCase<T, K> {
 	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
 	@Transactional()
-	async execute({ public_key, user_id }: T): Promise<K> {
-		const apiKey = await this.apiKeysRepository.findFirst({ public_key })
+	async execute({ id, user_id }: T): Promise<K> {
+		const apiKey = await this.apiKeysRepository.findById(id)
 		if (apiKey === null) {
 			throw new NotFoundException('API key not found')
 		}
@@ -49,7 +49,7 @@ export class DeleteApiKey implements IUseCase<T, K> {
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Composite([
 		Type.Object({
-			public_key: Type.String(),
+			id: Type.String(),
 			user_id: Type.String()
 		})
 	])

@@ -2,7 +2,7 @@ import { Static, TSchema, Type } from '@sinclair/typebox'
 
 import { AccountStatusEnum, IApiKey, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
 
-import { assertTypes, SetDateAsString } from '@utils/types'
+import { assertTypes, CustomOmit, SetDateAsString } from '@utils/types'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
 import { DateType, TEnumObject, TNullable, TNumeric } from '@utils/typebox/types'
 
@@ -20,6 +20,11 @@ const createSchema = <T extends TSchema>(
 	schema.$id = id
 	return schema as { $id: string } & T
 }
+
+/**
+ * This file defines TypeBox schemas for various entities and objects used in the application.
+ * The real entities are defined in the database module, and these schemas are used for validation and documentation in the API layer.
+ */
 
 // Enums
 export const accountStatusEnumSchema = createSchema(TEnumObject(AccountStatusEnum, {
@@ -46,12 +51,13 @@ export const apiKeyJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
 	user_id: Type.String({ readOnly: true }),
 	name: Type.String(),
-	public_key: Type.String({ readOnly: true }),
+	key_preview: Type.String({ readOnly: true }),
 	permissions: Type.Array(Type.String()),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IApiKey')
-assertTypes<Static<typeof apiKeyJsonSchema>, SetDateAsString<IApiKey, 'created_at' | 'updated_at'>>()
+type ApplicationApiKey = CustomOmit<IApiKey, 'encrypted_key' | 'key_lookup'>
+assertTypes<Static<typeof apiKeyJsonSchema>, SetDateAsString<ApplicationApiKey, 'created_at' | 'updated_at'>>()
 
 export const userJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),

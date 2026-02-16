@@ -4,12 +4,22 @@ import { apiKeys } from '@integrator-packages/database/drizzle/tables'
 import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
 import { IApiKey } from '@integrator-packages/database/entities'
 
-import { IApiKeysRepository, ICountParams, ICreateParams, IFindFirstParams, IFindManyParams, IFindManyResponse } from '@repositories/IApiKeysRepository'
+import { IApiKeysRepository, ICountParams, ICreateParams, IFindByIdResponse, IFindFirstParams, IFindManyParams, IFindManyResponse } from '@repositories/IApiKeysRepository'
 
 export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements IApiKeysRepository {
+	private findByIdQuery = this.drizzleClient.query.apiKeys
+		.findFirst({
+			where: eq(apiKeys.id, sql.placeholder('id')),
+			columns: {
+				id: true,
+				user_id: true
+			}
+		})
+		.prepare('findApiKeyById')
+
 	private findFirstQuery = this.drizzleClient.query.apiKeys
 		.findFirst({
-			where: eq(apiKeys.public_key, sql.placeholder('public_key'))
+			where: eq(apiKeys.key_lookup, sql.placeholder('key_lookup'))
 		})
 		.prepare('findApiKeyByPublicKey')
 
@@ -25,8 +35,12 @@ export class DrizzleApiKeysRepository extends DrizzleBaseRepository implements I
 		})
 	}
 
-	async findFirst({ public_key }: IFindFirstParams): Promise<IApiKey | null> {
-		return await this.findFirstQuery.execute({ public_key }) || null
+	async findById(id: string): Promise<IFindByIdResponse | null> {
+		return await this.findByIdQuery.execute({ id }) || null
+	}
+
+	async findFirst({ key_lookup }: IFindFirstParams): Promise<IApiKey | null> {
+		return await this.findFirstQuery.execute({ key_lookup }) || null
 	}
 
 	async count(where: ICountParams): Promise<number> {

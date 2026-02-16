@@ -7,6 +7,7 @@ import { isHttpException, UnauthorizedException } from '@integrator-packages/use
 import { GenericMiddleware, GenericRequest } from '@utils/fastify/types'
 import { Permissions } from '@utils/permissions'
 import { verifyAccessToken } from '@utils/jwt'
+import { hash } from '@utils/cryptography'
 
 import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
@@ -81,7 +82,7 @@ const authenticateApiKey = async(req: FastifyRequest<GenericRequest>): Promise<v
 		throw new UnauthorizedException()
 	}
 
-	const apiKey = await apiKeysRepository.findFirst({ public_key: authorization })
+	const apiKey = await apiKeysRepository.findFirst({ key_lookup: hash(authorization) })
 	if (apiKey === null) {
 		throw new UnauthorizedException()
 	}

@@ -11,13 +11,16 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
+import { omitKeys } from '@utils/objects'
 import { Permissions, UserPermissions } from '@utils/permissions'
+import { encrypt, hash } from '@utils/cryptography'
 import { apiKeyJsonSchema, TEnumObject } from '@utils/typebox'
+import { CustomOmit } from '@utils/types'
 
 type CreateApiKeyRequest = { permissions: UserPermissions[] } & Pick<IApiKey, 'user_id' | 'name'>
 type T = CreateApiKeyRequest
 type CreateApiKeyResponse = {
-	api_key: IApiKey
+	api_key: { key: string } & CustomOmit<IApiKey, 'encrypted_key' | 'key_lookup'>
 }
 type K = CreateApiKeyResponse
 
@@ -28,7 +31,10 @@ type K = CreateApiKeyResponse
 	summary: 'Create Api key',
 	description: 'Create a new API key for a user',
 	response: Type.Object({
-		api_key: Type.Ref(apiKeyJsonSchema.$id)
+		api_key: Type.Intersect([
+			Type.Ref(apiKeyJsonSchema.$id),
+			Type.Object({ key: Type.String() })
+		])
 	}, { $id: 'api-keys/CreateApiKeyResponse' })
 })
 export class CreateApiKey implements IUseCase<T, K> {
@@ -36,12 +42,21 @@ export class CreateApiKey implements IUseCase<T, K> {
 
 	@Transactional()
 	async execute(data: T): Promise<K> {
+		const key = `pk_${randomUUID().replaceAll('-', '_')}`
+
 		const apiKey = await this.apiKeysRepository.create({
 			...data,
-			public_key: `pk_${randomUUID().replaceAll('-', '_')}`
+			encrypted_key: encrypt(key),
+			key_lookup: hash(key),
+			key_preview: `${key.substring(0, 6)}***${key.substring(key.length - 4)}`
 		})
 
-		return { api_key: apiKey }
+		return {
+			api_key: {
+				...omitKeys(apiKey, ['encrypted_key', 'key_lookup']),
+				key
+			}
+		}
 	}
 }
 
