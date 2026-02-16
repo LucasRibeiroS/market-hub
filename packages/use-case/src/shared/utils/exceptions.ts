@@ -12,20 +12,14 @@ export abstract class HttpException {
 }
 
 export class UnauthorizedException extends HttpException {
-	constructor() {
-		super({ status_code: 401, body: 'Invalid credentials' })
+	constructor(message: string = 'Invalid credentials') {
+		super({ status_code: 401, body: message })
 	}
 }
 
 export class BadRequestException extends HttpException {
 	constructor(message: string) {
 		super({ status_code: 400, body: message })
-	}
-}
-
-export class NotAuthorizedException extends HttpException {
-	constructor() {
-		super({ status_code: 401, body: 'Not Authorized' })
 	}
 }
 
