@@ -1,5 +1,6 @@
 export { CreatePasswordReset } from './CreatePasswordReset'
 export { GenerateAccessToken } from './GenerateAccessToken'
 export { Login } from './Login'
+export { Logout } from './Logout'
 export { Register } from './Register'
 export { ResetPassword } from './ResetPassword'

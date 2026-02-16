@@ -10,6 +10,7 @@ type IEnv = {
 	NODE_ENV: 'local' | 'production' | 'test'
 	APPLICATION_NAME: string
 	PORT: number
+	APP_URL: string
 	DATABASE_URL: string
 	REDIS_HOST: string
 	REDIS_PORT: number
@@ -41,6 +42,7 @@ const schema = Type.Object({
 	], { default: 'local' }),
 	APPLICATION_NAME: Type.String({ default: 'integrator' }),
 	PORT: Type.Number({ default: 3000 }),
+	APP_URL: Type.String({ default: 'http://localhost' }),
 	DATABASE_URL: Type.String(),
 	REDIS_HOST: Type.String(),
 	REDIS_PORT: Type.Number(),

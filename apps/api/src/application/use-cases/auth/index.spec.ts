@@ -9,6 +9,7 @@ describe('auth use-cases', () => {
 		expect(() => container.resolve(useCases.CreatePasswordReset)).not.toThrow()
 		expect(() => container.resolve(useCases.GenerateAccessToken)).not.toThrow()
 		expect(() => container.resolve(useCases.Login)).not.toThrow()
+		expect(() => container.resolve(useCases.Logout)).not.toThrow()
 		expect(() => container.resolve(useCases.Register)).not.toThrow()
 		expect(() => container.resolve(useCases.ResetPassword)).not.toThrow()
 	})

@@ -3,6 +3,7 @@ import 'dotenv/config'
 import fastify, { FastifyInstance } from 'fastify'
 import cors from '@fastify/cors'
 import compress from '@fastify/compress'
+import cookie from '@fastify/cookie'
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 
 import rateLimit from '@specter-labs/fastify-rate-limit'
@@ -42,8 +43,15 @@ class HttpServer {
 	}
 
 	private addPlugins() {
-		this.app.register(cors, { origin: '*' })
+		this.app.register(cors, {
+			origin: (origin, cb) => {
+				cb(null, origin || true)
+			},
+			credentials: true,
+			methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
+		})
 		this.app.register(compress)
+		this.app.register(cookie)
 
 		// Custom plugins
 		this.app.register(rateLimit, {
@@ -72,6 +80,8 @@ class HttpServer {
 					.status(error.status_code)
 					.send({ process: error.process, body: error.body })
 			}
+
+			console.error('Unexpected error:', error)
 
 			return reply.status(500).send({
 				process: 'failed',

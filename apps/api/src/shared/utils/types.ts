@@ -26,3 +26,6 @@ export type SetDateAsString<T, K extends keyof T> = {
 
 // Function used to assert that two types extend each other at compile time
 export const assertTypes = <T1, _T2 extends T1>() => {}
+
+// Type guard to check if a value is a Record<string, unknown>
+export const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null

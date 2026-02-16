@@ -6,8 +6,9 @@ import { isHttpException, UnauthorizedException } from '@integrator-packages/use
 
 import { GenericMiddleware, GenericRequest } from '@utils/fastify/types'
 import { Permissions } from '@utils/permissions'
-import { verifyAccessToken } from '@utils/jwt'
 import { hash } from '@utils/cryptography'
+import { verifyAccessToken } from '@utils/jwt'
+import { ACCESS_TOKEN_COOKIE_NAME } from '@utils/cookies'
 
 import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
@@ -41,11 +42,8 @@ const apiKeysRepository: IApiKeysRepository = container.resolve(ApiKeysRepositor
 
 // User standard authentication, with jwt
 const authenticateJwt = async(req: FastifyRequest<GenericRequest>): Promise<void> => {
-	const authorization = req.headers.authorization || ''
-	const [prefix, token] = authorization.split(' ')
-
-	// Check if the token is a Bearer token
-	if (prefix !== 'Bearer' || !token) {
+	const token = req.cookies[ACCESS_TOKEN_COOKIE_NAME]
+	if (!token) {
 		throw new UnauthorizedException()
 	}
 
