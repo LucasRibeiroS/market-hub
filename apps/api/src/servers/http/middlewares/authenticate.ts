@@ -1,5 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
+import { container } from 'tsyringe'
 
 import { isHttpException, UnauthorizedException } from '@integrator-packages/use-case/exceptions'
 
@@ -7,7 +8,8 @@ import { GenericMiddleware, GenericRequest } from '@utils/fastify/types'
 import { Permissions } from '@utils/permissions'
 import { verifyAccessToken } from '@utils/jwt'
 
-import { DrizzleApiKeysRepository, DrizzleUsersRepository } from '@repositories/implementations'
+import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
+import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'
 
 export type AuthenticationMethods = 'jwt' | 'api_key' | 'any'
 
@@ -33,8 +35,8 @@ type IJwtToken = {
 	id: string
 }
 
-const usersRepository = new DrizzleUsersRepository()
-const apiKeysRepository = new DrizzleApiKeysRepository()
+const usersRepository: IUsersRepository = container.resolve(UsersRepositorySymbol)
+const apiKeysRepository: IApiKeysRepository = container.resolve(ApiKeysRepositorySymbol)
 
 // User standard authentication, with jwt
 const authenticateJwt = async(req: FastifyRequest<GenericRequest>): Promise<void> => {
