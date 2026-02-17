@@ -18,7 +18,11 @@
             <a routerLink="/auth/recover-password">Esqueci minha senha</a>
         </div>
 
-        <app-button label="Continuar" type="submit" />
+        <app-button
+            label="Continuar"
+            [isLoading]="isLoading"
+            type="submit"
+        />
 
         <hr />
 

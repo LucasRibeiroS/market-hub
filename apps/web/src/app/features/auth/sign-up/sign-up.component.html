@@ -21,7 +21,11 @@
             [control]="$any(signUpForm.get('password'))"
         />
 
-        <app-button label="Cadastrar" type="submit" />
+        <app-button
+            label="Cadastrar"
+            [isLoading]="isLoading"
+            type="submit"
+        />
 
         <hr />
 

@@ -1,11 +1,15 @@
-import { Component, OnInit } from '@angular/core'
+import { catchError, finalize, tap } from 'rxjs'
+import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
 import { ButtonComponent } from '@shared/components/buttons/button.component'
 import { ButtonTextComponent } from '@shared/components/buttons/button-text.component'
 import { InputTextComponent } from '@shared/components/input-text.component'
+
+import { AuthService } from '@core/auth/auth.service'
+import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/models'
 
 import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
 
@@ -23,60 +27,85 @@ import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
 	],
 	templateUrl: './recover-password.component.html'
 })
-export default class RecoverPasswordComponent implements OnInit {
-	recoverForm: FormGroup
-	codeSent = false
+export default class RecoverPasswordComponent {
+	recoverForm = new FormGroup({
+		email: new FormControl('lucas.ribeiro@specterlabs.com.br', [Validators.required, Validators.email]),
+		code: new FormControl(''),
+		password: new FormControl('')
+	}, { updateOn: 'blur' })
+	currentStep: 'code' | 'reset' = 'code'
+	isLoading = false
 
 	constructor(
-		private formBuilder: FormBuilder,
+		private authService: AuthService,
 		private router: Router
-	) {
-		this.recoverForm = this.formBuilder.group({
-			email: ['', [Validators.required, Validators.email]],
-			code: ['', []],
-			password: ['', []]
-		}, { updateOn: 'blur' })
-	}
-
-	ngOnInit() {
-		// Initialization logic here
-	}
+	) {}
 
 	onSubmit() {
-		if (!this.codeSent) {
-			// First step: send recovery code
-			const emailControl = this.recoverForm.get('email')
-			if (emailControl?.valid) {
-				console.log('Sending recovery code to:', emailControl.value)
-				// TODO: Call API to send recovery code
-				this.codeSent = true
-
-				// Add validators for code and password
-				this.recoverForm.get('code')?.setValidators([
-					Validators.required,
-					Validators.minLength(6),
-					Validators.maxLength(6)
-				])
-				this.recoverForm.get('password')?.setValidators([
-					Validators.required,
-					Validators.minLength(6)
-				])
-				this.recoverForm.get('code')?.updateValueAndValidity()
-				this.recoverForm.get('password')?.updateValueAndValidity()
-			} else {
-				emailControl?.markAsTouched()
-			}
-		} else {
-			// Second step: reset password with code
-			if (this.recoverForm.valid) {
-				const { email, code, password } = this.recoverForm.value
-				console.log('Resetting password:', { email, code, password })
-				// TODO: Call API to reset password
-				this.router.navigate(['/auth/sign-in'])
-			} else {
-				this.recoverForm.markAllAsTouched()
-			}
+		if (this.currentStep === 'code') {
+			this.createPasswordReset()
 		}
+
+		if (this.currentStep === 'reset') {
+			this.resetPassword()
+		}
+	}
+
+	createPasswordReset() {
+		if (this.recoverForm.valid) {
+			const payload: ICreatePasswordResetRequest = {
+				email: this.recoverForm.value.email!
+			}
+
+			this.isLoading = true
+			this.authService.createPasswordReset(payload).pipe(
+				tap(() => this.moveToResetStep()),
+				catchError(err => {
+					if (err.message === 'Your code has not expired yet') {
+						this.moveToResetStep()
+					}
+					return []
+				}),
+				finalize(() => this.isLoading = false)
+			).subscribe()
+		} else {
+			this.recoverForm.get('email')?.markAsTouched()
+		}
+	}
+
+	resetPassword() {
+		if (this.recoverForm.valid) {
+			const payload: IResetPasswordRequest = {
+				email: this.recoverForm.value.email!,
+				code: this.recoverForm.value.code!,
+				password: this.recoverForm.value.password!
+			}
+
+			this.isLoading = true
+			this.authService.resetPassword(payload).pipe(
+				tap(() => this.router.navigate(['/auth/sign-in'])),
+				finalize(() => this.isLoading = false)
+			).subscribe()
+		} else {
+			this.recoverForm.markAllAsTouched()
+		}
+	}
+
+	moveToResetStep() {
+		// Add validators for code and password
+		this.recoverForm.get('code')?.setValidators([
+			Validators.required,
+			Validators.minLength(6),
+			Validators.maxLength(6)
+		])
+		this.recoverForm.get('password')?.setValidators([
+			Validators.required,
+			Validators.minLength(6)
+		])
+		this.recoverForm.get('code')?.updateValueAndValidity()
+		this.recoverForm.get('password')?.updateValueAndValidity()
+
+		this.currentStep = 'reset'
 	}
 
 	resendCode(e: Event) {

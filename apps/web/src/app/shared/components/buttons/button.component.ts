@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button'
             [label]="label"
             [type]="type"
             [fluid]="fluid"
-            [loading]="loading"
+            [loading]="isLoading"
             [disabled]="disabled"
             [severity]="severity"
             [text]="text"
@@ -36,7 +36,7 @@ export class ButtonComponent {
 	@Input() label: string = ''
 	@Input() type: 'button' | 'submit' | 'reset' = 'button'
 	@Input() fluid: boolean = true
-	@Input() loading: boolean = false
+	@Input() isLoading: boolean = false
 	@Input() disabled: boolean = false
 	@Input() severity: 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null = null
 	@Input() text: boolean = false

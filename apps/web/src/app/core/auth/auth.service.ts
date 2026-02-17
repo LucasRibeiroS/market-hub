@@ -1,11 +1,12 @@
 import { BehaviorSubject, lastValueFrom, Observable, tap } from 'rxjs'
 
 import { Injectable } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpContext } from '@angular/common/http'
 import { Router } from '@angular/router'
 
 import { environment } from '@env/environment'
 
+import { IGNORED_ERRORS } from '@core/api/api-error.interceptor'
 import {
 	ICreatePasswordResetRequest,
 	IResetPasswordRequest,
@@ -69,7 +70,9 @@ export class AuthService {
 	}
 
 	createPasswordReset(payload: ICreatePasswordResetRequest): Observable<void> {
-		return this.http.post<void>(`${this.apiUrl}/auth/password/code`, payload)
+		return this.http.post<void>(`${this.apiUrl}/auth/password/code`, payload, {
+			context: new HttpContext().set(IGNORED_ERRORS, ['Your code has not expired yet'])
+		})
 	}
 
 	resetPassword(payload: IResetPasswordRequest): Observable<void> {
