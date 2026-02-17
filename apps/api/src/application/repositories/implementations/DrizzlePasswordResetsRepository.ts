@@ -12,16 +12,6 @@ import {
 } from '@repositories/IPasswordResetsRepository'
 
 export class DrizzlePasswordResetsRepository extends DrizzleBaseRepository implements IPasswordResetsRepository {
-	private createQuery = this.drizzleClient
-		.insert(passwordResets)
-		.values({
-			user_id: sql.placeholder('user_id'),
-			code: sql.placeholder('code'),
-			expiration: sql.placeholder('expiration')
-		})
-		.returning()
-		.prepare('createPasswordReset')
-
 	private findLastQuery = this.drizzleClient.query.passwordResets
 		.findFirst({
 			where: eq(passwordResets.user_id, sql.placeholder('user_id')),
@@ -30,7 +20,11 @@ export class DrizzlePasswordResetsRepository extends DrizzleBaseRepository imple
 		.prepare('findLastPasswordReset')
 
 	async create(data: ICreateParams): Promise<IPasswordReset> {
-		return await this.createQuery.execute(data).then(([passwordReset]) => passwordReset)
+		return await this.drizzleClient
+			.insert(passwordResets)
+			.values(data)
+			.returning()
+			.then(([passwordReset]) => passwordReset)
 	}
 
 	async findLast(data: IFindLastParams): Promise<IPasswordReset | null> {
