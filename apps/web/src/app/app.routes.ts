@@ -1,30 +1,17 @@
 import { Routes } from '@angular/router'
 import { authGuard } from '@core/auth/auth.guard'
-
-import { authRoutes } from '@features/auth/auth.routes'
+import { guestGuard } from '@core/auth/guest.guard'
 
 export const routes: Routes = [
 	{
 		path: 'auth',
-		children: authRoutes
+		canActivate: [guestGuard],
+		loadChildren: () => import('@features/auth/auth.routes').then(m => m.authRoutes)
 	},
 	{
-		path: '',
-		canActivate: [authGuard], // <--- Prevents access if not logged in
-		children: [
-			{
-				path: '',
-				redirectTo: 'marketplace-account', // Default to this page
-				pathMatch: 'full'
-			},
-			{
-				path: 'marketplace-account',
-				// Lazy load the feature module
-				loadChildren: () => import('./features/marketplace-account/marketplace-account.routes')
-					.then(m => m.marketplaceAccountRoutes)
-			}
-			// Future features like 'products', 'sales' go here...
-		]
+		path: 'marketplace-accounts',
+		canActivate: [authGuard],
+		loadChildren: () => import('@features/marketplace-accounts/marketplace-account.routes').then(m => m.marketplaceAccountRoutes)
 	},
 
 	// 3. Fallback (404)

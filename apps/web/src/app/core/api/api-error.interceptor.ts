@@ -10,9 +10,6 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
 	return next(req).pipe(
 		catchError((error: HttpErrorResponse | Error) => {
-			console.log('Current Lang:', translateService.currentLang)
-			console.log('Stored Translations:', translateService.getLangs())
-
 			const errorMessage = error.message || 'generic_api_error'
 			const translationKey = `errors.${errorMessage}`
 

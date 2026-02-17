@@ -64,10 +64,8 @@ export const appConfig: ApplicationConfig = {
 			withInterceptors([authInterceptor, apiErrorInterceptor, apiResponseInterceptor])
 		),
 		provideTranslateService({
-			defaultLanguage: 'pt-BR',
 			lang: 'pt-BR',
 			fallbackLang: 'pt-BR'
-
 		}),
 		providePrimeNG({
 			theme: {
@@ -87,7 +85,7 @@ export const appConfig: ApplicationConfig = {
 
 			translate.setTranslation('pt-BR', translationsPTBR)
 
-			authService.init()
+			await authService.init()
 		})
 	]
 }

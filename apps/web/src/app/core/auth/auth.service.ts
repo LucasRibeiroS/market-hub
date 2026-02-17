@@ -1,4 +1,4 @@
-import { BehaviorSubject, lastValueFrom, Observable, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, lastValueFrom, Observable, tap } from 'rxjs'
 
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
@@ -37,7 +37,7 @@ export class AuthService {
 	 * Initializes the user session on app startup.
 	 */
 	async init(): Promise<void> {
-		if (!this.isAuthenticated()) {
+		if (!this.isAuthenticated) {
 			return
 		}
 
@@ -54,17 +54,14 @@ export class AuthService {
 	}
 
 	// Checks if the user is authenticated by looking on the authentication cookie
-	private isAuthenticated(): boolean {
+	private get isAuthenticated(): boolean {
 		const cookies = document.cookie.split(';').map(cookie => cookie.trim())
 		const authCookie = cookies.find(cookie => cookie.startsWith(`${this.IS_AUTHENTICATED_COOKIE_NAME}=`))
 		return authCookie?.split('=')[1] === 'true'
 	}
 
-	signIn(payload: ISignInRequest): Observable<IUser> {
-		return this.http.post<ISignInResponse>(`${this.apiUrl}/auth/login`, payload).pipe(
-			switchMap(() => this.getUser()), // Fetch full User details
-			tap(user => this.currentUserSubject.next(user)) // Update State
-		)
+	signIn(payload: ISignInRequest): Observable<ISignInResponse> {
+		return this.http.post<ISignInResponse>(`${this.apiUrl}/auth/login`, payload)
 	}
 
 	signUp(payload: ISignUpRequest): Observable<ISignUpResponse> {
@@ -79,19 +76,11 @@ export class AuthService {
 		return this.http.post<void>(`${this.apiUrl}/auth/password/reset`, payload)
 	}
 
-	getUser(): Observable<IUser> {
+	getUser(): Observable<IUser | null> {
 		return this.http.get<IUser>(`${this.apiUrl}/users/me`).pipe(
 			tap(user => {
 				this.currentUserSubject.next(user)
-			}),
-			// If fetching user fails (e.g. invalid/expired token), treat as not authenticated
-			switchMap(user => {
-				if (user) {
-					return [user]
-				} else {
-					this.currentUserSubject.next(null)
-					return []
-				}
+				return this.currentUser$
 			})
 		)
 	}

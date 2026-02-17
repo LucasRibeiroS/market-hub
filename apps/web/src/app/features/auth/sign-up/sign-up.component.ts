@@ -1,8 +1,8 @@
+import { switchMap, tap } from 'rxjs'
 import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
-import { MessageService } from 'primeng/api'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ISignUpRequest } from '@core/auth/models'
@@ -11,7 +11,6 @@ import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
 
 import { ButtonComponent } from '@shared/components/buttons/button.component'
 import { InputTextComponent } from '@shared/components/input-text.component'
-import { catchError, tap } from 'rxjs'
 
 @Component({
 	selector: 'app-sign-up',
@@ -35,7 +34,6 @@ export default class SignUpComponent {
 
 	constructor(
 		private authService: AuthService,
-		private messageService: MessageService,
 		private router: Router
 	) {}
 
@@ -48,15 +46,8 @@ export default class SignUpComponent {
 			}
 
 			this.authService.signUp(payload).pipe(
-				tap(() => this.router.navigate(['/marketplace-account'])),
-				catchError(_ => {
-					this.messageService.add({
-						severity: 'error',
-						summary: 'Erro',
-						detail: 'Falha ao cadastrar. Verifique se os dados estão corretos'
-					})
-					return []
-				})
+				switchMap(() => this.authService.getUser()),
+				tap(() => this.router.navigate(['/marketplace-accounts']))
 			).subscribe()
 		} else {
 			this.signUpForm.markAllAsTouched()

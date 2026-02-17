@@ -1,9 +1,8 @@
-import { tap } from 'rxjs'
+import { switchMap, tap } from 'rxjs'
 import { Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
-import { MessageService } from 'primeng/api'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ISignInRequest } from '@core/auth/models'
@@ -24,7 +23,6 @@ import { InputTextComponent } from '@shared/components/input-text.component'
 		ButtonComponent,
 		InputTextComponent
 	],
-	providers: [MessageService],
 	templateUrl: './sign-in.component.html'
 })
 export default class SignInComponent {
@@ -35,7 +33,6 @@ export default class SignInComponent {
 
 	constructor(
 		private authService: AuthService,
-		private messageService: MessageService,
 		private router: Router
 	) {}
 
@@ -47,7 +44,8 @@ export default class SignInComponent {
 			}
 
 			this.authService.signIn(payload).pipe(
-				tap(() => this.router.navigate(['/marketplace-account']))
+				switchMap(() => this.authService.getUser()),
+				tap(() => this.router.navigate(['/marketplace-accounts']))
 			).subscribe()
 		} else {
 			this.signInForm.markAllAsTouched()

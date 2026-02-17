@@ -1,7 +1,7 @@
 {
     "errors": {
         "generic_api_error": "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.",
-        "generic_api_error_summary": "Algo aconteceu",
+        "generic_api_error_summary": "Erro ao processar solicitação",
         "Invalid credentials": "Credenciais inválidas. Por favor, verifique seu e-mail e senha.",
         "Email already in use": "Esse e-mail já está em uso.",
         "Email not found": "E-mail não encontrado.",
