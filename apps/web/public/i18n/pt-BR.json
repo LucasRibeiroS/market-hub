@@ -1,0 +1,12 @@
+{
+    "errors": {
+        "generic_api_error": "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente mais tarde.",
+        "generic_api_error_summary": "Algo aconteceu",
+        "Invalid credentials": "Credenciais inválidas. Por favor, verifique seu e-mail e senha.",
+        "Email already in use": "Esse e-mail já está em uso.",
+        "Email not found": "E-mail não encontrado.",
+        "Your code has not expired yet": "O último código de redefinição de senha ainda não expirou. Por favor, aguarde antes de solicitar outro.",
+        "Password reset not found": "Solicitação de redefinição de senha não encontrada.",
+        "Invalid or expired code": "Código de redefinição de senha inválido ou expirado."
+    }
+}

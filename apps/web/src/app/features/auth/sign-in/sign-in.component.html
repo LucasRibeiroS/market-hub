@@ -1,0 +1,30 @@
+<app-auth-layout title="Bem-vindo ao MarketHub">
+    <form [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+        <app-input-text
+            label="E-mail"
+            placeholder="Seu endereço de e-mail"
+            type="email"
+            [control]="$any(signInForm.get('email'))"
+        />
+
+        <app-input-text
+            label="Senha"
+            placeholder="Sua senha"
+            type="password"
+            [control]="$any(signInForm.get('password'))"
+        />
+
+        <div class="forgot-password">
+            <a routerLink="/auth/recover-password">Esqueci minha senha</a>
+        </div>
+
+        <app-button label="Continuar" type="submit" />
+
+        <hr />
+
+        <p class="toggle-text">
+            Não tem uma conta?
+            <a routerLink="/auth/sign-up">Cadastre-se</a>
+        </p>
+    </form>
+</app-auth-layout>
