@@ -42,12 +42,12 @@ export class ResetPassword implements IUseCase<T, K> {
 	async execute({ code, email, password }: T): Promise<K> {
 		const user = await this.usersRepository.findFirst({ email })
 		if (user === null) {
-			throw new NotFoundException('User not found')
+			throw new NotFoundException('Email not found')
 		}
 
 		const lastReset = await this.passwordResetsRepository.findLast({ user_id: user.id })
 		if (lastReset === null) {
-			throw new ConflictException('Action not available')
+			throw new NotFoundException('Password reset not found')
 		}
 		if (
 			lastReset.is_used ||
