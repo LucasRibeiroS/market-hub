@@ -12,8 +12,13 @@ export const apiErrorInterceptor: HttpInterceptorFn = (req, next) => {
 
 	return next(req).pipe(
 		catchError((error: HttpErrorResponse | Error) => {
-			const errorMessage = error.message || 'generic_api_error'
+			let errorMessage = error.message || 'generic_api_error'
 			const ignoredErrors = req.context.get(IGNORED_ERRORS)
+
+			// Check for network errors
+			if (error instanceof HttpErrorResponse && error.status === 0) {
+				errorMessage = 'network_error'
+			}
 
 			if (ignoredErrors.includes(errorMessage)) {
 				return throwError(() => error)

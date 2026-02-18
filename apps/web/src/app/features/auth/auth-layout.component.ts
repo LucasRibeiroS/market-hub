@@ -86,6 +86,17 @@ import { CommonModule } from '@angular/common'
             text-decoration: none;
         }
 
+        :host ::ng-deep .resend-code {
+            text-align: right;
+            margin-top: -1rem;
+            font-size: 0.75rem;
+        }
+
+        :host ::ng-deep .resend-code app-button-text {
+            font-size: 0.75rem;
+            color: var(--p-primary-600);
+            text-decoration: none;
+        }
     `]
 })
 export class AuthLayoutComponent {

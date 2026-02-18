@@ -12,21 +12,18 @@ import { CommonModule } from '@angular/common'
   `,
 	styles: [`
     .button-text {
+      padding: 0;
       background: none;
       border: none;
-      color: #007bff;
-      cursor: pointer;
-      padding: 0;
+      color: var(--p-primary-600);
       font: inherit;
-      text-decoration: underline;
-    }
-
-    .button-text:hover:not(:disabled) {
-      color: #0056b3;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
     }
 
     .button-text:disabled {
-      color: #6c757d;
+      color: var(--text-secondary);
       cursor: not-allowed;
     }
   `]

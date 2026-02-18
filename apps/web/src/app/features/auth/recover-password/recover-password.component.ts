@@ -1,5 +1,5 @@
-import { catchError, finalize, tap } from 'rxjs'
-import { Component } from '@angular/core'
+import { catchError, EMPTY, finalize, tap } from 'rxjs'
+import { ChangeDetectorRef, Component } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
@@ -38,7 +38,8 @@ export default class RecoverPasswordComponent {
 
 	constructor(
 		private authService: AuthService,
-		private router: Router
+		private router: Router,
+		private ref: ChangeDetectorRef
 	) {}
 
 	onSubmit() {
@@ -51,25 +52,31 @@ export default class RecoverPasswordComponent {
 		}
 	}
 
-	createPasswordReset() {
-		if (this.recoverForm.valid) {
+	async createPasswordReset() {
+		const emailControl = this.recoverForm.get('email')
+
+		if (emailControl?.valid) {
 			const payload: ICreatePasswordResetRequest = {
 				email: this.recoverForm.value.email!
 			}
 
 			this.isLoading = true
+
 			this.authService.createPasswordReset(payload).pipe(
 				tap(() => this.moveToResetStep()),
 				catchError(err => {
 					if (err.message === 'Your code has not expired yet') {
 						this.moveToResetStep()
 					}
-					return []
+					return EMPTY
 				}),
-				finalize(() => this.isLoading = false)
+				finalize(() => {
+					this.isLoading = false
+					this.ref.markForCheck()
+				})
 			).subscribe()
 		} else {
-			this.recoverForm.get('email')?.markAsTouched()
+			emailControl?.markAsTouched()
 		}
 	}
 
@@ -92,26 +99,30 @@ export default class RecoverPasswordComponent {
 	}
 
 	moveToResetStep() {
-		// Add validators for code and password
-		this.recoverForm.get('code')?.setValidators([
-			Validators.required,
-			Validators.minLength(6),
-			Validators.maxLength(6)
-		])
-		this.recoverForm.get('password')?.setValidators([
-			Validators.required,
-			Validators.minLength(6)
-		])
-		this.recoverForm.get('code')?.updateValueAndValidity()
-		this.recoverForm.get('password')?.updateValueAndValidity()
+		const codeControl = this.recoverForm.get('code')
+		const passwordControl = this.recoverForm.get('password')
+
+		if (!codeControl?.hasValidator(Validators.required)) {
+			codeControl?.setValidators([
+				Validators.required,
+				Validators.minLength(6),
+				Validators.maxLength(6)
+			])
+			codeControl?.updateValueAndValidity()
+		}
+
+		if (!passwordControl?.hasValidator(Validators.required)) {
+			passwordControl?.setValidators([
+				Validators.required,
+				Validators.minLength(6)
+			])
+			passwordControl?.updateValueAndValidity()
+		}
 
 		this.currentStep = 'reset'
 	}
 
-	resendCode(e: Event) {
-		e.preventDefault()
-		const email = this.recoverForm.get('email')?.value
-		console.log('Resending code to:', email)
-		// TODO: Call API to resend code
+	resendCode() {
+		this.createPasswordReset()
 	}
 }

@@ -3,28 +3,42 @@ import { CommonModule } from '@angular/common'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 
 import { InputTextModule } from 'primeng/inputtext'
+import { InputOtpModule } from 'primeng/inputotp'
 
 @Component({
 	selector: 'app-input-text',
 	standalone: true,
-	imports: [CommonModule, InputTextModule, ReactiveFormsModule],
+	imports: [CommonModule, InputTextModule, InputOtpModule, ReactiveFormsModule],
 	template: `
         <div class="field">
             <label [for]="id" *ngIf="label">{{ label }}</label>
             <div class="input-wrapper" [class.has-icon]="type === 'password'">
-                <input
-                    pInputText
+
+                <div *ngIf="type !== 'otp'" class="input-wrapper" [class.has-icon]="type === 'password'">
+                    <input
+                        pInputText
+                        [id]="id"
+                        [type]="type === 'password' ? (showPassword ? 'text' : 'password') : type"
+                        [placeholder]="placeholder"
+                        [maxLength]="maxLength"
+                        [formControl]="control"
+                    />
+                    <i
+                        *ngIf="type === 'password'"
+                        [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                        (click)="togglePasswordVisibility()"
+                        class="password-toggle"
+                    ></i>
+                </div>
+
+                <p-inputotp
+                    *ngIf="type === 'otp'"
                     [id]="id"
-                    [type]="type === 'password' ? (showPassword ? 'text' : 'password') : type"
-                    [placeholder]="placeholder"
                     [formControl]="control"
+                    [length]="maxLength > 6 ? 6 : maxLength"
+                    (onChange)="onOtpChange($event)"
                 />
-                <i
-                    *ngIf="type === 'password'"
-                    [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                    (click)="togglePasswordVisibility()"
-                    class="password-toggle"
-                ></i>
+
             </div>
             <small class="p-error" *ngIf="showError">{{ errorMessage }}</small>
         </div>
@@ -85,6 +99,19 @@ import { InputTextModule } from 'primeng/inputtext'
             color: var(--p-gray-500) !important;
             font-size: 0.95rem;
         }
+
+        :host ::ng-deep .p-inputotp {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        :host ::ng-deep .p-inputotp input {
+            flex: 1;
+            text-align: center;
+            text-transform: uppercase;
+        }
     `]
 })
 export class InputTextComponent {
@@ -92,12 +119,19 @@ export class InputTextComponent {
 	@Input() label: string = ''
 	@Input() placeholder: string = ''
 	@Input() type: string = 'text'
+	@Input() maxLength: number = 4096
 	@Input() control: FormControl = new FormControl('')
 
 	showPassword: boolean = false
 
 	togglePasswordVisibility(): void {
 		this.showPassword = !this.showPassword
+	}
+
+	onOtpChange(event: { value: string }): void {
+		// Manually ensure the control stays in sync if the binding
+		this.control.setValue(event.value)
+		this.control.markAsDirty()
 	}
 
 	get showError(): boolean {
