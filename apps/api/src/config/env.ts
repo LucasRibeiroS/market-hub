@@ -1,9 +1,15 @@
 import 'dotenv/config'
 
+import Ajv from 'ajv'
 import { Static, Type } from '@sinclair/typebox'
 
 import { assertTypes } from '@utils/types'
-import { ajv } from '@clients/ajv'
+
+const ajv = new Ajv({
+	removeAdditional: 'all',
+	coerceTypes: 'array',
+	useDefaults: true
+})
 
 type IEnv = {
 	TZ: string

@@ -58,7 +58,8 @@ export class CreatePasswordReset implements IUseCase<T, K> {
 			throw new ConflictException('Your code has not expired yet')
 		}
 
-		const code = crypto.randomBytes(3).toString('hex').toUpperCase()
+		const code = this.generateCode()
+
 		const message = await getResetPasswordEmail({
 			name: user.name,
 			code
@@ -79,6 +80,13 @@ export class CreatePasswordReset implements IUseCase<T, K> {
 		])
 
 		return {}
+	}
+
+	private generateCode(): string {
+		const code = crypto.randomBytes(3).toString('hex').toUpperCase()
+
+		// Changing confusing characters to common ones to avoid user errors
+		return code.replace(/[O0]/g, 'A').replace(/I/g, '1')
 	}
 }
 
