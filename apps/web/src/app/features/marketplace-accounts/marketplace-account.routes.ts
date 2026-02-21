@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+
 import { AccountListComponent } from './pages/account-list/account-list.component'
 
 export const marketplaceAccountRoutes: Routes = [

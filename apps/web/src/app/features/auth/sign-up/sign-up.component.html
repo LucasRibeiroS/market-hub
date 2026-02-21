@@ -1,37 +1,35 @@
-<app-auth-layout title="Crie sua conta">
-    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-        <app-input-text
-            label="Nome"
-            placeholder="Seu nome completo"
-            type="text"
-            [control]="$any(signUpForm.get('name'))"
-        />
+<form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+    <app-input-text
+        label="Nome"
+        placeholder="Seu nome completo"
+        type="text"
+        [control]="$any(signUpForm.get('name'))"
+    />
 
-        <app-input-text
-            label="E-mail"
-            placeholder="Seu endereço de e-mail"
-            type="email"
-            [control]="$any(signUpForm.get('email'))"
-        />
+    <app-input-text
+        label="E-mail"
+        placeholder="Seu endereço de e-mail"
+        type="email"
+        [control]="$any(signUpForm.get('email'))"
+    />
 
-        <app-input-text
-            label="Senha"
-            placeholder="Sua senha"
-            type="password"
-            [control]="$any(signUpForm.get('password'))"
-        />
+    <app-input-text
+        label="Senha"
+        placeholder="Sua senha"
+        type="password"
+        [control]="$any(signUpForm.get('password'))"
+    />
 
-        <app-button
-            label="Cadastrar"
-            [isLoading]="isLoading"
-            type="submit"
-        />
+    <app-button
+        label="Cadastrar"
+        [isLoading]="isLoading"
+        type="submit"
+    />
 
-        <hr />
+    <hr />
 
-        <p class="toggle-text">
-            Já tem uma conta?
-            <a routerLink="/auth/sign-in">Faça login</a>
-        </p>
-    </form>
-</app-auth-layout>
+    <p class="toggle-text">
+        Já tem uma conta?
+        <a routerLink="/auth/sign-in">Faça login</a>
+    </p>
+</form>

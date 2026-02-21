@@ -1,0 +1,114 @@
+<div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+    <!-- Logo / Company -->
+    <div class="sidebar-header">
+        <div class="company-logo">
+        <img src="/logo-no-text.svg" alt="Logo" class="logo-img" onerror="this.style.display='none'" />
+        <div class="logo-placeholder" *ngIf="true">
+            <span class="logo-icon">⚡</span>
+        </div>
+        </div>
+        <div class="company-info">
+        <span class="company-name">SPECTER LABS LTDA</span>
+        </div>
+        <button class="company-chevron" type="button">
+        <i class="pi pi-chevron-down"></i>
+        </button>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+        @for (item of menuItems; track item.label) {
+            <li class="nav-item" [class.has-children]="item.children?.length">
+            <!-- Item without children -->
+            @if (!item.children?.length) {
+                <a
+                class="nav-link"
+                [routerLink]="item.route"
+                routerLinkActive="active"
+                pRipple
+                >
+                <i class="nav-icon pi {{ item.icon }}"></i>
+                <span class="nav-label">{{ item.label }}</span>
+                </a>
+            }
+
+            <!-- Item with children -->
+            @if (item.children?.length) {
+                <button
+                class="nav-link nav-link-expandable"
+                [class.expanded]="isExpanded(item.label)"
+                (click)="toggleExpand(item.label)"
+                pRipple
+                type="button"
+                >
+                <i class="nav-icon pi {{ item.icon }}"></i>
+                <span class="nav-label">{{ item.label }}</span>
+                <i class="expand-icon pi" [class.pi-chevron-right]="!isExpanded(item.label)" [class.pi-chevron-down]="isExpanded(item.label)"></i>
+                </button>
+
+                @if (isExpanded(item.label)) {
+                <ul class="nav-sub-list">
+                    @for (child of item.children; track child.label) {
+                    <li class="nav-sub-item">
+                        <a
+                        class="nav-sub-link"
+                        [routerLink]="child.route"
+                        routerLinkActive="active"
+                        pRipple
+                        >
+                        <span class="nav-sub-dot"></span>
+                        <span class="nav-label">{{ child.label }}</span>
+                        </a>
+                    </li>
+                    }
+                </ul>
+                }
+            }
+            </li>
+        }
+        </ul>
+    </nav>
+
+    <!-- Promo banner -->
+    <div class="promo-banner">
+        <p class="promo-title">Gostou do que viu?</p>
+        <p class="promo-text">Teste nosso plano Max grátis por 30 dias e aproveite todas as funcionalidades.</p>
+        <button class="promo-btn" type="button">Teste grátis</button>
+    </div>
+
+    <!-- User -->
+    <div class="sidebar-footer">
+        <p-avatar
+        label="SP"
+        styleClass="user-avatar"
+        shape="circle"
+        />
+        <div class="user-info">
+        <span class="user-name">Sávio Pimenta</span>
+        <span class="user-email">saviopimentaalexandrin...</span>
+        </div>
+        <button class="user-chevron" type="button">
+        <i class="pi pi-chevron-down"></i>
+        </button>
+    </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+    <!-- Top bar -->
+    <header class="topbar">
+        <button class="topbar-toggle" type="button">
+        <i class="pi pi-bars"></i>
+        </button>
+        <span class="topbar-title">{{ pageTitle() }}</span>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+        <router-outlet />
+    </div>
+    </main>
+</div>

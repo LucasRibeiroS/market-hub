@@ -10,8 +10,6 @@ import { InputTextComponent } from '@shared/components/input-text.component'
 import { AuthService } from '@core/auth/auth.service'
 import { ISignInRequest } from '@core/auth/models'
 
-import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
-
 @Component({
 	selector: 'app-sign-in',
 	standalone: true,
@@ -19,7 +17,6 @@ import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
 		CommonModule,
 		ReactiveFormsModule,
 		RouterModule,
-		AuthLayoutComponent,
 		ButtonComponent,
 		InputTextComponent
 	],

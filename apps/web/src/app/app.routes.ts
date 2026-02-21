@@ -2,16 +2,26 @@ import { Routes } from '@angular/router'
 import { authGuard } from '@core/auth/auth.guard'
 import { guestGuard } from '@core/auth/guest.guard'
 
+import { AppLayoutComponent } from '@core/layouts/app-layout/app-layout.component'
+import { AuthLayoutComponent } from '@core/layouts/auth-layout/auth-layout.component'
+
 export const routes: Routes = [
+	{
+		path: '',
+		canActivate: [authGuard],
+		component: AppLayoutComponent,
+		children: [
+			{
+				path: 'marketplace-accounts',
+				loadChildren: () => import('@features/marketplace-accounts/marketplace-account.routes').then(m => m.marketplaceAccountRoutes)
+			}
+		]
+	},
 	{
 		path: 'auth',
 		canActivate: [guestGuard],
+		component: AuthLayoutComponent,
 		loadChildren: () => import('@features/auth/auth.routes').then(m => m.authRoutes)
-	},
-	{
-		path: 'marketplace-accounts',
-		canActivate: [authGuard],
-		loadChildren: () => import('@features/marketplace-accounts/marketplace-account.routes').then(m => m.marketplaceAccountRoutes)
 	},
 
 	// 3. Fallback (404)

@@ -11,8 +11,6 @@ import { InputTextComponent } from '@shared/components/input-text.component'
 import { AuthService } from '@core/auth/auth.service'
 import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/models'
 
-import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
-
 @Component({
 	selector: 'app-recover-password',
 	standalone: true,
@@ -20,7 +18,6 @@ import { AuthLayoutComponent } from '@features/auth/auth-layout.component'
 		CommonModule,
 		ReactiveFormsModule,
 		RouterModule,
-		AuthLayoutComponent,
 		ButtonComponent,
 		ButtonTextComponent,
 		InputTextComponent
