@@ -24,9 +24,9 @@ import { ISignUpRequest } from '@core/auth/models'
 })
 export default class SignUpComponent {
 	signUpForm = new FormGroup({
-		name: new FormControl('Lucas Ribeiro', [Validators.required, Validators.minLength(3)]),
-		email: new FormControl('lucas.ribeiro@specterlabs.com.br', [Validators.required, Validators.email]),
-		password: new FormControl('password1', [Validators.required, Validators.minLength(6)])
+		name: new FormControl('', [Validators.required, Validators.minLength(3)]),
+		email: new FormControl('', [Validators.required, Validators.email]),
+		password: new FormControl('', [Validators.required, Validators.minLength(6)])
 	}, { updateOn: 'blur' })
 	isLoading = false
 

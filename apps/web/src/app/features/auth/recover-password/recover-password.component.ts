@@ -26,7 +26,7 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 })
 export default class RecoverPasswordComponent {
 	recoverForm = new FormGroup({
-		email: new FormControl('lucas.ribeiro@specterlabs.com.br', [Validators.required, Validators.email]),
+		email: new FormControl('', [Validators.required, Validators.email]),
 		code: new FormControl(''),
 		password: new FormControl('')
 	}, { updateOn: 'blur' })
