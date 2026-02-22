@@ -1,24 +1,22 @@
-import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs'
+import { BehaviorSubject, catchError, filter, finalize, switchMap, take, throwError } from 'rxjs'
 import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http'
 import { inject } from '@angular/core'
 
 import { AuthService } from '@core/auth/auth.service'
 
-// MUTEX: Controls access to the refresh logic
 // false = idle, true = currently refreshing
 const isRefreshing$ = new BehaviorSubject<boolean>(false)
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 	const authService = inject(AuthService)
 
-	// 1. ENABLE COOKIES (Standard)
+	// ensure cookies are sent with every request
 	req = req.clone({ withCredentials: true })
 
 	return next(req).pipe(
 		catchError((error: HttpErrorResponse) => {
 
-			// 2. CHECK FOR 401 (Unauthorized)
-			// We only retry if it's a 401 AND it's not the refresh endpoint itself (to avoid infinite loops)
+			// If it's a 401 AND it's not the refresh endpoint itself (to avoid infinite loops) we must try refreshing
 			if (error.status === 401 && !req.url.includes('/auth/refresh') && !req.url.includes('/auth/login')) {
 				return handle401Error(req, next, authService)
 			}
@@ -29,14 +27,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 	)
 }
 
-// --- HELPER FUNCTION ---
-
 const handle401Error = (
 	req: HttpRequest<unknown>,
 	next: HttpHandlerFn,
 	authService: AuthService
 ) => {
-	// A. IF ALREADY REFRESHING: WAIT
+	// if already refreshing: wait
 	if (isRefreshing$.value) {
 		return isRefreshing$.pipe(
 			filter(isRefreshing => !isRefreshing), // Wait until it switches back to false
@@ -45,23 +41,23 @@ const handle401Error = (
 		)
 	}
 
-	// B. IF NOT REFRESHING: START REFRESH
+	// if not refreshing: start refresh
 	isRefreshing$.next(true) // Lock the mutex
 
 	return authService.refreshToken().pipe(
 		switchMap(() => {
-			// 1. Success! Unlock the mutex
-			isRefreshing$.next(false)
-
-			// 2. Retry the original request
+			// Retry the original request
 			// The browser will automatically attach the NEW cookies
 			return next(req)
 		}),
 		catchError((err) => {
-			isRefreshing$.next(false) // Unlock
 			authService.logout()
 
 			return throwError(() => err)
+		}),
+		finalize(() => {
+			// Ensure we always unlock
+			isRefreshing$.next(false)
 		})
 	)
 }

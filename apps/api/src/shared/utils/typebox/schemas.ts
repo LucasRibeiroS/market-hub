@@ -120,7 +120,7 @@ assertTypes<Static<typeof marketplaceListingJsonSchema>, SetDateAsString<IMarket
 // Objects
 export const paginatorJsonSchema = createSchema(Type.Object({
 	page: Type.Integer({ minimum: 1, default: 1 }),
-	page_size: Type.Integer({ minimum: 1, default: defaultPageSize, maximum: 100 }),
+	page_size: Type.Integer({ minimum: 5, default: defaultPageSize, maximum: 100 }),
 	order_by: Type.Optional(Type.String({ description: 'Field to sort by' })),
 	order_direction: Type.Optional(Type.Union([
 		Type.Literal('asc', { title: 'asc' }),

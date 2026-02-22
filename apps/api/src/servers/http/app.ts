@@ -65,6 +65,7 @@ class HttpServer {
 			prefix: `${env.APPLICATION_NAME}:http:cache`
 		})
 		this.app.register(logger, {
+			adapter: console,
 			level: env.NODE_ENV === 'production' ? 'error' : 'info',
 			prefix: env.APPLICATION_NAME,
 			ignoreStatusCodes: [401, 403]

@@ -61,7 +61,7 @@ export const appConfig: ApplicationConfig = {
 		provideClientHydration(withEventReplay()),
 		provideHttpClient(
 			withFetch(),
-			withInterceptors([authInterceptor, apiErrorInterceptor, apiResponseInterceptor])
+			withInterceptors([apiErrorInterceptor, apiResponseInterceptor, authInterceptor])
 		),
 		provideTranslateService({
 			lang: 'pt-BR',
