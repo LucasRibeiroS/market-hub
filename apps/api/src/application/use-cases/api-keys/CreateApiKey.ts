@@ -48,7 +48,8 @@ export class CreateApiKey implements IUseCase<T, K> {
 			...data,
 			encrypted_key: encrypt(key),
 			key_lookup: hash(key),
-			key_preview: `${key.substring(0, 6)}***${key.substring(key.length - 4)}`
+			key_preview: `${key.substring(0, 6)}***${key.substring(key.length - 4)}`,
+			is_active: true
 		})
 
 		return {

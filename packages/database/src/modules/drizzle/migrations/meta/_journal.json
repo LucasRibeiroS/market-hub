@@ -64,6 +64,13 @@
       "when": 1771263959628,
       "tag": "20260216174559_alter_key_fields_on_api_keys_table",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1771772925756,
+      "tag": "20260222150845_add_is_active_to_api_keys_table",
+      "breakpoints": true
     }
   ]
 }

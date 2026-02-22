@@ -21,6 +21,7 @@ type UpdateApiKeyRequest = {
 	data: Partial<{
 		name: string
 		permissions: UserPermissions[]
+		is_active: boolean
 	}>
 }
 type T = UpdateApiKeyRequest
@@ -63,7 +64,8 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		user_id: Type.String(),
 		data: Type.Partial(Type.Object({
 			name: Type.String({ minLength: 3, maxLength: 100 }),
-			permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { minItems: 1 })
+			permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { minItems: 1 }),
+			is_active: Type.Boolean()
 		}))
 	})
 

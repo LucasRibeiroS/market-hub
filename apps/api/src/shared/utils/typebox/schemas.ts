@@ -58,6 +58,7 @@ export const apiKeyJsonSchema = createSchema(Type.Object({
 	name: Type.String(),
 	key_preview: Type.String({ readOnly: true }),
 	permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { readOnly: true }),
+	is_active: Type.Boolean({ default: true }),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IApiKey')

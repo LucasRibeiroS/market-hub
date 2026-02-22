@@ -20,6 +20,7 @@ export const apiKeys = pgTable('api_keys', {
 	key_preview: text().notNull(), // Last 4 characters of the key for display purposes
 	name: text().notNull(),
 	permissions: text().array().notNull(),
+	is_active: boolean().default(true).notNull(),
 	...timestamps
 }, table => [
 	index().using('btree', table.user_id),
