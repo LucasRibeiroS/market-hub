@@ -1,4 +1,4 @@
-import { BehaviorSubject, lastValueFrom, Observable, tap } from 'rxjs'
+import { BehaviorSubject, lastValueFrom, map, Observable, tap } from 'rxjs'
 
 import { Injectable } from '@angular/core'
 import { HttpClient, HttpContext } from '@angular/common/http'
@@ -80,10 +80,10 @@ export class AuthService {
 	}
 
 	getUser(): Observable<IUser | null> {
-		return this.http.get<IUser>(`${this.apiUrl}/users/me`).pipe(
-			tap(user => {
+		return this.http.get<{ user: IUser }>(`${this.apiUrl}/users/me`).pipe(
+			map(({ user }) => user),
+			tap((user) => {
 				this.currentUserSubject.next(user)
-				return this.currentUser$
 			})
 		)
 	}
