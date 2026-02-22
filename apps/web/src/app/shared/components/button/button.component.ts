@@ -6,31 +6,8 @@ import { ButtonModule } from 'primeng/button'
 	selector: 'app-button',
 	standalone: true,
 	imports: [CommonModule, ButtonModule],
-	template: `
-        <p-button
-            [label]="label"
-            [type]="type"
-            [fluid]="fluid"
-            [loading]="isLoading"
-            [disabled]="disabled"
-            [severity]="severity"
-            [text]="text"
-            [outlined]="outlined"
-            [icon]="icon"
-            [iconPos]="iconPos"
-            [size]="size"
-            (onClick)="handleClick($event)">
-        </p-button>
-    `,
-	styles: [`
-        :host ::ng-deep .p-button {
-            border-radius: 4px;
-        }
-        :host ::ng-deep .p-button-label {
-			font-weight: 500;
-			font-size: 0.9rem;
-        }
-    `]
+	templateUrl: './button.component.html',
+	styleUrls: ['./button.component.css']
 })
 export class ButtonComponent {
 	@Input() label: string = ''

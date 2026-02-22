@@ -4,9 +4,7 @@ import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
-import { ButtonComponent } from '@shared/components/buttons/button.component'
-import { ButtonTextComponent } from '@shared/components/buttons/button-text.component'
-import { InputTextComponent } from '@shared/components/input-text.component'
+import { ButtonComponent, ButtonTextComponent, InputComponent } from '@shared/components'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/models'
@@ -22,7 +20,7 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 		ButtonTextComponent,
 		InputTextComponent
 	],
-	templateUrl: './recover-password.component.html'
+		InputComponent
 })
 export default class RecoverPasswordComponent {
 	recoverForm = new FormGroup({

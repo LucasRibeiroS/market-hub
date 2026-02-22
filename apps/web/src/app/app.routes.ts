@@ -12,7 +12,7 @@ export const routes: Routes = [
 		component: AppLayoutComponent,
 		children: [
 			{
-				path: 'marketplace-accounts',
+				path: 'integrations',
 				loadChildren: () => import('@features/marketplace-accounts/marketplace-account.routes').then(m => m.marketplaceAccountRoutes)
 			}
 		]

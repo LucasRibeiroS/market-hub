@@ -4,11 +4,11 @@ import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
-import { ButtonComponent } from '@shared/components/buttons/button.component'
-import { InputTextComponent } from '@shared/components/input-text.component'
+import { ButtonComponent, InputComponent } from '@shared/components'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ISignUpRequest } from '@core/auth/models'
+import { environment } from '@env/environment'
 
 @Component({
 	selector: 'app-sign-up',
@@ -18,7 +18,7 @@ import { ISignUpRequest } from '@core/auth/models'
 		ReactiveFormsModule,
 		RouterModule,
 		ButtonComponent,
-		InputTextComponent
+		InputComponent
 	],
 	templateUrl: './sign-up.component.html'
 })
@@ -46,7 +46,7 @@ export default class SignUpComponent {
 			this.isLoading = true
 			this.authService.signUp(payload).pipe(
 				switchMap(() => this.authService.getUser()),
-				tap(() => this.router.navigate(['/marketplace-accounts'])),
+				tap(() => this.router.navigate([environment.startingRoute])),
 				finalize(() => this.isLoading = false)
 			).subscribe()
 		} else {

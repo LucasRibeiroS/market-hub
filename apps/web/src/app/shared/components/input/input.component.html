@@ -1,0 +1,32 @@
+<div class="field">
+    <label [for]="id" *ngIf="label">{{ label }}</label>
+    <div class="input-wrapper" [class.has-icon]="type === 'password'">
+
+        <div *ngIf="type !== 'otp'" class="input-wrapper" [class.has-icon]="type === 'password'">
+            <input
+                pInputText
+                [id]="id"
+                [type]="type === 'password' ? (showPassword ? 'text' : 'password') : type"
+                [placeholder]="placeholder"
+                [maxLength]="maxLength"
+                [formControl]="control"
+            />
+            <i
+                *ngIf="type === 'password'"
+                [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                (click)="togglePasswordVisibility()"
+                class="password-toggle"
+            ></i>
+        </div>
+
+        <p-inputotp
+            *ngIf="type === 'otp'"
+            [id]="id"
+            [formControl]="control"
+            [length]="maxLength > 6 ? 6 : maxLength"
+            (onChange)="onOtpChange($event)"
+        />
+
+    </div>
+    <small class="p-error" *ngIf="showError">{{ errorMessage }}</small>
+</div>

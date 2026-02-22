@@ -9,6 +9,7 @@ import { InputTextComponent } from '@shared/components/input-text.component'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ISignInRequest } from '@core/auth/models'
+import { environment } from '@env/environment'
 
 @Component({
 	selector: 'app-sign-in',
@@ -18,7 +19,7 @@ import { ISignInRequest } from '@core/auth/models'
 		ReactiveFormsModule,
 		RouterModule,
 		ButtonComponent,
-		InputTextComponent
+		InputComponent
 	],
 	templateUrl: './sign-in.component.html'
 })
@@ -44,7 +45,7 @@ export default class SignInComponent {
 			this.isLoading = true
 			this.authService.signIn(payload).pipe(
 				switchMap(() => this.authService.getUser()),
-				tap(() => this.router.navigate(['/marketplace-accounts'])),
+				tap(() => this.router.navigate([environment.startingRoute])),
 				finalize(() => this.isLoading = false)
 			).subscribe()
 		} else {
