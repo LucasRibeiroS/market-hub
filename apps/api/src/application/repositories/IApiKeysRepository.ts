@@ -11,7 +11,7 @@ export type IFindManyResponse = {
 	pagination: IPagination
 }
 
-export type IFindByIdResponse = Pick<IApiKey, 'id' | 'user_id'>
+export type IFindByIdSimplifiedResponse = Pick<IApiKey, 'id' | 'user_id'>
 
 export type IFindFirstParams = Pick<IApiKey, 'key_lookup'>
 
@@ -25,7 +25,8 @@ export type IUpdateParams = Partial<CustomOmit<IApiKey, 'id' | 'user_id' | 'crea
 
 export interface IApiKeysRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
-	findById(id: string): Promise<IFindByIdResponse | null>
+	findById(id: string): Promise<IApiKey | null>
+	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
 	findFirst(params: IFindFirstParams): Promise<IApiKey | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IApiKey>

@@ -32,7 +32,7 @@ export class DeleteApiKey implements IUseCase<T, K> {
 
 	@Transactional()
 	async execute({ id, user_id }: T): Promise<K> {
-		const apiKey = await this.apiKeysRepository.findById(id)
+		const apiKey = await this.apiKeysRepository.findByIdSimplified(id)
 		if (apiKey === null || apiKey.user_id !== user_id) {
 			throw new NotFoundException('API key not found')
 		}

@@ -1,4 +1,5 @@
 export { CreateApiKey } from './CreateApiKey'
 export { DeleteApiKey } from './DeleteApiKey'
+export { GetApiKey } from './GetApiKey'
 export { ListApiKeys } from './ListApiKeys'
 export { UpdateApiKey } from './UpdateApiKey'

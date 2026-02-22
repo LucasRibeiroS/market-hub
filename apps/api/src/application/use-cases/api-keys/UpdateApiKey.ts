@@ -44,7 +44,7 @@ export class UpdateApiKey implements IUseCase<T, K> {
 	constructor(@inject(ApiKeysRepositorySymbol) private apiKeysRepository: IApiKeysRepository) {}
 
 	async execute({ id, user_id, data }: T): Promise<K> {
-		const existingApiKey = await this.apiKeysRepository.findById(id)
+		const existingApiKey = await this.apiKeysRepository.findByIdSimplified(id)
 		if (existingApiKey === null || existingApiKey.user_id !== user_id) {
 			throw new NotFoundException('API key not found')
 		}

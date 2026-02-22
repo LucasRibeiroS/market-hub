@@ -8,6 +8,7 @@ describe('api-keys use-cases', () => {
 		// Fix: Wrap the resolution in a function to properly test if it throws
 		expect(() => container.resolve(useCases.CreateApiKey)).not.toThrow()
 		expect(() => container.resolve(useCases.DeleteApiKey)).not.toThrow()
+		expect(() => container.resolve(useCases.GetApiKey)).not.toThrow()
 		expect(() => container.resolve(useCases.ListApiKeys)).not.toThrow()
 		expect(() => container.resolve(useCases.UpdateApiKey)).not.toThrow()
 	})
