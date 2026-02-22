@@ -4,8 +4,7 @@ import { CommonModule } from '@angular/common'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
-import { ButtonComponent } from '@shared/components/buttons/button.component'
-import { InputTextComponent } from '@shared/components/input-text.component'
+import { ButtonComponent, InputComponent } from '@shared/components'
 
 import { AuthService } from '@core/auth/auth.service'
 import { ISignInRequest } from '@core/auth/models'

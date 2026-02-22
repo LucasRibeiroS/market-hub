@@ -18,9 +18,9 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 		RouterModule,
 		ButtonComponent,
 		ButtonTextComponent,
-		InputTextComponent
-	],
 		InputComponent
+	],
+	templateUrl: './recover-password.component.html'
 })
 export default class RecoverPasswordComponent {
 	recoverForm = new FormGroup({
