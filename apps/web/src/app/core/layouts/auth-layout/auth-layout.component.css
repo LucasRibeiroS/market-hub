@@ -15,7 +15,7 @@
     left: 20px;
     width: 100%;
     height: 20px;
-    background-image: url('/logo-no-text.svg');
+    background-image: url('/logo.svg');
     background-size: contain;
     background-repeat: no-repeat;
     z-index: 1;
