@@ -1,0 +1,16 @@
+<div class="page-header">
+    @if (showBackButton) {
+        <app-button (click)="backClick.emit()" icon="pi pi-arrow-left" severity="secondary" />
+    }
+    <div class="page-header-text">
+        <h1 class="page-title">{{ title }}</h1>
+        <p class="page-description"> {{ description }}</p>
+    </div>
+    @if (showActionButton) {
+        <app-button
+            [label]="actionLabel ?? ''"
+            [icon]="actionIcon ?? ''"
+            (onClick)="actionClick.emit()"
+        ></app-button>
+    }
+</div>

@@ -1,4 +1,7 @@
 export { ButtonComponent } from './button/button.component'
 export { ButtonTextComponent } from './button/variants/button-text/button-text.component'
+export { CodeComponent } from './code/code.component'
+export { DataTableComponent } from './data-table/data-table.component'
 export { InputComponent } from './input/input.component'
+export { PageHeaderComponent } from './page-header/page-header.component'
 export { PopoverComponent } from './popover/popover.component'

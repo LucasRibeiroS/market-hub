@@ -1,0 +1,44 @@
+<p-dialog
+    [(visible)]="visible"
+    (visibleChange)="visibleChange.emit($event)"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '440px' }"
+    styleClass="delete-dialog"
+    [header]="'Excluir chave de API'"
+>
+    <div class="modal-body">
+        <p class="modal-description">
+            Esta ação é <strong>irreversível</strong>. A chave
+            <app-code>{{ apiKey?.key_preview }}</app-code>
+            será permanentemente excluída e qualquer integração que a utilize irá parar de funcionar.
+        </p>
+
+        <div class="confirm-field">
+            <label class="confirm-label">
+                Para confirmar, digite o nome da chave:
+                <strong>{{ apiKey?.name }}</strong>
+            </label>
+            <app-input-text
+                [control]="confirmValue"
+                [placeholder]="apiKey?.name ?? ''"
+                class="confirm-input"
+                autocomplete="off"
+            />
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="modal-footer">
+            <app-button label="Cancelar" severity="secondary" [text]="true" (click)="onCancel()" />
+            <app-button
+                label="Excluir chave"
+                severity="danger"
+                [disabled]="confirmValue.value !== apiKey?.name || loading"
+                [isLoading]="loading"
+                (click)="onConfirm()"
+            />
+        </div>
+    </ng-template>
+</p-dialog>

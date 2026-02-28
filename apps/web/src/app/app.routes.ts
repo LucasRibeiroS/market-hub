@@ -14,6 +14,10 @@ export const routes: Routes = [
 			{
 				path: 'integrations',
 				loadChildren: () => import('@features/marketplace-accounts/marketplace-account.routes').then(m => m.marketplaceAccountRoutes)
+			},
+			{
+				path: 'settings/api-keys',
+				loadChildren: () => import('@features/api-keys/api-keys.routes').then(m => m.apiKeysRoutes)
 			}
 		]
 	},

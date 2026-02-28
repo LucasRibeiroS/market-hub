@@ -1,0 +1,68 @@
+.data-table-card {
+    background-color: var(--p-surface-0);
+    border: 1px solid var(--p-surface-200);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+:host ::ng-deep .app-data-table .p-datatable-thead > tr > th {
+    background-color: var(--p-surface-0);
+    color: var(--p-surface-500);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--p-surface-200);
+    padding: 0.75rem 1rem;
+}
+
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr > td {
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    color: var(--p-surface-700);
+    border-bottom: 1px solid var(--p-surface-100);
+}
+
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr:last-child > td {
+    border-bottom: none;
+}
+
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr:hover > td {
+    background-color: var(--p-surface-50);
+}
+
+/* Highlighted row */
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr.row-highlighted > td {
+    transition: background-color 0.5s ease;
+    background-color: var(--p-primary-200);
+}
+
+.actions-header {
+    text-align: center !important;
+    width: 80px;
+}
+
+.actions-cell {
+    padding: 0.5rem 0.75rem !important;
+}
+
+.actions-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+}
+
+.empty-default {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 1rem;
+    gap: 0.5rem;
+    color: var(--p-surface-400);
+}
+
+.empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}

@@ -1,0 +1,65 @@
+<!-- Header -->
+<app-page-header
+    [title]="isEdit ? 'Editar chave' : 'Nova chave'"
+    description="{{ isEdit
+        ? 'Atualize as informações da sua chave de API.'
+        : 'Crie uma nova chave de acesso à API da plataforma.' }}
+    "
+    [showBackButton]="true"
+    (backClick)="goBack()"
+/>
+
+<!-- Form card -->
+<div class="form-card">
+    @if (loadingKey()) {
+        <div class="form-skeleton">
+            <p-skeleton height="1rem" width="30%" styleClass="mb-1" />
+            <p-skeleton height="2.5rem" styleClass="mb-4" />
+            <p-skeleton height="1rem" width="30%" styleClass="mb-1" />
+            <p-skeleton height="2.5rem" styleClass="mb-4" />
+        </div>
+    } @else {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
+        <app-input-text
+            id="name"
+            label="Nome"
+            placeholder="ex: Produção"
+            [control]="$any(form.get('name'))"
+        />
+
+        <p-multiselect
+            [options]="cities"
+            [formControl]="$any(form.get('permissions'))"
+            display="chip"
+            optionLabel="Permissões"
+            placeholder="Selecione permissões"
+            class="w-full md:w-80"
+        />
+
+
+        @if (isEdit) {
+            <div class="form-field">
+                <label class="form-label">Preview</label>
+                <div class="prefix-display">
+                <app-code>{{ existingKey()?.key_preview }}...</app-code>
+                <span class="prefix-note">O prefixo não pode ser alterado.</span>
+                </div>
+            </div>
+        }
+
+        <div class="form-actions">
+            <app-button
+                label="Cancelar"
+                severity="secondary"
+                [text]="true"
+                (click)="goBack()"
+            />
+            <app-button
+                [label]="isEdit ? 'Salvar alterações' : 'Criar chave'"
+                [isLoading]="saving()"
+                [disabled]="form.invalid || saving()"
+            />
+        </div>
+    </form>
+    }
+</div>

@@ -1,0 +1,10 @@
+.code {
+    background-color: var(--p-surface-100);
+    border: 1px solid var(--p-surface-200);
+    border-radius: 4px;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.8rem;
+    font-family: monospace;
+    font-weight: 600;
+    color: var(--p-surface-600);
+}

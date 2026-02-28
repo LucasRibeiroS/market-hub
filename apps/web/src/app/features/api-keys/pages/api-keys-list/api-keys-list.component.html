@@ -1,0 +1,64 @@
+<!-- Header -->
+<app-page-header
+    title="Chaves de API"
+    description="Gerencie as chaves de acesso à API da plataforma. Mantenha suas chaves seguras e revogue imediatamente qualquer chave comprometida."
+    actionLabel="Nova chave"
+    actionIcon="pi pi-plus"
+    (actionClick)="navigateToCreate()"
+/>
+
+<!-- Card -->
+<app-data-table
+    [columns]="columns"
+    [rows]="apiKeys()"
+    [loading]="loading()"
+    [highlightedId]="highlightedId()"
+    [paginator]="paginator()"
+    [pagination]="pagination()"
+    (onPaginatorChange)="onPaginatorChange($event)"
+    emptyMessage="Nenhuma chave de API encontrada."
+>
+    <ng-template pTemplate="key_preview" let-value>
+        <app-code>{{ value }}</app-code>
+    </ng-template>
+
+    <ng-template pTemplate="is_active" let-value>
+        <p-badge
+            [value]="value ? 'Ativa' : 'Revogada'"
+            [severity]="value ? 'success' : 'danger'"
+        />
+    </ng-template>
+
+    <ng-template pTemplate="created_at" let-value>
+        {{ value | date: 'dd/MM/yyyy' }}
+    </ng-template>
+
+    <!-- Actions column -->
+    <ng-template pTemplate="actions" let-row>
+        <app-button
+            icon="pi pi-pencil"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            tooltip="Editar"
+            (onClick)="navigateToEdit(row)"
+        ></app-button>
+        <app-button
+            icon="pi pi-trash"
+            [text]="true"
+            severity="danger"
+            size="small"
+            tooltip="Excluir"
+            (onClick)="openDeleteModal(row)"
+        ></app-button>
+    </ng-template>
+</app-data-table>
+
+<!-- Delete modal -->
+<app-api-key-delete-modal
+    [visible]="keyToDelete() !== null"
+    [apiKey]="keyToDelete()"
+    [loading]="deleting()"
+    (confirmed)="onDeleteConfirmed()"
+    (cancelled)="onDeleteCancelled()"
+/>

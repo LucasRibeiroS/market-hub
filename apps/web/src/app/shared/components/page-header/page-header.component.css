@@ -1,0 +1,31 @@
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.page-header-text {
+    flex: 1;
+}
+
+.page-title {
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+}
+
+.page-description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--p-surface-500);
+    max-width: 80%;
+    line-height: 1.6;
+}
+
+.page-header app-button,
+.page-header > *:last-child {
+  flex-shrink: 0;            /* prevents the button from compressing */
+}

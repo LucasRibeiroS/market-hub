@@ -149,14 +149,21 @@
         (click)="toggleSidebar()"
         aria-label="Toggle sidebar"
         >
-        <i class="pi pi-bars"></i>
+        <i
+            class="pi"
+            [class.pi-chevron-left]="!collapsed()"
+            [class.pi-chevron-right]="collapsed()"
+            style="font-size: 1rem;"
+        ></i>
         </button>
         <span class="topbar-title">{{ pageTitle() }}</span>
     </header>
 
     <!-- Page content -->
-    <div class="page-content">
-        <router-outlet />
+    <div class="page-wrapper">
+        <div class="page-content">
+            <router-outlet />
+        </div>
     </div>
 
     </main>
