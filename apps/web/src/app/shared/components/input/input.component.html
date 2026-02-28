@@ -1,32 +1,43 @@
 <div class="field">
-    <label [for]="id" *ngIf="label">{{ label }}</label>
-    <div class="input-wrapper" [class.has-icon]="type === 'password'">
+    @if (label()) {
+        <label [for]="id()" class="field-label">{{ label() }}</label>
+    }
 
-        <div *ngIf="type !== 'otp'" class="input-wrapper" [class.has-icon]="type === 'password'">
+    @if (type() !== 'otp') {
+        <div class="input-wrapper" [class.has-icon]="type() === 'password'">
             <input
                 pInputText
-                [id]="id"
-                [type]="type === 'password' ? (showPassword ? 'text' : 'password') : type"
-                [placeholder]="placeholder"
-                [maxLength]="maxLength"
-                [formControl]="control"
+                [id]="id()"
+                [type]="type() === 'password' ? (showPassword() ? 'text' : 'password') : type()"
+                [placeholder]="placeholder()"
+                [maxLength]="maxLength()"
+                [formControl]="control()"
+                class="field-input"
             />
-            <i
-                *ngIf="type === 'password'"
-                [class]="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
-                (click)="togglePasswordVisibility()"
-                class="password-toggle"
-            ></i>
+            @if (type() === 'password') {
+                <button
+                    type="button"
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()"
+                    tabindex="-1"
+                    aria-label="Toggle password visibility"
+                >
+                    <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'"></i>
+                </button>
+            }
         </div>
+    }
 
+    @if (type() === 'otp') {
         <p-inputotp
-            *ngIf="type === 'otp'"
-            [id]="id"
-            [formControl]="control"
-            [length]="maxLength > 6 ? 6 : maxLength"
+            [id]="id()"
+            [formControl]="control()"
+            [length]="maxLength() > 6 ? 6 : maxLength()"
             (onChange)="onOtpChange($event)"
         />
+    }
 
-    </div>
-    <small class="p-error" *ngIf="showError">{{ errorMessage }}</small>
+    @if (showError) {
+        <small class="field-error">{{ errorMessage }}</small>
+    }
 </div>

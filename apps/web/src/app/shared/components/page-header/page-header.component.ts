@@ -1,35 +1,30 @@
 import {
 	ChangeDetectionStrategy,
 	Component,
-	EventEmitter,
-	Input,
-	Output
+	computed,
+	input,
+	output
 } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { ButtonComponent } from '@shared/components/button/button.component'
 
 @Component({
 	selector: 'app-page-header',
 	standalone: true,
-	imports: [CommonModule, ButtonComponent],
+	imports: [ButtonComponent],
 	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: './page-header.component.html',
 	styleUrls: ['./page-header.component.css']
 })
 export class PageHeaderComponent {
-	@Input() title = ''
-	@Input() description = ''
+	title = input('')
+	description = input('')
 
-	// optional action button event handlers
-	@Input() actionLabel?: string
-	@Input() actionIcon?: string
-	@Output() actionClick = new EventEmitter<void>()
+	actionLabel = input<string | undefined>(undefined)
+	actionIcon = input<string | undefined>(undefined)
+	actionClick = output<void>()
 
-	// optional backbutton
-	@Input() showBackButton = false
-	@Output() backClick = new EventEmitter<void>()
+	showBackButton = input(false)
+	backClick = output<void>()
 
-	get showActionButton(): boolean {
-		return Boolean(this.actionLabel || this.actionIcon)
-	}
+	showActionButton = computed(() => Boolean(this.actionLabel() || this.actionIcon()))
 }

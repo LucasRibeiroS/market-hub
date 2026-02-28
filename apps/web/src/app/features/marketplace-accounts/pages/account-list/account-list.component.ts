@@ -1,20 +1,20 @@
 import { Component, inject } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { AsyncPipe } from '@angular/common'
 import { AuthService } from '@core/auth/auth.service'
 import { Observable } from 'rxjs'
 import { IUser } from '@core/auth/models'
+import { PageHeaderComponent, ButtonComponent } from '@shared/components'
 
 @Component({
 	selector: 'app-account-list',
 	standalone: true,
-	imports: [CommonModule], // Needed for the 'async' pipe
-	templateUrl: './account-list.component.html'
+	imports: [AsyncPipe, PageHeaderComponent, ButtonComponent],
+	templateUrl: './account-list.component.html',
+	styleUrls: ['./account-list.component.css']
 })
 export class AccountListComponent {
 	private authService = inject(AuthService)
 
-	// 1. Connect to the global state
-	// We don't fetch data here; we just listen to the stream the AuthService manages.
 	currentUser$: Observable<IUser | null> = this.authService.currentUser$
 
 	onLogout(): void {

@@ -15,14 +15,14 @@
 
     <app-input-text
         label="Senha"
-        placeholder="Sua senha"
+        placeholder="Crie uma senha"
         type="password"
         [control]="$any(signUpForm.get('password'))"
     />
 
     <app-button
-        label="Cadastrar"
-        [isLoading]="isLoading"
+        label="Criar conta"
+        [isLoading]="isLoading()"
         type="submit"
     />
 

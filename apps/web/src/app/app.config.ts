@@ -7,7 +7,7 @@ import { provideTranslateService, TranslateService } from '@ngx-translate/core'
 import { providePrimeNG } from 'primeng/config'
 import { definePreset } from '@primeuix/themes'
 import { MessageService } from 'primeng/api'
-import Aura from '@primeuix/themes/aura'
+import Lara from '@primeuix/themes/lara'
 
 import translationsPTBR from '../../public/i18n/pt-BR.json'
 
@@ -18,7 +18,7 @@ import { AuthService } from '@core/auth/auth.service'
 
 import { routes } from './app.routes'
 
-const ThemePreset = definePreset(Aura, {
+const ThemePreset = definePreset(Lara, {
 	semantic: {
 		primary: {
 			50: '#fffbf0',

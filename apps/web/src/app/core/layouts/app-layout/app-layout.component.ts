@@ -36,10 +36,12 @@ interface MenuItem {
 })
 export class AppLayoutComponent implements OnInit {
 	private authService = inject(AuthService)
+	private router = inject(Router)
+
 	currentUser$: Observable<IUser | null> = this.authService.currentUser$
 
 	pageTitle = signal('Dashboard')
-	collapsed = signal(false)
+	collapsed = signal(localStorage.getItem('sidebarCollapsed') === 'true')
 	expandedItems = signal<Set<string>>(new Set(['Configurações']))
 	activePopoverChildren: MenuItem[] = []
 
@@ -59,7 +61,7 @@ export class AppLayoutComponent implements OnInit {
 			icon: 'pi-cog',
 			children: [
 				{
-					label: 'Chaves',
+					label: 'Chaves de API',
 					icon: 'pi-key',
 					route: '/settings/api-keys'
 				}
@@ -67,25 +69,25 @@ export class AppLayoutComponent implements OnInit {
 		}
 	]
 
-	constructor(private router: Router) {
+	ngOnInit(): void {
+		this.updatePageTitle()
 		this.router.events
 			.pipe(filter(e => e instanceof NavigationEnd))
-			.subscribe(() => {
-				const url = this.router.url
-				if (url.includes('dashboard')) this.pageTitle.set('Dashboard')
-				else if (url.includes('integracoes')) this.pageTitle.set('Integrações')
-				else if (url.includes('chaves')) this.pageTitle.set('Chaves')
-				else this.pageTitle.set('')
-			})
+			.subscribe(() => this.updatePageTitle())
 	}
 
-	ngOnInit(): void {
-		this.collapsed = signal(localStorage.getItem('sidebarCollapsed') === 'true')
+	private updatePageTitle(): void {
+		const url = this.router.url
+		if (url.includes('api-keys')) this.pageTitle.set('Chaves de API')
+		else if (url.includes('dashboard')) this.pageTitle.set('Dashboard')
+		else if (url.includes('integrations')) this.pageTitle.set('Integrações')
+		else if (url.includes('settings')) this.pageTitle.set('Configurações')
+		else this.pageTitle.set('')
 	}
 
 	toggleSidebar(): void {
 		this.collapsed.update(v => !v)
-		localStorage.setItem('sidebarCollapsed', this.collapsed() ? 'true' : 'false')
+		localStorage.setItem('sidebarCollapsed', String(this.collapsed()))
 	}
 
 	isExpanded(label: string): boolean {

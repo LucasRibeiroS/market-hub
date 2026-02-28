@@ -1,6 +1,5 @@
 import { finalize, switchMap, tap } from 'rxjs'
-import { Component } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
@@ -14,7 +13,6 @@ import { environment } from '@env/environment'
 	selector: 'app-sign-in',
 	standalone: true,
 	imports: [
-		CommonModule,
 		ReactiveFormsModule,
 		RouterModule,
 		ButtonComponent,
@@ -23,29 +21,28 @@ import { environment } from '@env/environment'
 	templateUrl: './sign-in.component.html'
 })
 export default class SignInComponent {
+	private authService = inject(AuthService)
+	private router = inject(Router)
+
 	signInForm = new FormGroup({
-		email: new FormControl('lucas.ribeiro@specterlabs.com.br', [Validators.required, Validators.email]),
-		password: new FormControl('password1', [Validators.required, Validators.minLength(6)])
+		email: new FormControl('', [Validators.required, Validators.email]),
+		password: new FormControl('', [Validators.required, Validators.minLength(6)])
 	}, { updateOn: 'blur' })
-	isLoading = false
 
-	constructor(
-		private authService: AuthService,
-		private router: Router
-	) {}
+	isLoading = signal(false)
 
-	onSubmit() {
+	onSubmit(): void {
 		if (this.signInForm.valid) {
 			const payload: ISignInRequest = {
 				email: this.signInForm.value.email!,
 				password: this.signInForm.value.password!
 			}
 
-			this.isLoading = true
+			this.isLoading.set(true)
 			this.authService.signIn(payload).pipe(
 				switchMap(() => this.authService.getUser()),
 				tap(() => this.router.navigate([environment.startingRoute])),
-				finalize(() => this.isLoading = false)
+				finalize(() => this.isLoading.set(false))
 			).subscribe()
 		} else {
 			this.signInForm.markAllAsTouched()

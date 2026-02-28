@@ -1,6 +1,5 @@
 import { catchError, EMPTY, finalize, tap } from 'rxjs'
-import { ChangeDetectorRef, Component } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { ChangeDetectorRef, Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
@@ -13,7 +12,6 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 	selector: 'app-recover-password',
 	standalone: true,
 	imports: [
-		CommonModule,
 		ReactiveFormsModule,
 		RouterModule,
 		ButtonComponent,
@@ -23,31 +21,28 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 	templateUrl: './recover-password.component.html'
 })
 export default class RecoverPasswordComponent {
+	private authService = inject(AuthService)
+	private router = inject(Router)
+	private ref = inject(ChangeDetectorRef)
+
 	recoverForm = new FormGroup({
 		email: new FormControl('', [Validators.required, Validators.email]),
 		code: new FormControl(''),
 		password: new FormControl('')
 	}, { updateOn: 'blur' })
-	currentStep: 'code' | 'reset' = 'code'
-	isLoading = false
 
-	constructor(
-		private authService: AuthService,
-		private router: Router,
-		private ref: ChangeDetectorRef
-	) {}
+	currentStep = signal<'code' | 'reset'>('code')
+	isLoading = signal(false)
 
-	onSubmit() {
-		if (this.currentStep === 'code') {
+	onSubmit(): void {
+		if (this.currentStep() === 'code') {
 			this.createPasswordReset()
-		}
-
-		if (this.currentStep === 'reset') {
+		} else {
 			this.resetPassword()
 		}
 	}
 
-	async createPasswordReset() {
+	createPasswordReset(): void {
 		const emailControl = this.recoverForm.get('email')
 
 		if (emailControl?.valid) {
@@ -55,8 +50,7 @@ export default class RecoverPasswordComponent {
 				email: this.recoverForm.value.email!
 			}
 
-			this.isLoading = true
-
+			this.isLoading.set(true)
 			this.authService.createPasswordReset(payload).pipe(
 				tap(() => this.moveToResetStep()),
 				catchError(err => {
@@ -66,7 +60,7 @@ export default class RecoverPasswordComponent {
 					return EMPTY
 				}),
 				finalize(() => {
-					this.isLoading = false
+					this.isLoading.set(false)
 					this.ref.markForCheck()
 				})
 			).subscribe()
@@ -75,7 +69,7 @@ export default class RecoverPasswordComponent {
 		}
 	}
 
-	resetPassword() {
+	resetPassword(): void {
 		if (this.recoverForm.valid) {
 			const payload: IResetPasswordRequest = {
 				email: this.recoverForm.value.email!,
@@ -83,17 +77,17 @@ export default class RecoverPasswordComponent {
 				password: this.recoverForm.value.password!
 			}
 
-			this.isLoading = true
+			this.isLoading.set(true)
 			this.authService.resetPassword(payload).pipe(
 				tap(() => this.router.navigate(['/auth/sign-in'])),
-				finalize(() => this.isLoading = false)
+				finalize(() => this.isLoading.set(false))
 			).subscribe()
 		} else {
 			this.recoverForm.markAllAsTouched()
 		}
 	}
 
-	moveToResetStep() {
+	moveToResetStep(): void {
 		const codeControl = this.recoverForm.get('code')
 		const passwordControl = this.recoverForm.get('password')
 
@@ -114,10 +108,10 @@ export default class RecoverPasswordComponent {
 			passwordControl?.updateValueAndValidity()
 		}
 
-		this.currentStep = 'reset'
+		this.currentStep.set('reset')
 	}
 
-	resendCode() {
+	resendCode(): void {
 		this.createPasswordReset()
 	}
 }

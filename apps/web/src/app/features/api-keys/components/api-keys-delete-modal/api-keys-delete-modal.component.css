@@ -2,24 +2,14 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    padding: 0.25rem 0;
+    padding: 0.125rem 0;
 }
 
 .modal-description {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: var(--p-surface-600);
-    line-height: 1.6;
-}
-
-.key-prefix {
-    background-color: var(--p-surface-100);
-    border: 1px solid var(--p-surface-200);
-    border-radius: 4px;
-    padding: 0.1rem 0.4rem;
-    font-size: 0.82rem;
-    color: var(--p-surface-700);
-    font-family: monospace;
+    line-height: 1.65;
 }
 
 .confirm-field {
@@ -29,16 +19,14 @@
 }
 
 .confirm-label {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
     color: var(--p-surface-600);
-}
-
-.confirm-input {
-    width: 100%;
+    line-height: 1.5;
 }
 
 .modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
+    width: 100%;
 }

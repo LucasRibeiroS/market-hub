@@ -4,12 +4,18 @@
     border: none;
     color: var(--p-primary-600);
     font: inherit;
-    font-weight: 500;
+    font-size: inherit;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.button-text:hover {
+    color: var(--p-primary-700);
 }
 
 .button-text:disabled {
-    color: var(--text-secondary);
+    color: var(--p-surface-400);
     cursor: not-allowed;
 }

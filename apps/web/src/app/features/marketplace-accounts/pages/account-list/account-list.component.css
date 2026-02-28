@@ -1,0 +1,70 @@
+.account-card {
+    background-color: var(--p-surface-0);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-xs);
+}
+
+.account-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: var(--p-primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar-initials {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--p-primary-700);
+    text-transform: uppercase;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.account-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--p-surface-900);
+    letter-spacing: -0.01em;
+}
+
+.account-email {
+    font-size: 0.8125rem;
+    color: var(--p-surface-500);
+}
+
+/* Danger zone */
+.danger-section {
+    background-color: var(--p-surface-0);
+    border: 1px solid var(--p-red-200);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-xs);
+}
+
+.danger-title {
+    margin: 0 0 0.375rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--p-red-700);
+    letter-spacing: -0.01em;
+}
+
+.danger-description {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--p-surface-500);
+    line-height: 1.5;
+}

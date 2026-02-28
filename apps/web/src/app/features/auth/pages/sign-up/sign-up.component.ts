@@ -1,6 +1,5 @@
 import { finalize, switchMap, tap } from 'rxjs'
-import { Component } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router, RouterModule } from '@angular/router'
 
@@ -14,7 +13,6 @@ import { environment } from '@env/environment'
 	selector: 'app-sign-up',
 	standalone: true,
 	imports: [
-		CommonModule,
 		ReactiveFormsModule,
 		RouterModule,
 		ButtonComponent,
@@ -23,19 +21,18 @@ import { environment } from '@env/environment'
 	templateUrl: './sign-up.component.html'
 })
 export default class SignUpComponent {
+	private authService = inject(AuthService)
+	private router = inject(Router)
+
 	signUpForm = new FormGroup({
 		name: new FormControl('', [Validators.required, Validators.minLength(3)]),
 		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', [Validators.required, Validators.minLength(6)])
 	}, { updateOn: 'blur' })
-	isLoading = false
 
-	constructor(
-		private authService: AuthService,
-		private router: Router
-	) {}
+	isLoading = signal(false)
 
-	onSubmit() {
+	onSubmit(): void {
 		if (this.signUpForm.valid) {
 			const payload: ISignUpRequest = {
 				name: this.signUpForm.value.name!,
@@ -43,11 +40,11 @@ export default class SignUpComponent {
 				password: this.signUpForm.value.password!
 			}
 
-			this.isLoading = true
+			this.isLoading.set(true)
 			this.authService.signUp(payload).pipe(
 				switchMap(() => this.authService.getUser()),
 				tap(() => this.router.navigate([environment.startingRoute])),
-				finalize(() => this.isLoading = false)
+				finalize(() => this.isLoading.set(false))
 			).subscribe()
 		} else {
 			this.signUpForm.markAllAsTouched()

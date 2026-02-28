@@ -1,25 +1,152 @@
 /* You can add global styles to this file, and also import other style files */
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import 'primeicons/primeicons.css';
 
+/* ============================================================
+   DESIGN TOKENS
+============================================================ */
 :root {
-  --font-family: "Inter", sans-serif;
+  /* Typography */
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Shadows */
+  --shadow-xs:  0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm:  0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md:  0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+  --shadow-lg:  0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+
+  /* Border radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Transitions */
+  --transition-fast: 120ms ease;
+  --transition-base: 180ms ease;
+  --transition-slow: 280ms ease;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgb(255 153 0 / 0.22);
 }
 
-/* Reset basic browser styles */
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
-    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-x: hidden;
 }
 
-/* Apply the global theme */
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    font-family: var(--font-family), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    letter-spacing: 0.5px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    color: var(--p-surface-800);
+}
+
+/* ============================================================
+   GLOBAL FOCUS STYLE
+============================================================ */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ============================================================
+   PRIMENG GLOBAL OVERRIDES
+============================================================ */
+
+/* Consistent border-radius for PrimeNG dialogs */
+:root .p-dialog {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+:root .p-dialog .p-dialog-header {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  padding: 1.25rem 1.5rem 1rem !important;
+  border-bottom: 1px solid var(--p-surface-100) !important;
+  font-weight: 600 !important;
+  font-size: 0.9375rem !important;
+}
+
+:root .p-dialog .p-dialog-content {
+  padding: 1.25rem 1.5rem !important;
+}
+
+:root .p-dialog .p-dialog-footer {
+  padding: 0.875rem 1.5rem !important;
+  border-top: 1px solid var(--p-surface-100) !important;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+}
+
+/* Toast */
+:root .p-toast .p-toast-message {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Paginator */
+:root .p-paginator {
+  padding: 0.625rem 1rem !important;
+  border-top: 1px solid var(--p-surface-100) !important;
+}
+
+/* Skeleton */
+:root .p-skeleton {
+  border-radius: var(--radius-xs) !important;
+}
+
+/* Badge */
+:root .p-badge {
+  font-size: 0.6875rem !important;
+  font-weight: 600 !important;
+  border-radius: 99px !important;
+  padding: 0.1875rem 0.5rem !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* MultiSelect */
+:root .p-multiselect {
+  border-radius: var(--radius-sm) !important;
+  border: 1.5px solid var(--p-surface-200) !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+}
+
+:root .p-multiselect:focus-within {
+  border-color: var(--p-primary-500) !important;
+  box-shadow: var(--focus-ring) !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--p-surface-300);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--p-surface-400);
 }

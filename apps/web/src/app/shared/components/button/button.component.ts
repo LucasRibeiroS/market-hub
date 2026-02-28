@@ -1,32 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { Component, input, output } from '@angular/core'
 import { ButtonModule } from 'primeng/button'
 import { TooltipModule } from 'primeng/tooltip'
 
 @Component({
 	selector: 'app-button',
 	standalone: true,
-	imports: [CommonModule, ButtonModule, TooltipModule],
+	imports: [ButtonModule, TooltipModule],
 	templateUrl: './button.component.html',
 	styleUrls: ['./button.component.css']
 })
 export class ButtonComponent {
-	@Input() label: string = ''
-	@Input() tooltip: string = ''
-	@Input() type: 'button' | 'submit' | 'reset' = 'button'
-	@Input() fluid: boolean = true
-	@Input() isLoading: boolean = false
-	@Input() disabled: boolean = false
-	@Input() severity: 'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null = null
-	@Input() text: boolean = false
-	@Input() outlined: boolean = false
-	@Input() icon: string = ''
-	@Input() iconPos: 'left' | 'right' | 'top' | 'bottom' = 'left'
-	@Input() size: 'small' | 'large' | undefined = undefined
+	label = input('')
+	tooltip = input('')
+	type = input<'button' | 'submit' | 'reset'>('button')
+	fluid = input(true)
+	isLoading = input(false)
+	disabled = input(false)
+	severity = input<'success' | 'info' | 'warn' | 'danger' | 'help' | 'primary' | 'secondary' | 'contrast' | null>(null)
+	text = input(false)
+	outlined = input(false)
+	icon = input('')
+	iconPos = input<'left' | 'right' | 'top' | 'bottom'>('left')
+	size = input<'small' | 'large' | undefined>(undefined)
 
-	@Output() onClick = new EventEmitter<Event>()
+	onClick = output<Event>()
 
-	handleClick(event: Event) {
+	handleClick(event: Event): void {
 		this.onClick.emit(event)
 	}
 }

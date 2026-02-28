@@ -1,83 +1,137 @@
-.auth-container {
+/* ============================================================
+   AUTH BACKGROUND
+============================================================ */
+.auth-bg {
     min-height: 100vh;
     width: 100%;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     background-color: var(--p-surface-50);
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 153, 0, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 153, 0, 0.04) 0%, transparent 50%);
+    padding: 2rem 1rem;
 }
 
-.auth-container::after {
-    content: '';
-    position: fixed;
-    top: 20px;
-    left: 20px;
+/* ============================================================
+   WRAPPER (vertical stack: brand → card → footer)
+============================================================ */
+.auth-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
     width: 100%;
-    height: 20px;
-    background-image: url('/logo.svg');
-    background-size: contain;
-    background-repeat: no-repeat;
-    z-index: 1;
+    max-width: 420px;
 }
 
-.auth-container h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--p-surface-800);
+/* ============================================================
+   BRAND
+============================================================ */
+.auth-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.auth-logo {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* ============================================================
+   CARD
+============================================================ */
 .auth-card {
-    min-width: 400px;
-    margin: 1rem;
-    padding: 2rem;
-    border-radius: 8px;
-    border: 1px solid var(--p-surface-200);
+    width: 100%;
     background-color: var(--p-surface-0);
-    z-index: 2;
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
 }
 
-:host ::ng-deep hr {
-    margin: 1rem 0;
-    border: none;
-    border-top: 1px solid var(--p-surface-200);
+.auth-card-header {
+    padding: 1.75rem 2rem 0;
 }
 
-:host ::ng-deep .toggle-text {
-    margin: 0rem;
-    margin-top: 1rem;
-    font-size: 0.85rem;
-    color: var(--p-slate-600);
+.auth-title {
+    margin: 0 0 0.125rem;
+    font-size: 1.3125rem;
+    font-weight: 700;
+    color: var(--p-surface-900);
+    letter-spacing: -0.025em;
+    line-height: 1.3;
+}
+
+.auth-card-body {
+    padding: 1.5rem 2rem 2rem;
+}
+
+/* ============================================================
+   FOOTER TEXT
+============================================================ */
+.auth-footer-text {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--p-surface-400);
     text-align: center;
 }
 
+/* ============================================================
+   SLOT STYLES (forms rendered by child routes)
+============================================================ */
+:host ::ng-deep hr {
+    margin: 1.25rem 0;
+    border: none;
+    border-top: 1px solid var(--p-surface-100);
+}
+
+:host ::ng-deep .toggle-text {
+    margin: 1.25rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--p-surface-500);
+    text-align: center;
+    line-height: 1.5;
+}
+
 :host ::ng-deep .toggle-text a {
-    font-size: 0.85rem;
     color: var(--p-primary-600);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
+    transition: color var(--transition-fast);
+}
+
+:host ::ng-deep .toggle-text a:hover {
+    color: var(--p-primary-700);
 }
 
 :host ::ng-deep .forgot-password {
     text-align: right;
-    margin-bottom: 1rem;
-    margin-top: -1rem;
+    margin: -0.75rem 0 1rem;
 }
 
 :host ::ng-deep .forgot-password a {
-    font-size: 0.85rem;
-    color: var(--p-primary-600);
+    font-size: 0.8125rem;
+    color: var(--p-surface-500);
     text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+
+:host ::ng-deep .forgot-password a:hover {
+    color: var(--p-primary-600);
 }
 
 :host ::ng-deep .resend-code {
     text-align: right;
-    margin-top: -1rem;
-    font-size: 0.75rem;
+    margin: -0.75rem 0 1.25rem;
+    font-size: 0.8125rem;
+    color: var(--p-surface-500);
 }
 
 :host ::ng-deep .resend-code app-button-text {
-    font-size: 0.75rem;
-    color: var(--p-primary-600);
-    text-decoration: none;
+    font-size: 0.8125rem;
 }

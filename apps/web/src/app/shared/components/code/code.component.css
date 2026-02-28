@@ -1,10 +1,14 @@
 .code {
+    display: inline-flex;
+    align-items: center;
     background-color: var(--p-surface-100);
     border: 1px solid var(--p-surface-200);
-    border-radius: 4px;
-    padding: 0.15rem 0.45rem;
-    font-size: 0.8rem;
-    font-family: monospace;
-    font-weight: 600;
-    color: var(--p-surface-600);
+    border-radius: var(--radius-xs);
+    padding: 0.125rem 0.4375rem;
+    font-size: 0.8125rem;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-weight: 500;
+    color: var(--p-surface-700);
+    letter-spacing: 0;
+    white-space: nowrap;
 }

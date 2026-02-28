@@ -1,16 +1,26 @@
 <div class="page-header">
-    @if (showBackButton) {
-        <app-button (click)="backClick.emit()" icon="pi pi-arrow-left" severity="secondary" />
+    @if (showBackButton()) {
+        <button
+            type="button"
+            class="back-btn"
+            (click)="backClick.emit()"
+            aria-label="Go back"
+        >
+            <i class="pi pi-arrow-left"></i>
+        </button>
     }
     <div class="page-header-text">
-        <h1 class="page-title">{{ title }}</h1>
-        <p class="page-description"> {{ description }}</p>
+        <h1 class="page-title">{{ title() }}</h1>
+        @if (description()) {
+            <p class="page-description">{{ description() }}</p>
+        }
     </div>
-    @if (showActionButton) {
+    @if (showActionButton()) {
         <app-button
-            [label]="actionLabel ?? ''"
-            [icon]="actionIcon ?? ''"
+            [label]="actionLabel() ?? ''"
+            [icon]="actionIcon() ?? ''"
+            [fluid]="false"
             (onClick)="actionClick.emit()"
-        ></app-button>
+        />
     }
 </div>
