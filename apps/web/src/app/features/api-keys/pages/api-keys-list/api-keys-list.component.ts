@@ -36,10 +36,10 @@ export class ApiKeysListComponent implements OnInit {
 	pagination = signal<IPagination | null>(null)
 	paginator = signal<IPaginator>({ page: 1, page_size: defaultPageSize })
 
-	loading = signal(false)
-	private loader = withLoadingDelay(this.loading)
+	isLoading = signal(false)
+	private loader = withLoadingDelay(this.isLoading)
 
-	deleting = signal(false)
+	isDeleting = signal(false)
 	keyToDelete = signal<IApiKey | null>(null)
 	highlightedId = signal<string | null>(null)
 
@@ -94,11 +94,11 @@ export class ApiKeysListComponent implements OnInit {
 	onDeleteConfirmed(): void {
 		const key = this.keyToDelete()
 		if (!key) return
-		this.deleting.set(true)
+		this.isDeleting.set(true)
 		this.apiKeysService.delete({ id: key.id }).subscribe({
 			next: () => {
 				this.keyToDelete.set(null)
-				this.deleting.set(false)
+				this.isDeleting.set(false)
 				this.highlightedId.set(null)
 				this.keyToDelete.set(null)
 				this.loadKeys()
@@ -110,7 +110,7 @@ export class ApiKeysListComponent implements OnInit {
 				})
 			},
 			error: () => {
-				this.deleting.set(false)
+				this.isDeleting.set(false)
 				this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível excluir a chave.', life: 4000 })
 			}
 		})

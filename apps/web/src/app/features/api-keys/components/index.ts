@@ -1,1 +1,2 @@
-export { ApiKeyDeleteModalComponent } from './api-keys-delete-modal/api-keys-delete-modal.component'
+export { ApiKeyCreatedModalComponent } from './api-key-created-modal/api-key-created-modal.component'
+export { ApiKeyDeleteModalComponent } from './api-key-delete-modal/api-key-delete-modal.component'

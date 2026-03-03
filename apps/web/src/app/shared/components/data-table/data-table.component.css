@@ -2,7 +2,7 @@
     background-color: var(--p-surface-0);
     border: 1px solid var(--p-surface-200);
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    overflow: visible;
     box-shadow: var(--shadow-xs);
 }
 
@@ -25,20 +25,49 @@
     vertical-align: middle;
 }
 
-:host ::ng-deep .app-data-table .p-datatable-tbody > tr:last-child > td {
-    border-bottom: none;
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr {
+    transition: box-shadow 0.15s ease;
+}
+
+/* Hover effect on rows */
+:host ::ng-deep .app-data-table table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Transparent border to avoid table position changes */
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr > td {
+    border: solid 2px transparent;
+    border-left-style: none;
+    border-right-style: none;
+}
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr > td:first-child {
+    border-left-style: solid;
+}
+:host ::ng-deep .app-data-table .p-datatable-tbody > tr > td:last-child {
+    border-right-style: solid;
 }
 
 :host ::ng-deep .app-data-table .p-datatable-tbody > tr:hover > td {
-    background-color: var(--p-surface-50);
+    background-color: var(--p-surface-0);
+    border-color: var(--p-primary-400);
+}
+
+/* Last row radius only when there is NO paginator */
+:host ::ng-deep .app-data-table:not(.has-paginator) .p-datatable-tbody > tr:last-child > td:first-child {
+  border-bottom-left-radius: var(--radius-lg);
+}
+
+:host ::ng-deep .app-data-table:not(.has-paginator) .p-datatable-tbody > tr:last-child > td:last-child {
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 /* Highlighted row */
 :host ::ng-deep .app-data-table .p-datatable-tbody > tr.row-highlighted > td {
-    transition: background-color 0.5s ease;
-    background-color: var(--p-primary-50);
+    border-color: var(--p-primary-400);
 }
 
+/* Actions column */
 .actions-header {
     text-align: right !important;
 }

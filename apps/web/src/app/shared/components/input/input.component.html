@@ -12,6 +12,7 @@
                 [placeholder]="placeholder()"
                 [maxLength]="maxLength()"
                 [formControl]="control()"
+                [disabled]="true"
                 class="field-input"
             />
             @if (type() === 'password') {
@@ -33,6 +34,7 @@
             [id]="id()"
             [formControl]="control()"
             [length]="maxLength() > 6 ? 6 : maxLength()"
+            [disabled]="disabled()"
             (onChange)="onOtpChange($event)"
         />
     }

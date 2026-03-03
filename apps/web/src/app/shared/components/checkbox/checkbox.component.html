@@ -1,0 +1,25 @@
+<div class="field">
+    <div>
+        @if (label()) {
+            <label [for]="id()" class="field-label">{{ label() }}</label>
+        }
+        @if (description()) {
+            <span class="field-description">  {{ description() }}</span>
+        }
+    </div>
+    <div class="checkbox-wrapper" [class.checkbox-wrapper--disabled]="disabled()">
+        <p-checkbox
+            [inputId]="id()"
+            [formControl]="control()"
+            [disabled]="disabled()"
+            [binary]="true"
+        />
+        <span class="status-text" [class.status-text--active]="control().value">
+            {{ control().value ? activeLabel() : inactiveLabel() }}
+        </span>
+    </div>
+
+    @if (showError) {
+        <small class="field-error">{{ errorMessage }}</small>
+    }
+</div>

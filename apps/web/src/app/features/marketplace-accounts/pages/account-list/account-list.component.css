@@ -41,7 +41,7 @@
 }
 
 .account-email {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     color: var(--p-surface-500);
 }
 

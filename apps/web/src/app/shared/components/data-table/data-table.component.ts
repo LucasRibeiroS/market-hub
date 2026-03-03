@@ -2,16 +2,15 @@ import {
 	AfterContentInit,
 	Component,
 	ContentChildren,
-	EventEmitter,
-	Input,
-	Output,
+	input,
+	model,
+	output,
 	QueryList,
 	TemplateRef
 } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { TableModule, TablePageEvent } from 'primeng/table'
 import { SkeletonModule } from 'primeng/skeleton'
-import { ButtonModule } from 'primeng/button'
 import { PrimeTemplate } from 'primeng/api'
 
 import { defaultPageSize, IPagination, IPaginator } from '@shared/utils/pagination'
@@ -27,32 +26,33 @@ export interface TableColumn {
 @Component({
 	selector: 'app-data-table',
 	standalone: true,
-	imports: [CommonModule, TableModule, SkeletonModule, ButtonModule],
+	imports: [CommonModule, TableModule, SkeletonModule],
 	templateUrl: './data-table.component.html',
 	styleUrls: ['./data-table.component.css']
 })
 export class DataTableComponent<T extends object> implements AfterContentInit {
 	/** Column definitions */
-	@Input() columns: TableColumn[] = []
+	columns = input<TableColumn[]>([])
 	/** Data rows */
-	@Input() rows: T[] = []
+	rows = input<T[]>([])
 	/** Show skeleton loaders instead of data */
-	@Input() loading = false
+	loading = input(false)
 	/** Field used as unique row key */
-	@Input() dataKey = 'id'
+	dataKey = input('id')
 	/** Row id to highlight (fades out automatically via CSS animation) */
-	@Input() highlightedId: string | null = null
+	highlightedId = input<string | null>(null)
 	/** Enable pagination */
-	@Input() paginator: IPaginator = { page: 1, page_size: defaultPageSize }
+	paginator = model<IPaginator>({ page: 1, page_size: defaultPageSize })
 	/** Page size options for the paginator */
-	@Input() pageSizeOptions: number[] = [5, 10, 25]
+	pageSizeOptions = input<number[]>([5, 10, 25])
 	/** Minimum table width before horizontal scroll kicks in */
-	@Input() minWidth = '600px'
+	minWidth = input('600px')
 	/** Message shown in the empty state when no custom empty template is provided */
-	@Input() emptyMessage = 'Nenhum resultado encontrado.'
+	emptyMessage = input('Nenhum resultado encontrado.')
+	/** Pagination metadata */
+	pagination = input<IPagination | null>(null)
 
-	@Input() pagination: IPagination | null = null
-	@Output() onPaginatorChange = new EventEmitter<IPaginator>()
+	onPaginatorChange = output<IPaginator>()
 
 	@ContentChildren(PrimeTemplate) templates!: QueryList<PrimeTemplate>
 
@@ -76,41 +76,40 @@ export class DataTableComponent<T extends object> implements AfterContentInit {
 					this.emptyTemplate = t.template
 					break
 				default:
-					// anything else is treated as a cell template named after the column field
 					this.cellTemplates.set(t.getType(), t.template)
 			}
 		})
 	}
 
 	onPage(event: TablePageEvent): void {
-		this.paginator = {
-			...this.paginator,
+		const next: IPaginator = {
+			...this.paginator(),
 			page: event.first / event.rows + 1,
 			page_size: event.rows
 		}
-		this.onPaginatorChange.emit(this.paginator)
+		this.paginator.set(next)
+		this.onPaginatorChange.emit(next)
 	}
 
 	onSort(event: { field: string, order: -1 | 1 }): void {
 		const direction = event.order === 1 ? 'asc' : 'desc'
+		const current = this.paginator()
 
-		// avoiding infinite loop
-		if (event.field === this.paginator.order_by && direction === this.paginator.order_direction) {
-			return
-		}
+		if (event.field === current.order_by && direction === current.order_direction) return
 
-		this.paginator = {
-			...this.paginator,
+		const next: IPaginator = {
+			...current,
 			page: 1,
 			order_by: event.field,
 			order_direction: direction
 		}
-		this.onPaginatorChange.emit(this.paginator)
+		this.paginator.set(next)
+		this.onPaginatorChange.emit(next)
 	}
 
 	get showPaginator(): boolean {
-		const minPageSize = Math.min(...this.pageSizeOptions)
-		return !this.loading && this.rows.length > minPageSize
+		const minPageSize = Math.min(...this.pageSizeOptions())
+		return !this.loading() && this.rows().length > minPageSize
 	}
 
 	getCellTemplate(field: string): TemplateRef<unknown> | null {
@@ -118,7 +117,7 @@ export class DataTableComponent<T extends object> implements AfterContentInit {
 	}
 
 	rowClass(row: T): string {
-		return this.highlightedId && (row as Record<string, unknown>)[this.dataKey] === this.highlightedId
+		return this.highlightedId() && (row as Record<string, unknown>)[this.dataKey()] === this.highlightedId()
 			? 'row-highlighted'
 			: ''
 	}

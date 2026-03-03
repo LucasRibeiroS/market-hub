@@ -30,7 +30,12 @@ export class ApiKeysService {
 		return this.http.get<GetApiKeyResponse>(`${this.apiUrl}/${id}`).pipe(map(res => res.api_key))
 	}
 
-	create(data: CreateApiKeyRequest): Observable<IApiKey> {
+	/**
+	 * Creates a new API key.
+	 * @param data The data to create the API key with
+	 * @returns An observable of the created API key, including the plaintext key. Note that the plaintext key is only returned on creation and cannot be retrieved afterwards for security reasons.
+	 */
+	create(data: CreateApiKeyRequest): Observable<{ key: string } & IApiKey> {
 		return this.http.post<CreateApiKeyResponse>(this.apiUrl, data).pipe(map(res => res.api_key))
 	}
 

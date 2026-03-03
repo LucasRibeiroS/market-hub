@@ -11,7 +11,7 @@
 <app-data-table
     [columns]="columns"
     [rows]="apiKeys()"
-    [loading]="loading()"
+    [loading]="isLoading()"
     [highlightedId]="highlightedId()"
     [paginator]="paginator()"
     [pagination]="pagination()"
@@ -58,7 +58,7 @@
 <app-api-key-delete-modal
     [visible]="keyToDelete() !== null"
     [apiKey]="keyToDelete()"
-    [loading]="deleting()"
+    [loading]="isDeleting()"
     (confirmed)="onDeleteConfirmed()"
     (cancelled)="onDeleteCancelled()"
 />

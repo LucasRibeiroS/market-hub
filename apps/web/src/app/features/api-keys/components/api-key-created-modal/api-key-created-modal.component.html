@@ -1,0 +1,60 @@
+<p-dialog
+    [visible]="visible()"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [closable]="false"
+    [style]="{ width: '480px' }"
+    [header]="'Chave criada com sucesso'"
+>
+    <div class="modal-body">
+
+        <!-- Warning banner -->
+        <div class="warning-banner">
+            <i class="pi pi-exclamation-triangle warning-icon"></i>
+            <p class="warning-text">
+                Copie sua chave agora. Por segurança, ela <strong>não será exibida novamente</strong>
+                após você fechar esta janela.
+            </p>
+        </div>
+
+        <!-- Key display -->
+        <div class="key-block">
+            <div class="key-label">Sua chave de API</div>
+            <div class="key-value-row">
+                <app-code>{{ apiKey() }}</app-code>
+                <app-button
+                    icon="pi pi-copy"
+                    size="small"
+                    tooltip="Copiar chave"
+                    severity="secondary"
+                    [class.copied]="copied()"
+                    (click)="copy()"
+                />
+            </div>
+            <!-- Copy confirmation hint -->
+            <p class="copy-hint">
+                @if (copied()) {
+                    <i class="pi pi-check-circle"></i> Chave copiada para a área de transferência
+                } @else {
+                    Clique no ícone de cópia para copiar a chave
+                }
+            </p>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="modal-footer">
+            <span class="confirm-hint">
+                @if (!copied()) {
+                    Copie a chave antes de confirmar
+                }
+            </span>
+            <app-button
+                label="Entendi, fechar"
+                (click)="onConfirm()"
+            />
+        </div>
+    </ng-template>
+
+</p-dialog>

@@ -1,2 +1,11 @@
-<p-toast position="bottom-right"></p-toast>
+<p-toast
+    position="bottom-right"
+    [motionOptions]="{
+        type: 'transition',
+        duration: {
+            enter: 120,
+            leave: 180
+        },
+    }"
+/>
 <router-outlet></router-outlet>

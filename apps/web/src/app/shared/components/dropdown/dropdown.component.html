@@ -1,0 +1,41 @@
+<div class="field">
+    @if (label()) {
+        <label [for]="id()" class="field-label">{{ label() }}</label>
+    }
+
+    @if (!multiple()) {
+        <p-select
+            [inputId]="id()"
+            [options]="options()"
+            [optionLabel]="optionLabel()"
+            [optionValue]="optionValue()"
+            [placeholder]="placeholder()"
+            [filter]="filter()"
+            [showClear]="showClear()"
+            [loading]="loading()"
+            [formControl]="$any(control())"
+            styleClass="field-select"
+        />
+    }
+
+    @if (multiple()) {
+        <p-multiselect
+            [inputId]="id()"
+            [options]="options()"
+            [optionLabel]="optionLabel()"
+            [optionValue]="optionValue()"
+            [placeholder]="placeholder()"
+            [filter]="filter()"
+            [showClear]="showClear()"
+            [showHeader]="false"
+            [loading]="loading()"
+            [formControl]="$any(control())"
+            styleClass="field-multiselect"
+            display="chip"
+        />
+    }
+
+    @if (showError) {
+        <small class="field-error">{{ errorMessage }}</small>
+    }
+</div>

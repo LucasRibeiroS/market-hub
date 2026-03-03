@@ -15,7 +15,7 @@
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: var(--radius-sm);
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
 }
 
 .back-btn:hover {

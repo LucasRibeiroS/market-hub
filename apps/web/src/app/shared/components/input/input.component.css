@@ -6,7 +6,7 @@
 
 .field-label {
     display: block;
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     font-weight: 500;
     color: var(--p-surface-700);
     letter-spacing: -0.005em;
@@ -61,8 +61,6 @@
     border-radius: var(--radius-sm) !important;
     border: 1.5px solid var(--p-surface-200) !important;
     font-size: 0.875rem !important;
-    color: var(--p-surface-800) !important;
-    background-color: var(--p-surface-0) !important;
     transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
 }
 

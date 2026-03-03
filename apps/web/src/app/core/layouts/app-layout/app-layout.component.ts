@@ -1,7 +1,7 @@
 import { filter, Observable } from 'rxjs'
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router'
+import { IsActiveMatchOptions, NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router'
 
 import { AvatarModule } from 'primeng/avatar'
 import { RippleModule } from 'primeng/ripple'
@@ -118,12 +118,16 @@ export class AppLayoutComponent implements OnInit {
 	/** Highlights a parent nav item when one of its children is the active route */
 	isChildActive(item: MenuItem): boolean {
 		if (!item.children?.length) return false
-		return item.children.some(c => c.route && this.router.isActive(c.route, {
-			paths: 'exact',
+		return item.children.some(c => c.route && this.router.isActive(c.route, this.activeRouteOptions))
+	}
+
+	get activeRouteOptions(): IsActiveMatchOptions {
+		return {
+			paths: 'subset',
 			queryParams: 'ignored',
 			fragment: 'ignored',
 			matrixParams: 'ignored'
-		}))
+		}
 	}
 
 	logout(): void {

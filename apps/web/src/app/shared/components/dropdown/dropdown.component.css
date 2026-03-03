@@ -1,0 +1,315 @@
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.field-label {
+    display: block;
+    font-size: var(--font-size-label);
+    font-weight: 500;
+    color: var(--p-surface-700);
+    letter-spacing: -0.005em;
+}
+
+.field-error {
+    display: block;
+    color: var(--p-red-600);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+/* ── Select trigger ─────────────────────────────────────── */
+:host ::ng-deep .p-select {
+    width: 100%;
+    border-radius: var(--radius-sm) !important;
+    border: 1.5px solid var(--p-surface-200) !important;
+    background-color: var(--p-surface-0) !important;
+    box-shadow: none !important;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+    font-size: 0.875rem !important;
+}
+
+:host ::ng-deep .p-select:not(.p-disabled):hover {
+    border-color: var(--p-surface-300) !important;
+}
+
+:host ::ng-deep .p-select.p-focus {
+    border-color: var(--p-primary-500) !important;
+    box-shadow: var(--focus-ring) !important;
+    outline: none !important;
+}
+
+:host ::ng-deep .p-select.ng-invalid.ng-touched,
+:host ::ng-deep .p-select.ng-invalid.ng-dirty {
+    border-color: var(--p-red-400) !important;
+}
+
+:host ::ng-deep .p-select.ng-invalid.ng-touched.p-focus,
+:host ::ng-deep .p-select.ng-invalid.ng-dirty.p-focus {
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.15) !important;
+}
+
+:host ::ng-deep .p-select .p-select-label {
+    font-size: 0.875rem !important;
+    color: var(--p-surface-800) !important;
+    padding: 0.5rem 0.75rem !important;
+}
+
+:host ::ng-deep .p-select .p-select-label.p-placeholder {
+    color: var(--p-surface-400) !important;
+}
+
+:host ::ng-deep .p-select .p-select-dropdown {
+    color: var(--p-surface-500) !important;
+    width: 2.25rem !important;
+}
+
+:host ::ng-deep .p-select.p-disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+/* ── Dropdown overlay panel ─────────────────────────────── */
+:host ::ng-deep .p-select-overlay {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--p-surface-200) !important;
+    box-shadow: var(--shadow-md) !important;
+    overflow: hidden;
+    margin-top: 4px !important;
+}
+
+:host ::ng-deep .p-select-filter-container {
+    padding: 0.5rem !important;
+    border-bottom: 1px solid var(--p-surface-100) !important;
+}
+
+:host ::ng-deep .p-select-filter {
+    width: 100%;
+    font-size: 0.875rem !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+:host ::ng-deep .p-select-list {
+    padding: 0.25rem !important;
+}
+
+:host ::ng-deep .p-select-option {
+    border-radius: var(--radius-xs) !important;
+    font-size: 0.875rem !important;
+    color: var(--p-surface-700) !important;
+    padding: 0.4375rem 0.625rem !important;
+    margin: 1px 0 !important;
+    transition: background-color var(--transition-fast) !important;
+}
+
+:host ::ng-deep .p-select-option:not(.p-select-option-selected):hover {
+    background-color: var(--p-surface-50) !important;
+    color: var(--p-surface-900) !important;
+}
+
+:host ::ng-deep .p-select-option.p-select-option-selected {
+    background-color: var(--p-primary-50) !important;
+    color: var(--p-primary-700) !important;
+    font-weight: 500 !important;
+}
+
+:host ::ng-deep .p-select-option.p-select-option-selected:hover {
+    background-color: var(--p-primary-100) !important;
+}
+
+:host ::ng-deep .p-select-option.p-disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+}
+
+:host ::ng-deep .p-select-empty-message {
+    padding: 0.625rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    color: var(--p-surface-400) !important;
+    text-align: center;
+}
+
+/* ── Clear button ───────────────────────────────────────── */
+:host ::ng-deep .p-select-clear-icon {
+    color: var(--p-surface-400) !important;
+    font-size: 0.75rem !important;
+    transition: color var(--transition-fast) !important;
+}
+
+:host ::ng-deep .p-select-clear-icon:hover {
+    color: var(--p-surface-600) !important;
+}
+
+/* ── MultiSelect trigger ─────────────────────────────────── */
+:host ::ng-deep .p-multiselect {
+    width: 100%;
+    border-radius: var(--radius-sm) !important;
+    border: 1.5px solid var(--p-surface-200) !important;
+    background-color: var(--p-surface-0) !important;
+    box-shadow: none !important;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast) !important;
+    font-size: 0.875rem !important;
+    min-height: 2.375rem;
+}
+
+:host ::ng-deep .p-multiselect:not(.p-disabled):hover {
+    border-color: var(--p-surface-300) !important;
+}
+
+:host ::ng-deep .p-multiselect.p-focus {
+    border-color: var(--p-primary-500) !important;
+    box-shadow: var(--focus-ring) !important;
+    outline: none !important;
+}
+
+:host ::ng-deep .p-multiselect.ng-invalid.ng-touched,
+:host ::ng-deep .p-multiselect.ng-invalid.ng-dirty {
+    border-color: var(--p-red-400) !important;
+}
+
+:host ::ng-deep .p-multiselect.ng-invalid.ng-touched.p-focus,
+:host ::ng-deep .p-multiselect.ng-invalid.ng-dirty.p-focus {
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.15) !important;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-label-container {
+    padding: 0.3125rem 0.625rem !important;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    min-height: 2rem;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-label {
+    font-size: 0.875rem !important;
+    color: var(--p-surface-800) !important;
+    padding: 0 !important;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-label.p-placeholder {
+    color: var(--p-surface-400) !important;
+}
+
+:host ::ng-deep .p-multiselect .p-multiselect-dropdown {
+    color: var(--p-surface-500) !important;
+    width: 2.25rem !important;
+    flex-shrink: 0;
+}
+
+:host ::ng-deep .p-multiselect.p-disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+}
+
+/* Chips */
+:host ::ng-deep .p-multiselect .p-chip {
+    background-color: var(--p-primary-50) !important;
+    color: var(--p-primary-700) !important;
+    border-radius: var(--radius-xs) !important;
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    padding: 0.125rem 0.375rem !important;
+    gap: 0.25rem;
+    border: 1px solid var(--p-primary-100) !important;
+}
+
+:host ::ng-deep .p-multiselect .p-chip .p-chip-remove-icon {
+    color: var(--p-primary-500) !important;
+    font-size: 0.625rem !important;
+    transition: color var(--transition-fast) !important;
+}
+
+:host ::ng-deep .p-multiselect .p-chip .p-chip-remove-icon:hover {
+    color: var(--p-primary-700) !important;
+}
+
+/* ── MultiSelect overlay panel ───────────────────────────── */
+:host ::ng-deep .p-multiselect-overlay {
+    border-radius: var(--radius-md) !important;
+    border: 1px solid var(--p-surface-200) !important;
+    box-shadow: var(--shadow-md) !important;
+    overflow: hidden;
+    margin-top: 4px !important;
+}
+
+:host ::ng-deep .p-multiselect-filter-container {
+    flex: 1;
+}
+
+:host ::ng-deep .p-multiselect-filter {
+    width: 100%;
+    font-size: 0.875rem !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+:host ::ng-deep .p-multiselect-list {
+    padding: 0.25rem !important;
+}
+
+:host ::ng-deep .p-multiselect-option {
+    border-radius: var(--radius-xs) !important;
+    font-size: 0.875rem !important;
+    color: var(--p-surface-700) !important;
+    padding: 0.4375rem 0.625rem !important;
+    margin: 1px 0 !important;
+    transition: background-color var(--transition-fast) !important;
+    gap: 0.5rem;
+}
+
+:host ::ng-deep .p-multiselect-option:not(.p-selected):hover {
+    background-color: var(--p-surface-50) !important;
+    color: var(--p-surface-900) !important;
+}
+
+:host ::ng-deep .p-multiselect-option.p-selected {
+    background-color: var(--p-primary-50) !important;
+    color: var(--p-primary-700) !important;
+    font-weight: 500 !important;
+}
+
+:host ::ng-deep .p-multiselect-option.p-selected:hover {
+    background-color: var(--p-primary-100) !important;
+}
+
+:host ::ng-deep .p-multiselect-option .p-checkbox {
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+    flex-shrink: 0;
+}
+
+:host ::ng-deep .p-multiselect-option .p-checkbox .p-checkbox-box {
+    width: 1.2rem !important;
+    height: 1.2rem !important;
+    border-radius: var(--radius-xs) !important;
+    transition: border-color var(--transition-fast), background-color var(--transition-fast) !important;
+}
+
+:host ::ng-deep .p-multiselect-option.p-selected .p-checkbox .p-checkbox-box {
+    background-color: var(--p-primary-500) !important;
+    border-color: var(--p-primary-500) !important;
+}
+
+:host ::ng-deep .p-multiselect-empty-message {
+    padding: 0.625rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    color: var(--p-surface-400) !important;
+    text-align: center;
+}
+
+:host ::ng-deep .p-multiselect-close {
+    color: var(--p-surface-400) !important;
+    transition: color var(--transition-fast) !important;
+}
+
+:host ::ng-deep .p-multiselect-close:hover {
+    color: var(--p-surface-700) !important;
+}
+
+:host ::ng-deep .p-multiselect-option .p-checkbox .p-checkbox-icon {
+    font-size: 0.5rem !important;
+    width: 80% !important;
+    height: 80% !important;
+}

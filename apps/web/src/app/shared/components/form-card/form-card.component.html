@@ -1,0 +1,20 @@
+<div class="form-card">
+    <div class="card-header">
+        <ng-content select="[formCardHeader]"></ng-content>
+    </div>
+
+    @if (isLoading()) {
+        <div class="form-skeleton">
+            @for (row of rows(); track $index) {
+                <p-skeleton height="1rem" width="30%" styleClass="mb-1" />
+                <p-skeleton height="2.5rem" styleClass="mb-4" />
+            }
+        </div>
+    } @else {
+        <ng-content></ng-content>
+
+        <div class="form-actions">
+            <ng-content select="[formCardFooter]"></ng-content>
+        </div>
+    }
+</div>

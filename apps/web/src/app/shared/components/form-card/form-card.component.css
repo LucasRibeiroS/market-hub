@@ -1,0 +1,41 @@
+/* ============================================================
+   FORM CARD
+============================================================ */
+.form-card {
+    background-color: var(--p-surface-0);
+    border: 1px solid var(--p-surface-200);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+}
+
+/* ============================================================
+   CARD HEADER
+============================================================ */
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1.5rem;
+    border-bottom: 1px solid var(--p-surface-200);
+}
+
+/* ============================================================
+   SKELETON
+============================================================ */
+.form-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1rem 1.5rem;
+}
+
+/* ============================================================
+   ACTIONS
+============================================================ */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-top: 1px solid var(--p-surface-200);
+    padding: 0.75rem 1.5rem;
+}

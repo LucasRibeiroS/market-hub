@@ -10,8 +10,8 @@ import { ButtonComponent, CodeComponent, InputComponent } from '@shared/componen
 	selector: 'app-api-key-delete-modal',
 	standalone: true,
 	imports: [ReactiveFormsModule, DialogModule, ButtonComponent, CodeComponent, InputComponent],
-	templateUrl: './api-keys-delete-modal.component.html',
-	styleUrls: ['./api-keys-delete-modal.component.css']
+	templateUrl: './api-key-delete-modal.component.html',
+	styleUrls: ['./api-key-delete-modal.component.css']
 })
 export class ApiKeyDeleteModalComponent {
 	visible = model(false)

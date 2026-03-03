@@ -1,21 +1,22 @@
 <div class="data-table-card">
     <p-table
-        [value]="loading ? skeletonRows : rows"
+        [value]="loading() ? skeletonRows : rows()"
         [paginator]="showPaginator"
-        [rows]="paginator.page_size"
-        [rowsPerPageOptions]="pageSizeOptions"
+        [rows]="paginator().page_size"
+        [rowsPerPageOptions]="pageSizeOptions()"
         [sortMode]="'single'"
         [rowHover]="true"
-        [dataKey]="dataKey"
-        [tableStyle]="{ 'min-width': minWidth }"
+        [dataKey]="dataKey()"
+        [tableStyle]="{ 'min-width': minWidth() }"
         styleClass="app-data-table"
+        [class.has-paginator]="showPaginator"
         (onPage)="onPage($event)"
         (onSort)="onSort($event)"
     >
         <!-- Header -->
         <ng-template pTemplate="header">
             <tr>
-            @for (col of columns; track col.field) {
+            @for (col of columns(); track col.field) {
                 <th
                 [pSortableColumn]="col.sortable ? col.field : undefined"
                 [style.width]="col.width ?? 'auto'"
@@ -36,9 +37,9 @@
         <!-- Body -->
         <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
             <!-- Skeleton rows -->
-            @if (loading) {
+            @if (loading()) {
                 <tr>
-                    @for (col of columns; track col.field) {
+                    @for (col of columns(); track col.field) {
                         <td><p-skeleton height="1.1rem" [width]="skeletonWidths[rowIndex % skeletonWidths.length]" /></td>
                     }
                     @if (hasActionsTemplate) {
@@ -48,9 +49,9 @@
             }
 
             <!-- Real rows -->
-            @if (!loading) {
+            @if (!loading()) {
                 <tr [class]="rowClass(row)">
-                    @for (col of columns; track col.field) {
+                    @for (col of columns(); track col.field) {
                         <td [style.text-align]="col.align ?? 'left'">
                             <!-- Custom cell template if provided, else plain value -->
                             @if (getCellTemplate(col.field); as tmpl) {
@@ -79,15 +80,15 @@
 
         <!-- Empty -->
         <ng-template pTemplate="emptymessage">
-            @if (!loading) {
+            @if (!loading()) {
                 <tr>
-                    <td [attr.colspan]="columns.length + (hasActionsTemplate ? 1 : 0)">
+                    <td [attr.colspan]="columns().length + (hasActionsTemplate ? 1 : 0)">
                         @if (emptyTemplate) {
                             <ng-container [ngTemplateOutlet]="emptyTemplate" />
                         } @else {
                             <div class="empty-default">
                                 <i class="pi pi-inbox empty-icon"></i>
-                                <p>{{ emptyMessage }}</p>
+                                <p>{{ emptyMessage() }}</p>
                             </div>
                         }
                     </td>

@@ -10,44 +10,43 @@
 />
 
 <!-- Form card -->
-<div class="form-card">
-    @if (loadingKey()) {
-        <div class="form-skeleton">
-            <p-skeleton height="1rem" width="30%" styleClass="mb-1" />
-            <p-skeleton height="2.5rem" styleClass="mb-4" />
-            <p-skeleton height="1rem" width="30%" styleClass="mb-1" />
-            <p-skeleton height="2.5rem" styleClass="mb-4" />
-        </div>
-    } @else {
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form">
-        <app-input-text
-            id="name"
-            label="Nome"
-            placeholder="ex: Produção"
-            [control]="$any(form.get('name'))"
-        />
-
-        <p-multiselect
-            [options]="cities"
-            [formControl]="$any(form.get('permissions'))"
-            display="chip"
-            optionLabel="Permissões"
-            placeholder="Selecione permissões"
-            class="w-full md:w-80"
-        />
-
-
-        @if (isEdit) {
-            <div class="form-field">
-                <label class="form-label">Preview</label>
-                <div class="prefix-display">
-                <app-code>{{ existingKey()?.key_preview }}...</app-code>
-                <span class="prefix-note">O prefixo não pode ser alterado.</span>
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <app-form-card [isLoading]="isLoading()">
+        <ng-container formCardHeader>
+            @if (isEdit && existingKey()) {
+                <div class="card-header-info">
+                    <span class="card-header-label">Chave</span>
+                    <app-code>{{ existingKey()!.key_preview }}</app-code>
                 </div>
-            </div>
-        }
+            } @else {
+                <span class="card-header-label">Sua nova chave será exibida após a criação</span>
+            }
+        </ng-container>
 
-        <div class="form-actions">
+        <div class="form-content">
+            <app-input-text
+                id="name"
+                label="Nome"
+                placeholder="ex: Produção"
+                [control]="$any(form.get('name'))"
+            />
+
+            <app-dropdown
+                label="Permissões"
+                placeholder="Selecione as permissões para esta chave"
+                [options]="permissions()"
+                [control]="$any(form.get('permissions'))"
+                [multiple]="true"
+            />
+
+            <app-checkbox
+                label="Chave ativa?"
+                description="Desativar bloqueará todas as requisições que usam esta chave."
+                [control]="$any(form.get('is_active'))"
+            />
+        </div>
+
+        <ng-container formCardFooter>
             <app-button
                 label="Cancelar"
                 severity="secondary"
@@ -56,10 +55,16 @@
             />
             <app-button
                 [label]="isEdit ? 'Salvar alterações' : 'Criar chave'"
-                [isLoading]="saving()"
-                [disabled]="form.invalid || saving()"
+                [isLoading]="isSaving()"
+                [disabled]="form.invalid || isSaving()"
+                (click)="onSubmit()"
             />
-        </div>
-    </form>
-    }
-</div>
+        </ng-container>
+    </app-form-card>
+</form>
+
+<app-api-key-created-modal
+    [visible]="newKeyValue() !== null"
+    [apiKey]="newKeyValue()"
+    (dismiss)="onCreatedModalDismiss()"
+/>

@@ -342,7 +342,7 @@
 }
 
 .user-name {
-    font-size: 0.8125rem;
+    font-size: var(--font-size-label);
     font-weight: 600;
     color: var(--p-surface-800);
     white-space: nowrap;
