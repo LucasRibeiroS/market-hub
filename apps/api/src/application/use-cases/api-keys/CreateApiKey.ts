@@ -71,6 +71,5 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		permissions: Type.Array(Type.Ref(permissionsEnumSchema.$id), { minItems: 1 })
 	})
 
-	protected $id = 'api-keys/CreateApiKeyValidator'
 	protected schema = Validator.schema
 }
