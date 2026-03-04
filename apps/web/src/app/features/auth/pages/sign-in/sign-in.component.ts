@@ -18,7 +18,8 @@ import { environment } from '@env/environment'
 		ButtonComponent,
 		InputComponent
 	],
-	templateUrl: './sign-in.component.html'
+	templateUrl: './sign-in.component.html',
+	styleUrls: ['./sign-in.component.css']
 })
 export default class SignInComponent {
 	private authService = inject(AuthService)

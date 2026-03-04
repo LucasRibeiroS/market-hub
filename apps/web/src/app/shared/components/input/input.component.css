@@ -23,6 +23,13 @@
     padding-right: 2.625rem;
 }
 
+.input-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 1.25rem; /* prevents layout shift when error appears */
+}
+
 .password-toggle {
     position: absolute;
     right: 0;
@@ -49,7 +56,6 @@
 }
 
 .field-error {
-    display: block;
     color: var(--p-red-600);
     font-size: 0.75rem;
     font-weight: 500;

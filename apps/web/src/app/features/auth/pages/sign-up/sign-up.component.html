@@ -1,30 +1,33 @@
 <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-    <app-input-text
-        label="Nome"
-        placeholder="Seu nome completo"
-        type="text"
-        [control]="$any(signUpForm.get('name'))"
-    />
+    <div class="form-content">
+        
+        <app-input-text
+            label="Nome"
+            placeholder="Seu nome completo"
+            type="text"
+            [control]="$any(signUpForm.get('name'))"
+        />
 
-    <app-input-text
-        label="E-mail"
-        placeholder="Seu endereço de e-mail"
-        type="email"
-        [control]="$any(signUpForm.get('email'))"
-    />
+        <app-input-text
+            label="E-mail"
+            placeholder="Seu endereço de e-mail"
+            type="email"
+            [control]="$any(signUpForm.get('email'))"
+        />
 
-    <app-input-text
-        label="Senha"
-        placeholder="Crie uma senha"
-        type="password"
-        [control]="$any(signUpForm.get('password'))"
-    />
+        <app-input-text
+            label="Senha"
+            placeholder="Crie uma senha"
+            type="password"
+            [control]="$any(signUpForm.get('password'))"
+        />
 
-    <app-button
-        label="Criar conta"
-        [isLoading]="isLoading()"
-        type="submit"
-    />
+        <app-button
+            label="Criar conta"
+            [isLoading]="isLoading()"
+            type="submit"
+        />
+    </div>
 
     <hr />
 

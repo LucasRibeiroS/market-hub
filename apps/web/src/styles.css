@@ -8,7 +8,7 @@
 :root {
   /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-size-label: var(--font-size-label);
+  --font-size-label: 0.875rem;
 
   /* Shadows */
   --shadow-xs:  0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -31,6 +31,9 @@
 
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgb(255 153 0 / 0.22);
+
+  /* Colors (using PrimeNG palette) */
+  --p-primary-rgb: rgb(230 122 0);
 }
 
 /* ============================================================

@@ -11,11 +11,11 @@
         placeholder="Sua senha"
         type="password"
         [control]="$any(signInForm.get('password'))"
-    />
-
-    <div class="forgot-password">
-        <a routerLink="/auth/recover-password">Esqueci minha senha</a>
-    </div>
+    >
+        <div inputSuffix class="forgot-password">
+            <a routerLink="/auth/recover-password">Esqueci minha senha</a>
+        </div>
+    </app-input-text>
 
     <app-button
         label="Entrar"

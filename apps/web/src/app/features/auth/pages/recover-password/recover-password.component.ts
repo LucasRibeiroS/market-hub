@@ -18,7 +18,8 @@ import { ICreatePasswordResetRequest, IResetPasswordRequest } from '@core/auth/m
 		ButtonTextComponent,
 		InputComponent
 	],
-	templateUrl: './recover-password.component.html'
+	templateUrl: './recover-password.component.html',
+	styleUrls: ['./recover-password.component.css']
 })
 export default class RecoverPasswordComponent {
 	private authService = inject(AuthService)

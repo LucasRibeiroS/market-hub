@@ -39,7 +39,12 @@
         />
     }
 
-    @if (showError) {
-        <small class="field-error">{{ errorMessage }}</small>
-    }
+    <div class="input-footer">
+        @if (showError) {
+            <span class="field-error">{{ errorMessage }}</span>
+        } @else {
+            <span></span>  <!-- spacer to keep the link right-aligned -->
+        }
+        <ng-content select="[inputSuffix]" />
+    </div>
 </div>

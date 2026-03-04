@@ -1,25 +1,24 @@
 /* ============================================================
    AUTH BACKGROUND
 ============================================================ */
-.auth-bg {
-    min-height: 100vh;
-    width: 100%;
+.auth-layout {
+    height: 100vh;
+    width: 100vw;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--p-surface-50);
     background-image:
-        radial-gradient(circle at 20% 20%, rgba(255, 153, 0, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 153, 0, 0.04) 0%, transparent 50%);
-    padding: 2rem 1rem;
+        radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--p-primary-color) 7%, transparent) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, color-mix(in srgb, var(--p-primary-color) 5%, transparent) 0%, transparent 50%);
 }
 
 /* ============================================================
    WRAPPER (vertical stack: brand → card → footer)
 ============================================================ */
 .auth-wrapper {
-    display: flex;
     flex-direction: column;
+    display: flex;
     align-items: center;
     gap: 1.25rem;
     width: 100%;
@@ -106,32 +105,4 @@
 
 :host ::ng-deep .toggle-text a:hover {
     color: var(--p-primary-700);
-}
-
-:host ::ng-deep .forgot-password {
-    text-align: right;
-    margin: -0.75rem 0 1rem;
-}
-
-:host ::ng-deep .forgot-password a {
-    font-size: var(--font-size-label);
-    color: var(--p-surface-500);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color var(--transition-fast);
-}
-
-:host ::ng-deep .forgot-password a:hover {
-    color: var(--p-primary-600);
-}
-
-:host ::ng-deep .resend-code {
-    text-align: right;
-    margin: -0.75rem 0 1.25rem;
-    font-size: var(--font-size-label);
-    color: var(--p-surface-500);
-}
-
-:host ::ng-deep .resend-code app-button-text {
-    font-size: var(--font-size-label);
 }
