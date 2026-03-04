@@ -46,7 +46,7 @@ export class CreatePasswordReset implements IUseCase<T, K> {
 	async execute({ email }: T): Promise<K> {
 		const user = await this.usersRepository.findFirst({ email })
 		if (user === null) {
-			throw new NotFoundException('User not found')
+			throw new NotFoundException('Email not found')
 		}
 
 		const lastReset = await this.passwordResetsRepository.findLast({ user_id: user.id })
