@@ -20,6 +20,13 @@
     line-height: 1.4;
 }
 
+.dropdown-footer {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    min-height: 1.25rem; /* prevents layout shift when error appears */
+}
+
 /* ── Select trigger ─────────────────────────────────────── */
 :host ::ng-deep .p-select {
     width: 100%;
