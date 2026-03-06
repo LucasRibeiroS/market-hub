@@ -43,6 +43,19 @@ export class ListMarketplaceProviders implements IUseCase<T, K> {
 			is_active: true
 		})
 
-		return { providers }
+		return {
+			providers: providers.map(p => ({
+				...p,
+				auth_url: this.buildAuthUrl(p)
+			}))
+		}
+	}
+
+	private buildAuthUrl(provider: IMarketplaceProvider): string {
+		const url = new URL(provider.auth_url)
+		url.searchParams.append('client_id', provider.client_id)
+		url.searchParams.append('redirect_uri', provider.redirect_url)
+		url.searchParams.append('response_type', 'code')
+		return url.toString()
 	}
 }
