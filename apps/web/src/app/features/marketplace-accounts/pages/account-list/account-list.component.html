@@ -1,29 +1,97 @@
 <app-page-header
-    title="Minha conta"
-    description="Gerencie as informações do seu perfil e preferências da conta."
-/>
+    title="Suas integrações"
+    description="Conecte suas ferramentas favoritas em um só lugar."
+>
+    <app-button
+        label="Adicionar integração"
+        icon="pi pi-plus"
+        (click)="goToAdd()"
+    />
+</app-page-header>
 
-@if (currentUser$ | async; as user) {
-    <div class="account-card">
-        <div class="account-avatar">
-            <span class="avatar-initials">{{ user.name[0] }}</span>
-        </div>
-        <div class="account-info">
-            <span class="account-name">{{ user.name }}</span>
-            <span class="account-email">{{ user.email }}</span>
-        </div>
+<!-- Loading skeleton -->
+@if (isLoading()) {
+    <div class="integrations-grid">
+        @for (_ of skeletons; track $index) {
+            <div class="integration-card integration-card--skeleton">
+                <div class="card-body">
+                    <p-skeleton shape="circle" size="3rem" />
+                    <div class="card-info">
+                        <p-skeleton height="1rem" width="60%" styleClass="mb-2" />
+                        <p-skeleton height="0.75rem" width="80%" />
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <p-skeleton height="0.75rem" width="40%" />
+                    <p-skeleton height="0.75rem" width="3.5rem" />
+                </div>
+            </div>
+        }
     </div>
+}
 
-    <div class="danger-section">
-        <h2 class="danger-title">Zona de perigo</h2>
-        <p class="danger-description">Ao sair, sua sessão será encerrada neste dispositivo.</p>
+<!-- Empty state -->
+@else if (accounts().length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="pi pi-plug"></i>
+        </div>
+        <p class="empty-title">Nenhuma integração ainda</p>
+        <p class="empty-description">Adicione sua primeira integração para começar a sincronizar dados.</p>
         <app-button
-            label="Sair da conta"
-            severity="danger"
-            [outlined]="true"
-            [fluid]="false"
-            icon="pi pi-sign-out"
-            (onClick)="onLogout()"
+            label="Adicionar integração"
+            icon="pi pi-plus"
+            (click)="goToAdd()"
         />
+    </div>
+}
+
+<!-- Grid -->
+@else {
+    <div class="integrations-grid">
+        @for (account of accounts(); track account.id) {
+            <div
+                class="integration-card"
+                [class.integration-card--inactive]="account.status === AccountStatusEnum.disconnected || account.status === AccountStatusEnum.expired"
+            >
+                <!-- Card top: logo + name + status badge -->
+                <div class="card-body">
+                    <div class="provider-logo" [ngClass]="'provider-logo--' + account.provider.provider">
+                        <img
+                            [src]="getProviderLogo(account.provider.provider)"
+                            [alt]="account.provider.display_name + ' logo'"
+                            class="logo-img"
+                            loading="lazy"
+                        />
+                    </div>
+
+                    <span
+                        class="status-badge"
+                        [ngClass]="'status-badge--' + account.status"
+                    >
+                        <span class="status-dot"></span>
+                        {{ getStatusLabel(account.status) }}
+                    </span>
+                </div>
+
+                <!-- Name + provider -->
+                <div class="card-info">
+                    <span class="account-name">{{ account.external_id }}</span>
+                    <span class="account-meta">
+                        <i class="pi pi-user"></i>
+                        {{ account.external_email ?? account.external_id }}
+                    </span>
+                </div>
+
+                <!-- Footer: provider label + configure -->
+                <div class="card-footer">
+                    <span class="provider-label">{{ account.provider.display_name }}</span>
+                    <button class="config-btn" (click)="onConfigClick(account)">
+                        <i class="pi pi-cog"></i>
+                        Configurar
+                    </button>
+                </div>
+            </div>
+        }
     </div>
 }
