@@ -47,9 +47,6 @@ export class GetApiKey implements IUseCase<T, K> {
 	}
 }
 
-@Documentation({
-	request: Type.Index(Validator.schema, ['data'], { $id: 'api-keys/GetApiKeyRequest' })
-})
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		id: Type.String(),
