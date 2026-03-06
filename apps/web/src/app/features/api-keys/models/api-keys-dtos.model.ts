@@ -10,7 +10,6 @@ export type ListApiKeysResponse = {
 
 export type GetApiKeyResponse = { api_key: IApiKey }
 
-// TODO Change permissions from string[] to UserPermissions[]
 export type CreateApiKeyRequest = { permissions: string[] } & Pick<IApiKey, 'name'>
 export type CreateApiKeyResponse = {
 	api_key: { key: string } & IApiKey
@@ -18,7 +17,6 @@ export type CreateApiKeyResponse = {
 
 export type UpdateApiKeyRequest = Partial<{
 	name: string
-	// TODO Change permissions from string[] to UserPermissions[]
 	permissions: string[]
 	is_active: boolean
 }>
