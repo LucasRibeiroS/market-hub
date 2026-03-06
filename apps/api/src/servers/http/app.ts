@@ -28,6 +28,7 @@ import { usersRoutes } from '@http/routes/users_routes'
 import { productsRoutes } from '@http/routes/products_routes'
 import { variantsRoutes } from '@http/routes/variants_routes'
 import { marketplaceAccountRoutes } from '@http/routes/marketplace_account_routes'
+import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_routes'
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '@utils/cookies'
 import { defaultSchemas } from '@utils/fastify/schema'
@@ -139,6 +140,7 @@ class HttpServer {
 		this.app.register(productsRoutes)
 		this.app.register(variantsRoutes)
 		this.app.register(marketplaceAccountRoutes)
+		this.app.register(marketplaceProviderRoutes)
 	}
 
 	start() {

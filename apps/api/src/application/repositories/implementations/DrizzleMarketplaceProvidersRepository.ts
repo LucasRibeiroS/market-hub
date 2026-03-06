@@ -4,11 +4,21 @@ import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/cli
 import { marketplaceProviders } from '@integrator-packages/database/drizzle/tables'
 import { IMarketplaceProvider } from '@integrator-packages/database/entities'
 
-import { IFindFirstParams, IMarketplaceProvidersRepository } from '@repositories/IMarketplaceProvidersRepository'
+import { IFindFirstParams, IFindManyParams, IMarketplaceProvidersRepository } from '@repositories/IMarketplaceProvidersRepository'
 
 export class DrizzleMarketplaceProvidersRepository
 	extends DrizzleBaseRepository
 	implements IMarketplaceProvidersRepository {
+
+	private findManyQuery = this.drizzleClient.query.marketplaceProviders
+		.findMany({
+			where: eq(marketplaceProviders.is_active, sql.placeholder('is_active'))
+		})
+		.prepare('findManyMarketplaceProviders')
+
+	async findMany({ is_active }: IFindManyParams): Promise<IMarketplaceProvider[]> {
+		return await this.findManyQuery.execute({ is_active })
+	}
 
 	private findFirstQuery = this.drizzleClient.query.marketplaceProviders
 		.findFirst({
