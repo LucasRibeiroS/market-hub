@@ -24,4 +24,4 @@ export interface IPasswordResetsRepository {
 	update(params: IUpdateParams): Promise<IPasswordReset>
 }
 
-export const PasswordResetsRepositorySymbol = 'PasswordResetsRepository'
+export const PasswordResetsRepositorySymbol = Symbol('IPasswordResetsRepository')

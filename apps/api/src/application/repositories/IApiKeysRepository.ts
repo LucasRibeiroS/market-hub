@@ -34,4 +34,4 @@ export interface IApiKeysRepository {
 	delete(id: string): Promise<void>
 }
 
-export const ApiKeysRepositorySymbol = 'ApiKeysRepository'
+export const ApiKeysRepositorySymbol = Symbol('IApiKeysRepository')

@@ -8,4 +8,4 @@ export interface IEmailAdapter {
 	sendEmail(params: ISendEmailParams): Promise<string>
 }
 
-export const EmailAdapterSymbol = 'EmailAdapter'
+export const EmailAdapterSymbol = Symbol('IEmailAdapter')
