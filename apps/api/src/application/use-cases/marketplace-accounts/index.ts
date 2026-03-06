@@ -1,1 +1,5 @@
 export { CreateMarketplaceAccount } from './CreateMarketplaceAccount'
+export { DeleteMarketplaceAccount } from './DeleteMarketplaceAccount'
+export { GetMarketplaceAccount } from './GetMarketplaceAccount'
+export { ListMarketplaceAccounts } from './ListMarketplaceAccounts'
+export { UpdateMarketplaceAccount } from './UpdateMarketplaceAccount'

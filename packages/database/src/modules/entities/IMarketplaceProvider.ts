@@ -8,5 +8,6 @@ export type IMarketplaceProvider = {
 	token_url: string
 	client_id: string
 	client_secret: string
+	redirect_url: string
 	is_active: boolean
 }

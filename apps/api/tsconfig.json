@@ -29,6 +29,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"@adapters/*": ["src/application/adapters/*"],
+			"@factories/*": ["src/application/factories/*"],
 			"@entities": ["src/application/entities/index.ts"],
 			"@entities/*": ["src/application/entities/*"],
 			"@repositories/*": ["src/application/repositories/*"],

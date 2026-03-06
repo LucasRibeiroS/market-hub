@@ -73,24 +73,25 @@ export const variants = pgTable('variants', {
 // Marketplace management
 export const marketplaceProviders = pgTable('marketplace_providers', {
 	id: text().primaryKey().$defaultFn(() => `mktp_${generateId()}`),
-	provider: provider().notNull().unique(),
+	provider: provider().notNull(),
 	display_name: text().notNull(),
 	auth_url: text().notNull(),
 	token_url: text().notNull(),
 	client_id: text().notNull(),
 	client_secret: text().notNull(),
-	is_active: boolean().default(true)
+	redirect_url: text().notNull(),
+	is_active: boolean().notNull().default(true)
 })
 
 export const marketplaceAccounts = pgTable('marketplace_accounts', {
 	id: text().primaryKey().$defaultFn(() => `mktacc_${generateId()}`),
 	user_id: text().notNull().references(() => users.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
-	provider: provider().notNull().references(() => marketplaceProviders.provider, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	provider_id: text().notNull().references(() => marketplaceProviders.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
 	external_id: text().notNull(),
 	external_email: text(),
 	status: accountStatus().notNull().default('active'),
 	...timestamps
-}, table => [index().using('btree', table.user_id, table.provider)])
+}, table => [index().using('btree', table.user_id, table.provider_id)])
 
 export const marketplaceCredentials = pgTable('marketplace_credentials', {
 	id: text().primaryKey().$defaultFn(() => `mktcred_${generateId()}`),

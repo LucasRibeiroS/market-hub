@@ -1,6 +1,6 @@
 import { Static, TSchema, Type } from '@sinclair/typebox'
 
-import { AccountStatusEnum, IApiKey, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IApiKey, IMarketplaceAccount, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
 
 import { Permissions } from '@utils/permissions'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
@@ -64,6 +64,18 @@ export const apiKeyJsonSchema = createSchema(Type.Object({
 }), 'entities/IApiKey')
 type ApplicationApiKey = CustomOmit<IApiKey, 'encrypted_key' | 'key_lookup'>
 assertTypes<Static<typeof apiKeyJsonSchema>, SetDateAsString<ApplicationApiKey, 'created_at' | 'updated_at'>>()
+
+export const marketplaceAccountJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	user_id: Type.String({ readOnly: true }),
+	provider_id: Type.String({ readOnly: true }),
+	external_id: Type.String({ readOnly: true }),
+	external_email: TNullable(Type.String({ readOnly: true })),
+	status: Type.Ref(accountStatusEnumSchema.$id),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IMarketplaceAccount')
+assertTypes<Static<typeof marketplaceAccountJsonSchema>, SetDateAsString<IMarketplaceAccount, 'created_at' | 'updated_at'>>()
 
 export const userJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
@@ -149,6 +161,7 @@ export const getAllSchemas = () => [
 	permissionsEnumSchema,
 	userJsonSchema,
 	apiKeyJsonSchema,
+	marketplaceAccountJsonSchema,
 	productJsonSchema,
 	variantJsonSchema,
 	marketplaceListingJsonSchema,

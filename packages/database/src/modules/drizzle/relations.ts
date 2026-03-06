@@ -30,8 +30,8 @@ export const marketplaceProvidersRelations = relations(marketplaceProviders, ({ 
 
 export const marketplaceAccountsRelations = relations(marketplaceAccounts, ({ one, many }) => ({
 	provider: one(marketplaceProviders, {
-		fields: [marketplaceAccounts.provider],
-		references: [marketplaceProviders.provider]
+		fields: [marketplaceAccounts.provider_id],
+		references: [marketplaceProviders.id]
 	}),
 	credentials: one(marketplaceCredentials, {
 		fields: [marketplaceAccounts.id],

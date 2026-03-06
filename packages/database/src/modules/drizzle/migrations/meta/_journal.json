@@ -71,6 +71,13 @@
       "when": 1771772925756,
       "tag": "20260222150845_add_is_active_to_api_keys_table",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1772811213564,
+      "tag": "20260306153333_add_redirect_url_and_refactor_marketplace_accounts_fk_to_provider_id",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,9 @@
-import { AccountStatus, Provider } from '@entities/enums'
+import { AccountStatus } from '@entities/enums'
 
 export type IMarketplaceAccount = {
 	id: string
 	user_id: string
-	provider: Provider
+	provider_id: string
 	external_id: string
 	external_email: string | null
 	status: AccountStatus
