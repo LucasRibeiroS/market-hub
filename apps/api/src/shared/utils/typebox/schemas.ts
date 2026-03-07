@@ -34,21 +34,21 @@ export const accountStatusEnumSchema = createSchema(TEnumObject(AccountStatusEnu
 	expired: 'The account connection has expired and needs re-authorization',
 	revoked: 'The account access has been revoked by the marketplace',
 	error: 'There was an error with the account connection'
-}), 'enums/AccountStatusEnum')
+}), '/enums/AccountStatusEnum')
 export const listingStatusEnumSchema = createSchema(TEnumObject(ListingStatusEnum, {
 	pending: 'The listing is pending synchronization',
 	active: 'The listing is active on the marketplace',
 	paused: 'The listing is paused on the marketplace',
 	error: 'There was an error with the listing synchronization'
-}), 'enums/ListingStatusEnum')
+}), '/enums/ListingStatusEnum')
 export const providerEnumSchema = createSchema(TEnumObject(ProviderEnum, {
 	mercado_livre: 'Mercado Livre - Marketplace de vendas online',
 	magalu: 'Magazine Luiza - Marketplace de vendas online'
-}), 'enums/ProviderEnum')
+}), '/enums/ProviderEnum')
 export const permissionsEnumSchema = createSchema(TEnumObject(Permissions.user, {
 	products: 'Manage products and variants',
 	webhooks: 'Manage webhooks'
-}), 'enums/PermissionsEnum')
+}), '/enums/PermissionsEnum')
 
 // Models
 // User management
