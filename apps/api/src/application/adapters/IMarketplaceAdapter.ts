@@ -1,6 +1,6 @@
 import { IMarketplaceAccount, IMarketplaceCredential, IMarketplaceProvider, Provider } from '@integrator-packages/database/entities'
 
-type ProviderClientConfig = Pick<IMarketplaceProvider, 'client_id' | 'client_secret' | 'redirect_url'>
+type ProviderClientConfig = Pick<IMarketplaceProvider, 'client_id' | 'client_secret' | 'redirect_uri' | 'base_url'>
 
 export type OAuthCredentials = Pick<
 	IMarketplaceCredential,

@@ -100,7 +100,7 @@ export const marketplaceCredentials = pgTable('marketplace_credentials', {
 	refresh_token: text().notNull(),
 	access_token_expires_at: timestamp(timestampConfig).notNull(),
 	refresh_token_expires_at: timestamp(timestampConfig).notNull(),
-	scopes: jsonb('scopes'),
+	scopes: jsonb('scopes').$type<Record<string, unknown>>(), // Ex: { "read_orders": true, "write_products": true }
 	token_type: text('token_type').default('Bearer')
 }, table => [uniqueIndex().using('btree', table.account_id)])
 

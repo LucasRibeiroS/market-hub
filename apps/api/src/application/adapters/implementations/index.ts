@@ -1,3 +1,3 @@
 export * from './MagaluAdapter'
-export * from './MercadoLivreAdapter'
+export * from './mercado-livre/MercadoLivreAdapter'
 export * from './SmtpEmailAdapter'

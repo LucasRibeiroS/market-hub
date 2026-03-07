@@ -9,6 +9,7 @@ import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/valid
 import { Documentation } from '@integrator-packages/use-case/documentation'
 
 import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
+import { IMarketplaceCredentialsRepository, MarketplaceCredentialsRepositorySymbol } from '@repositories/IMarketplaceCredentialsRepository'
 import { IMarketplaceProvidersRepository, MarketplaceProvidersRepositorySymbol } from '@repositories/IMarketplaceProvidersRepository'
 
 import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
@@ -40,6 +41,8 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 	constructor(
 		@inject(MarketplaceAccountsRepositorySymbol)
 		private marketplaceAccountsRepository: IMarketplaceAccountsRepository,
+		@inject(MarketplaceCredentialsRepositorySymbol)
+		private marketplaceCredentialsRepository: IMarketplaceCredentialsRepository,
 		@inject(MarketplaceProvidersRepositorySymbol)
 		private marketplaceProvidersRepository: IMarketplaceProvidersRepository,
 		@inject(MarketplaceAdapterFactorySymbol)
@@ -59,8 +62,6 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 		const adapter = this.marketplaceAdapterFactory.get(provider)
 
 		const { account, credentials } = await adapter.exchangeCode({ code, provider: mktProvider })
-		// TODO Create credentials
-		console.log('Received credentials from marketplace adapter:', credentials)
 
 		const mktAccount = await this.marketplaceAccountsRepository.create({
 			user_id: user_id,
@@ -68,6 +69,16 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 			external_id: account.external_id,
 			external_email: account.external_email,
 			status: AccountStatusEnum.active
+		})
+
+		await this.marketplaceCredentialsRepository.create({
+			account_id: mktAccount.id,
+			access_token: credentials.access_token,
+			access_token_expires_at: credentials.access_token_expires_at,
+			refresh_token: credentials.refresh_token,
+			refresh_token_expires_at: credentials.refresh_token_expires_at,
+			scopes: credentials.scopes,
+			token_type: credentials.token_type
 		})
 
 		return { account: mktAccount }

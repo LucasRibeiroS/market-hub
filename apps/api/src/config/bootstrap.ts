@@ -16,6 +16,7 @@ import { MarketplaceAdapterFactory } from '@factories/implementations'
 
 import { ApiKeysRepositorySymbol } from '@repositories/IApiKeysRepository'
 import { MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
+import { MarketplaceCredentialsRepositorySymbol } from '@repositories/IMarketplaceCredentialsRepository'
 import { MarketplaceProvidersRepositorySymbol } from '@repositories/IMarketplaceProvidersRepository'
 import { PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
 import { UsersRepositorySymbol } from '@repositories/IUsersRepository'
@@ -25,6 +26,7 @@ import { VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
 import {
 	DrizzleApiKeysRepository,
 	DrizzleMarketplaceAccountsRepository,
+	DrizzleMarketplaceCredentialsRepository,
 	DrizzleMarketplaceProvidersRepository,
 	DrizzlePasswordResetsRepository,
 	DrizzleProductsRepository,
@@ -46,6 +48,7 @@ container.register(MarketplaceAdapterFactorySymbol, MarketplaceAdapterFactory)
 // Register repositories dependencies
 container.register(ApiKeysRepositorySymbol, DrizzleApiKeysRepository)
 container.register(MarketplaceAccountsRepositorySymbol, DrizzleMarketplaceAccountsRepository)
+container.register(MarketplaceCredentialsRepositorySymbol, DrizzleMarketplaceCredentialsRepository)
 container.register(MarketplaceProvidersRepositorySymbol, DrizzleMarketplaceProvidersRepository)
 container.register(PasswordResetsRepositorySymbol, DrizzlePasswordResetsRepository)
 container.register(UsersRepositorySymbol, DrizzleUsersRepository)
