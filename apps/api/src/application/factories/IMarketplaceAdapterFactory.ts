@@ -6,4 +6,4 @@ export interface IMarketplaceAdapterFactory {
 	get(provider: Provider): IMarketplaceAdapter
 }
 
-export const MarketplaceAdapterFactorySymbol = Symbol('MarketplaceAdapterFactory')
+export const MarketplaceAdapterFactorySymbol = Symbol('IMarketplaceAdapterFactory')
