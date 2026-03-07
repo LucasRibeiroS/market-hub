@@ -78,6 +78,13 @@
       "when": 1772811213564,
       "tag": "20260306153333_add_redirect_url_and_refactor_marketplace_accounts_fk_to_provider_id",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1772847196035,
+      "tag": "20260307013316_rename_marketplace_providers_table_columns",
+      "breakpoints": true
     }
   ]
 }

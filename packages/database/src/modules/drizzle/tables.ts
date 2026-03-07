@@ -75,12 +75,12 @@ export const marketplaceProviders = pgTable('marketplace_providers', {
 	id: text().primaryKey().$defaultFn(() => `mktp_${generateId()}`),
 	provider: provider().notNull(),
 	display_name: text().notNull(),
-	auth_url: text().notNull(),
-	token_url: text().notNull(),
+	is_active: boolean().notNull().default(true),
 	client_id: text().notNull(),
 	client_secret: text().notNull(),
-	redirect_url: text().notNull(),
-	is_active: boolean().notNull().default(true)
+	redirect_uri: text().notNull(),
+	base_url: text().notNull(),
+	auth_url: text().notNull()
 })
 
 export const marketplaceAccounts = pgTable('marketplace_accounts', {

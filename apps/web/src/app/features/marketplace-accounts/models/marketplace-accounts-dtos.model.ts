@@ -1,4 +1,5 @@
-import { IMarketplaceAccount, IMarketplaceProvider, Provider } from '@features/marketplace-accounts/models/marketplace-account.model'
+import { IMarketplaceAccount } from '@features/marketplace-accounts/models/marketplace-account.model'
+import { IMarketplaceProvider, Provider } from '@features/marketplace-accounts/models/marketplace-provider.model'
 
 import { IPagination, IPaginator } from '@shared/utils/pagination'
 
@@ -11,10 +12,13 @@ export type ListMarketplaceAccountsResponse = {
 }
 
 export type CreateMarketplaceAccountRequest = {
-	user_id: string
 	provider: Provider
-	code: string // The code received from the marketplace after the user authorizes our app.
+	code: string
 }
 export type CreateMarketplaceAccountResponse = {
 	account: IMarketplaceAccount
+}
+
+export type ListMarketplaceProvidersResponse = {
+	providers: Pick<IMarketplaceProvider, 'provider' | 'display_name' | 'auth_url'>[]
 }

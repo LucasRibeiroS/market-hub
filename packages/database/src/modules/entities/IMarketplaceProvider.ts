@@ -4,10 +4,10 @@ export type IMarketplaceProvider = {
 	id: string
 	provider: Provider
 	display_name: string
-	auth_url: string
-	token_url: string
+	is_active: boolean
 	client_id: string
 	client_secret: string
-	redirect_url: string
-	is_active: boolean
+	redirect_uri: string
+	base_url: string
+	auth_url: string
 }
