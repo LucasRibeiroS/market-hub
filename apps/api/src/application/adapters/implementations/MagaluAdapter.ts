@@ -5,6 +5,8 @@ import { Provider } from '@integrator-packages/database/entities'
 import {
 	IExchangeCodeParams,
 	IExchangeCodeResponse,
+	IGetUserInfoParams,
+	IGetUserInfoResponse,
 	IMarketplaceAdapter,
 	IRefreshTokenParams,
 	IRefreshTokenResponse,
@@ -17,6 +19,10 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 	readonly provider: Provider = 'magalu'
 
 	async exchangeCode(_params: IExchangeCodeParams): Promise<IExchangeCodeResponse> {
+		throw new Error('Not implemented')
+	}
+
+	async getUserInfo(_params: IGetUserInfoParams): Promise<IGetUserInfoResponse> {
 		throw new Error('Not implemented')
 	}
 

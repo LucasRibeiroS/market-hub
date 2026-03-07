@@ -16,4 +16,12 @@ export class MercadoLivreClient extends BaseHttpClient {
 			{ 'Authorization': `${credentials.token_type} ${credentials.access_token}` }
 		)
 	}
+
+	updateCredentials(credentials: Pick<IMarketplaceCredential, 'access_token' | 'token_type'>): void {
+		if (credentials.token_type !== 'Bearer') {
+			throw new Error(`Unsupported token type: ${credentials.token_type}`)
+		}
+
+		this.defaultHeaders['Authorization'] = `${credentials.token_type} ${credentials.access_token}`
+	}
 }

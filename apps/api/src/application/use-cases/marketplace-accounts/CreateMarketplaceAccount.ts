@@ -61,7 +61,8 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 
 		const adapter = this.marketplaceAdapterFactory.get(provider)
 
-		const { account, credentials } = await adapter.exchangeCode({ code, provider: mktProvider })
+		const { credentials } = await adapter.exchangeCode({ code, provider: mktProvider })
+		const { account } = await adapter.getUserInfo({ credentials, provider: mktProvider })
 
 		const mktAccount = await this.marketplaceAccountsRepository.create({
 			user_id: user_id,

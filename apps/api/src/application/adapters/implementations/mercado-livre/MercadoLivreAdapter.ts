@@ -9,6 +9,8 @@ import { MercadoLivreClient } from '@adapters/implementations/mercado-livre/Merc
 import {
 	IExchangeCodeParams,
 	IExchangeCodeResponse,
+	IGetUserInfoParams,
+	IGetUserInfoResponse,
 	IMarketplaceAdapter,
 	IRefreshTokenParams,
 	IRefreshTokenResponse,
@@ -36,16 +38,12 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 			code
 		}
 
-		const [response, error] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
-		if (error) {
-			throw new FailedDependencyException(`Mercado Livre exchange code error: ${error.message}`)
+		const [response, err] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
+		if (err) {
+			throw new FailedDependencyException(`Mercado Livre exchange code error: ${err.message}`)
 		}
 
 		return {
-			account: {
-				external_id: response.user_id.toString(),
-				external_email: null // Mercado Livre does not return email in token response
-			},
 			credentials: {
 				access_token: response.access_token,
 				access_token_expires_at: addSeconds(new Date(), response.expires_in),
@@ -54,6 +52,22 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 				refresh_token_expires_at: addDays(new Date(), 60),
 				scopes: response.scope.split(' ').reduce((acc, scope) => ({ ...acc, [scope]: true }), {}),
 				token_type: response.token_type
+			}
+		}
+	}
+
+	async getUserInfo({ credentials, provider }: IGetUserInfoParams): Promise<IGetUserInfoResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const [response, err] = await client.get<IUserResponse>('/users/me')
+		if (err) {
+			throw new FailedDependencyException(`Mercado Livre get user info error: ${err.message}`)
+		}
+
+		return {
+			account: {
+				external_id: response.id.toString(),
+				external_email: response.email
 			}
 		}
 	}
@@ -69,6 +83,8 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	private getClient({ base_url, credentials }: IGetClientParams): MercadoLivreClient {
 		if (!this.client) {
 			this.client = new MercadoLivreClient(base_url, credentials)
+		} else {
+			this.client.updateCredentials(credentials)
 		}
 
 		return this.client
@@ -90,6 +106,11 @@ type IOAuthTokenResponse = {
 	scope: string
 	user_id: number
 	refresh_token: string
+}
+
+type IUserResponse = {
+	id: number
+	email: string
 }
 
 type IGetClientParams = {

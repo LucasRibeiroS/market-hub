@@ -17,8 +17,15 @@ export type IExchangeCodeParams = {
 	provider: ProviderClientConfig
 }
 export type IExchangeCodeResponse = {
-	account: Pick<IMarketplaceAccount, 'external_id' | 'external_email'>
 	credentials: OAuthCredentials
+}
+
+export type IGetUserInfoParams = {
+	credentials: OAuthCredentials
+	provider: ProviderClientConfig
+}
+export type IGetUserInfoResponse = {
+	account: Pick<IMarketplaceAccount, 'external_id' | 'external_email'>
 }
 
 export type IRefreshTokenParams = {
@@ -42,6 +49,7 @@ export interface IMarketplaceAdapter {
 	readonly provider: Provider
 
 	exchangeCode(params: IExchangeCodeParams): Promise<IExchangeCodeResponse>
+	getUserInfo(params: IGetUserInfoParams): Promise<IGetUserInfoResponse>
 	refreshToken(params: IRefreshTokenParams): Promise<IRefreshTokenResponse>
 	revokeAuthorization(params: IRevokeAuthorizationParams): Promise<IRevokeAuthorizationResponse>
 }
