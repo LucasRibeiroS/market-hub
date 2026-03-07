@@ -54,7 +54,7 @@ export class ListMarketplaceProviders implements IUseCase<T, K> {
 	private buildAuthUrl(provider: IMarketplaceProvider): string {
 		const url = new URL(provider.auth_url)
 		url.searchParams.append('client_id', provider.client_id)
-		url.searchParams.append('redirect_uri', provider.redirect_url)
+		url.searchParams.append('redirect_uri', provider.redirect_uri)
 		url.searchParams.append('response_type', 'code')
 		return url.toString()
 	}
