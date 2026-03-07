@@ -30,7 +30,7 @@ export default class RecoverPasswordComponent {
 		email: new FormControl('', [Validators.required, Validators.email]),
 		code: new FormControl(''),
 		password: new FormControl('')
-	}, { updateOn: 'blur' })
+	}, { updateOn: 'submit' })
 
 	currentStep = signal<'code' | 'reset'>('code')
 	isLoading = signal(false)

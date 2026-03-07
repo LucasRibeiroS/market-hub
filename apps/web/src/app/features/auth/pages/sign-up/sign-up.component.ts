@@ -28,7 +28,7 @@ export default class SignUpComponent {
 		name: new FormControl('', [Validators.required, Validators.minLength(3)]),
 		email: new FormControl('', [Validators.required, Validators.email]),
 		password: new FormControl('', [Validators.required, Validators.minLength(6)])
-	}, { updateOn: 'blur' })
+	}, { updateOn: 'submit' })
 
 	isLoading = signal(false)
 
