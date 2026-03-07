@@ -1,0 +1,26 @@
+@if (isLoading()) {
+    <div class="callback-state">
+        <p-progressSpinner
+            strokeWidth="4"
+            animationDuration="0.8s"
+            [style]="{ width: '3rem', height: '3rem' }"
+        />
+        <p class="callback-title">Conectando sua conta...</p>
+        <p class="callback-description">Aguarde enquanto completamos a autorização.</p>
+    </div>
+}
+
+@else if (hasError()) {
+    <div class="callback-state callback-state--error">
+        <div class="error-icon">
+            <i class="pi pi-times-circle"></i>
+        </div>
+        <p class="callback-title">Falha na conexão</p>
+        <p class="callback-description">{{ errorMessage() }}</p>
+        <app-button
+            label="Tentar novamente"
+            icon="pi pi-refresh"
+            (click)="retry()"
+        />
+    </div>
+}

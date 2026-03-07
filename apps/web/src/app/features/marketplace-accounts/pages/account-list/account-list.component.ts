@@ -4,29 +4,12 @@ import { CommonModule } from '@angular/common'
 import { Router } from '@angular/router'
 import { SkeletonModule } from 'primeng/skeleton'
 
-import { AccountStatus, AccountStatusEnum, IMarketplaceAccount, ListMarketplaceAccountsResponse, Provider } from '@features/marketplace-accounts/models'
-import { MarketplaceAccountsService } from '@features/marketplace-accounts/services/marketplace-accounts.service'
+import { AccountStatusEnum, IMarketplaceAccount, ListMarketplaceAccountsResponse } from '@features/marketplace-accounts/models'
+import { MarketplaceAccountsService } from '@features/marketplace-accounts/services'
+import { AccountStatusPipe, ProviderLogoPipe } from '@features/marketplace-accounts/pipes'
 
 import { ButtonComponent, PageHeaderComponent } from '@shared/components'
 import { withLoadingDelay } from '@shared/utils/loading-delay'
-
-const PROVIDER_META: Record<Provider, { name: string, logo: string }> = {
-	mercado_livre: {
-		name: 'Mercado Livre',
-		logo: 'providers/mercado-livre.svg'
-	},
-	magalu: {
-		name: 'Magazine Luiza',
-		logo: 'providers/magalu.svg'
-	}
-}
-const STATUS_LABELS: Record<AccountStatus, string> = {
-	active: 'Ativa',
-	disconnected: 'Desconectada',
-	expired: 'Expirada',
-	revoked: 'Revogada',
-	error: 'Erro na conexão'
-}
 
 @Component({
 	selector: 'app-integrations',
@@ -35,7 +18,9 @@ const STATUS_LABELS: Record<AccountStatus, string> = {
 		CommonModule,
 		SkeletonModule,
 		ButtonComponent,
-		PageHeaderComponent
+		PageHeaderComponent,
+		ProviderLogoPipe,
+		AccountStatusPipe
 	],
 	templateUrl: './account-list.component.html',
 	styleUrl: './account-list.component.css'
@@ -68,16 +53,8 @@ export class AccountListComponent implements OnInit {
 			.subscribe()
 	}
 
-	getProviderLogo(provider: Provider): string {
-		return PROVIDER_META[provider]?.logo ?? ''
-	}
-
-	getStatusLabel(status: AccountStatus): string {
-		return STATUS_LABELS[status] ?? status
-	}
-
-	goToAdd(): void {
-		this.router.navigate(['/integrations/add'])
+	navigateToConnect(): void {
+		this.router.navigate(['/integrations/connect'])
 	}
 
 	onConfigClick(account: IMarketplaceAccount): void {

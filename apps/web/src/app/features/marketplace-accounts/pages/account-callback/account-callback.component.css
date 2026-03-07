@@ -1,0 +1,29 @@
+.callback-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 6rem 2rem;
+    text-align: center;
+    color: var(--p-surface-500);
+}
+
+.callback-state--error .error-icon {
+    font-size: 3rem;
+    color: var(--p-red-500);
+    opacity: 0.8;
+}
+
+.callback-title {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--p-surface-700);
+    margin: 0;
+}
+
+.callback-description {
+    font-size: var(--text-sm);
+    margin: 0;
+    max-width: 28rem;
+}

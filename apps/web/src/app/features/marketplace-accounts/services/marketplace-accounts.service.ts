@@ -4,7 +4,12 @@ import { Injectable } from '@angular/core'
 
 import { environment } from '@env/environment'
 
-import { ListMarketplaceAccountsRequest, ListMarketplaceAccountsResponse } from '@features/marketplace-accounts/models/marketplace-accounts-dtos.model'
+import {
+	CreateMarketplaceAccountRequest,
+	CreateMarketplaceAccountResponse,
+	ListMarketplaceAccountsRequest,
+	ListMarketplaceAccountsResponse
+} from '@features/marketplace-accounts/models'
 
 @Injectable({ providedIn: 'root' })
 export class MarketplaceAccountsService {
@@ -14,5 +19,9 @@ export class MarketplaceAccountsService {
 
 	list(data: ListMarketplaceAccountsRequest): Observable<ListMarketplaceAccountsResponse> {
 		return this.http.get<ListMarketplaceAccountsResponse>(this.apiUrl, { params: data })
+	}
+
+	create(data: CreateMarketplaceAccountRequest): Observable<CreateMarketplaceAccountResponse> {
+		return this.http.post<CreateMarketplaceAccountResponse>(this.apiUrl, data)
 	}
 }

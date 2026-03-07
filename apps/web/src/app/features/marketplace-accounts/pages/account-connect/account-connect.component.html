@@ -1,0 +1,67 @@
+<app-page-header
+    title="Adicionar integração"
+    description="Selecione o marketplace que deseja conectar à sua conta."
+    [showBackButton]="true"
+    (backClick)="goBack()"
+/>
+
+<!-- Loading skeleton -->
+@if (isLoading()) {
+    <div class="providers-grid">
+        @for (_ of skeletons; track $index) {
+            <div class="provider-card provider-card--skeleton">
+                <div class="card-body">
+                    <p-skeleton shape="circle" size="3.5rem" />
+                    <div class="card-info">
+                        <p-skeleton height="1rem" width="50%" styleClass="mb-2" />
+                        <p-skeleton height="0.75rem" width="70%" />
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <p-skeleton height="2.25rem" width="100%" borderRadius="8px" />
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Empty state -->
+@else if (providers().length === 0) {
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="pi pi-plug"></i>
+        </div>
+        <p class="empty-title">Nenhum provedor disponível</p>
+        <p class="empty-description">Não há marketplaces configurados no momento. Tente novamente mais tarde.</p>
+    </div>
+}
+
+<!-- Provider cards -->
+@else {
+    <div class="providers-grid">
+        @for (provider of providers(); track provider.provider) {
+            <div class="provider-card">
+                <div class="card-body">
+                    <div class="provider-logo" [ngClass]="'provider-logo--' + provider.provider">
+                        <img
+                            [src]="provider.provider | providerLogo"
+                            [alt]="provider.display_name + ' logo'"
+                            class="logo-img"
+                            loading="lazy"
+                        />
+                    </div>
+                    <div class="card-info">
+                        <span class="provider-name">{{ provider.display_name }}</span>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <app-button
+                        label="Conectar"
+                        icon="pi pi-link"
+                        (click)="connect(provider)"
+                    />
+                </div>
+            </div>
+        }
+    </div>
+}
