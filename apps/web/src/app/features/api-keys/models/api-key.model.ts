@@ -1,12 +1,3 @@
-export interface ApiKey {
-	id: string
-	name: string
-	prefix: string
-	createdAt: Date
-	expiresAt: Date | null
-	lastUsedAt: Date | null
-}
-
 export type IApiKey = {
 	id: string
 	user_id: string
