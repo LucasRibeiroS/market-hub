@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 
 import { IWrappedUseCase } from '@integrator-packages/use-case'
 
-import { GenericRequest } from '@utils/fastify/types'
+import { GenericRequest } from '@http/utils/types'
 
 declare module 'fastify' {
 	export interface FastifyReply {

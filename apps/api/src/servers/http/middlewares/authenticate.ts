@@ -4,11 +4,11 @@ import { container } from 'tsyringe'
 
 import { isHttpException, UnauthorizedException } from '@integrator-packages/use-case/exceptions'
 
-import { GenericMiddleware, GenericRequest } from '@utils/fastify/types'
 import { Permissions } from '@utils/permissions'
 import { hash } from '@utils/cryptography'
 import { verifyAccessToken } from '@utils/jwt'
-import { ACCESS_TOKEN_COOKIE_NAME } from '@utils/cookies'
+import { ACCESS_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
+import { GenericMiddleware, GenericRequest } from '@http/utils/types'
 
 import { IUsersRepository, UsersRepositorySymbol } from '@repositories/IUsersRepository'
 import { ApiKeysRepositorySymbol, IApiKeysRepository } from '@repositories/IApiKeysRepository'

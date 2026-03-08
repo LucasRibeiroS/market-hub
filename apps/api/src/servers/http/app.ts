@@ -30,8 +30,8 @@ import { variantsRoutes } from '@http/routes/variants_routes'
 import { marketplaceAccountRoutes } from '@http/routes/marketplace_account_routes'
 import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_routes'
 
-import { ACCESS_TOKEN_COOKIE_NAME } from '@utils/cookies'
-import { defaultSchemas } from '@utils/fastify/schema'
+import { ACCESS_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
+import { defaultSchemas } from '@http/utils/schema'
 
 class HttpServer {
 	private app: FastifyInstance

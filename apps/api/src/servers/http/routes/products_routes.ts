@@ -1,4 +1,4 @@
-import { registerRoutes } from '@utils/fastify/routes'
+import { registerRoutes } from '@http/utils/routes'
 
 import { CreateProduct, GetProduct, ListProducts } from '@use-cases/products'
 import { BulkCreateVariants, BulkDeleteVariants } from '@use-cases/variants'

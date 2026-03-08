@@ -1,4 +1,4 @@
-import { registerRoutes } from '@utils/fastify/routes'
+import { registerRoutes } from '@http/utils/routes'
 
 import { CreateApiKey, DeleteApiKey, GetApiKey, ListApiKeys, UpdateApiKey } from '@use-cases/api-keys'
 

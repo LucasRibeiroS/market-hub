@@ -6,9 +6,9 @@ import { ServerErrorException } from '@integrator-packages/use-case/exceptions'
 
 import { env } from '@config/env'
 
-import { ACCESS_TOKEN_COOKIE_NAME, IS_AUTHENTICATED_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '@utils/cookies'
 import { determineTokenExpiration, getTokens } from '@utils/jwt'
-import { GenericRequest } from '@utils/fastify/types'
+import { ACCESS_TOKEN_COOKIE_NAME, IS_AUTHENTICATED_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
+import { GenericRequest } from '@http/utils/types'
 
 declare module 'fastify' {
 	export interface FastifyReply {

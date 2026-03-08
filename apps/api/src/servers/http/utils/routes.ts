@@ -8,7 +8,7 @@ import { AuthenticationMethods } from '@http/middlewares/authenticate'
 import { applyUseCase, IApplyUseCaseOptions } from '@http/middlewares/apply_use_case'
 import { applyAuthUseCase, IApplyAuthUseCaseOptions } from '@http/middlewares/apply_auth_use_case'
 
-import { getFullSchema } from '@utils/fastify/schema'
+import { getFullSchema } from '@http/utils/schema'
 
 type IRoute = {
 	method: 'post' | 'get' | 'put' | 'delete' | 'patch'
