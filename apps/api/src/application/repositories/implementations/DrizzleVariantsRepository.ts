@@ -11,7 +11,7 @@ export class DrizzleVariantsRepository extends DrizzleBaseRepository implements 
 		.findFirst({
 			where: eq(variants.sku, sql.placeholder('sku'))
 		})
-		.prepare('findFirstVariantBySku')
+		.prepare('findFirstVariant')
 
 	async findMany({ user_id, product_id, sku }: IFindManyParams): Promise<IFindManyResponse> {
 		return await this.drizzleClient.query.variants.findMany({
