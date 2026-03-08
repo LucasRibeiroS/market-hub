@@ -8,6 +8,7 @@ import { schemas } from '@integrator-packages/use-case/schemas'
 import { getAllSchemas } from '@utils/typebox'
 
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
+import { ConsoleLoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters/logger'
 import { MarketplaceAdapterSymbol } from '@adapters/IMarketplaceAdapter'
 import { MagaluAdapter, MercadoLivreAdapter, SmtpEmailAdapter } from '@adapters/implementations'
 
@@ -39,6 +40,7 @@ schemas.register(getAllSchemas())
 
 // Register adapters dependencies
 container.register(EmailAdapterSymbol, SmtpEmailAdapter)
+container.register(LoggerAdapterSymbol, ConsoleLoggerAdapter)
 container.register(MarketplaceAdapterSymbol, MagaluAdapter)
 container.register(MarketplaceAdapterSymbol, MercadoLivreAdapter)
 

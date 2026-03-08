@@ -29,7 +29,7 @@ export type IGetUserInfoResponse = {
 }
 
 export type IRefreshTokenParams = {
-	credentials: OAuthCredentials
+	refresh_token: string
 	provider: ProviderClientConfig
 }
 export type IRefreshTokenResponse = {

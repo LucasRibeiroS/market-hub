@@ -1,8 +1,11 @@
 import { addDays, addSeconds } from 'date-fns'
-import { injectable } from 'tsyringe'
+import { inject, injectable } from 'tsyringe'
 
 import { IMarketplaceCredential, IMarketplaceProvider, Provider } from '@integrator-packages/database/entities'
+import { ILoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters'
 import { FailedDependencyException } from '@integrator-packages/use-case/exceptions'
+
+import { Union } from '@utils/types'
 
 import { MercadoLivreClient } from '@adapters/implementations/mercado-livre/MercadoLivreClient'
 
@@ -23,6 +26,11 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	readonly provider: Provider = 'mercado_livre'
 	private client: MercadoLivreClient
 
+	constructor(
+		@inject(LoggerAdapterSymbol)
+		private readonly loggerAdapter: ILoggerAdapter
+	) {}
+
 	async exchangeCode({ code, provider }: IExchangeCodeParams): Promise<IExchangeCodeResponse> {
 		const client = this.getClient({
 			base_url: provider.base_url,
@@ -38,20 +46,21 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 			code
 		}
 
-		const [response, err] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
+		const [res, err] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
 		if (err) {
-			throw new FailedDependencyException(`Mercado Livre exchange code error: ${err.message}`)
+			this.loggerAdapter.error(`Mercado Livre exchange code error: ${err.message}`)
+			throw new FailedDependencyException('Failed to exchange code for mercado livre')
 		}
 
 		return {
 			credentials: {
-				access_token: response.access_token,
-				access_token_expires_at: addSeconds(new Date(), response.expires_in),
-				refresh_token: response.refresh_token,
+				access_token: res.access_token,
+				access_token_expires_at: addSeconds(new Date(), res.expires_in),
+				refresh_token: res.refresh_token,
 				// Mercado livre refresh tokens may have a longer expiration, but if it statys invalid for 60 days, it's likely to be expired or revoked
 				refresh_token_expires_at: addDays(new Date(), 60),
-				scopes: response.scope.split(' ').reduce((acc, scope) => ({ ...acc, [scope]: true }), {}),
-				token_type: response.token_type
+				scopes: res.scope.split(' ').reduce((acc, scope) => ({ ...acc, [scope]: true }), {}),
+				token_type: res.token_type
 			}
 		}
 	}
@@ -59,21 +68,52 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	async getUserInfo({ credentials, provider }: IGetUserInfoParams): Promise<IGetUserInfoResponse> {
 		const client = this.getClient({ base_url: provider.base_url, credentials })
 
-		const [response, err] = await client.get<IUserResponse>('/users/me')
+		const [res, err] = await client.get<IUserResponse>('/users/me')
 		if (err) {
-			throw new FailedDependencyException(`Mercado Livre get user info error: ${err.message}`)
+			this.loggerAdapter.error(`Mercado Livre get user info error: ${err.message}`)
+			throw new FailedDependencyException('Failed to get user info on mercado livre')
 		}
 
 		return {
 			account: {
-				external_id: response.id.toString(),
-				external_email: response.email
+				external_id: res.id.toString(),
+				external_email: res.email
 			}
 		}
 	}
 
-	async refreshToken(_params: IRefreshTokenParams): Promise<IRefreshTokenResponse> {
-		throw new Error('Not implemented')
+	async refreshToken({ refresh_token, provider }: IRefreshTokenParams): Promise<IRefreshTokenResponse> {
+		const client = this.getClient({
+			base_url: provider.base_url,
+			// credentials are only necessary for authenticated requests
+			credentials: { access_token: '', token_type: 'Bearer' }
+		})
+
+		const payload: IOAuthTokenPayload = {
+			client_id: provider.client_id,
+			client_secret: provider.client_secret,
+			redirect_uri: provider.redirect_uri,
+			grant_type: 'refresh_token',
+			refresh_token
+		}
+
+		const [res, err] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
+		if (err) {
+			this.loggerAdapter.error(`Mercado Livre refresh token error: ${err.message}`)
+			throw new FailedDependencyException('Failed to refresh token for mercado livre')
+		}
+
+		return {
+			credentials: {
+				access_token: res.access_token,
+				access_token_expires_at: addSeconds(new Date(), res.expires_in),
+				refresh_token: res.refresh_token,
+				// Mercado livre refresh tokens may have a longer expiration, but if it statys invalid for 60 days, it's likely to be expired or revoked
+				refresh_token_expires_at: addDays(new Date(), 60),
+				scopes: res.scope.split(' ').reduce((acc, scope) => ({ ...acc, [scope]: true }), {}),
+				token_type: res.token_type
+			}
+		}
 	}
 
 	async revokeAuthorization(_params: IRevokeAuthorizationParams): Promise<IRevokeAuthorizationResponse> {
@@ -94,11 +134,11 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 type IOAuthTokenPayload = {
 	client_id: string
 	client_secret: string
-	grant_type: 'authorization_code'
 	redirect_uri: string
-	code: string
-}
-
+} & Union<[
+	{ grant_type: 'authorization_code', code: string },
+	{ grant_type: 'refresh_token', refresh_token: string }
+]>
 type IOAuthTokenResponse = {
 	access_token: string
 	token_type: string

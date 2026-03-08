@@ -1,7 +1,7 @@
 import { UnknownObject } from '@utils/types'
+import { TryCatchResult } from '@utils/try_catch'
 
 // A base fetch client that can be extended for specific APIs, providing common functionality like error handling, request configuration, etc.
-type Result<T> = [T, null] | [null, Error]
 
 export class BaseHttpClient {
 	protected baseURL: string
@@ -14,11 +14,11 @@ export class BaseHttpClient {
 		this.defaultHeaders = { ...this.defaultHeaders, ...headers }
 	}
 
-	get<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<Result<T>> {
+	get<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, { ...options, method: 'GET' })
 	}
 
-	post<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<Result<T>> {
+	post<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'POST',
@@ -27,7 +27,7 @@ export class BaseHttpClient {
 		})
 	}
 
-	patch<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<Result<T>> {
+	patch<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'PATCH',
@@ -36,11 +36,11 @@ export class BaseHttpClient {
 		})
 	}
 
-	delete<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<Result<T>> {
+	delete<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, { ...options, method: 'DELETE' })
 	}
 
-	private async request<T>(endpoint: string, options?: RequestInit): Promise<Result<T>> {
+	private async request<T>(endpoint: string, options?: RequestInit): Promise<TryCatchResult<T>> {
 		try {
 			const url = `${this.baseURL}${endpoint}`
 			const response = await fetch(url, {

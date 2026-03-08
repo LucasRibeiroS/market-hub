@@ -1,0 +1,1 @@
+export { UpdateMarketplaceCredential } from './UpdateMarketplaceCredential'

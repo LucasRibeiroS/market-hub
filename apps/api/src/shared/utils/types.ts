@@ -24,6 +24,8 @@ export type SetDateAsString<T, K extends keyof T> = {
 		: T[P]
 } & Omit<T, K>
 
+export type Union<T extends unknown[]> = T[number]
+
 // Function used to assert that two types extend each other at compile time
 export const assertTypes = <T1, _T2 extends T1>() => {}
 
