@@ -31,7 +31,15 @@ type K = GetMarketplaceAccountResponse
 	summary: 'Get Marketplace Account',
 	description: 'Get an existing Marketplace Account for a user',
 	response: Type.Object({
-		account: Type.Ref(marketplaceAccountJsonSchema.$id)
+		account: Type.Intersect([
+			Type.Ref(marketplaceAccountJsonSchema.$id),
+			Type.Object({
+				provider: Type.Object({
+					provider: Type.String(),
+					display_name: Type.String()
+				})
+			})
+		])
 	}, { $id: 'marketplace-accounts/GetMarketplaceAccountResponse' })
 })
 export class GetMarketplaceAccount implements IUseCase<T, K> {
