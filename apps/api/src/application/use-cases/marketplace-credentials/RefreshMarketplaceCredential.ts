@@ -13,16 +13,16 @@ import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@fa
 
 import { tryCatch } from '@utils/try_catch'
 
-type UpdateMarketplaceCredentialRequest = {
+export type RefreshMarketplaceCredentialRequest = {
 	account_id: string
 }
-type T = UpdateMarketplaceCredentialRequest
-type UpdateMarketplaceCredentialResponse = void
-type K = UpdateMarketplaceCredentialResponse
+type T = RefreshMarketplaceCredentialRequest
+type RefreshMarketplaceCredentialResponse = void
+type K = RefreshMarketplaceCredentialResponse
 
 @injectable()
 @ValidateWith(() => Validator)
-export class UpdateMarketplaceCredential implements IUseCase<T, K> {
+export class RefreshMarketplaceCredential implements IUseCase<T, K> {
 	constructor(
 		@inject(MarketplaceCredentialsRepositorySymbol)
 		private marketplaceCredentialsRepository: IMarketplaceCredentialsRepository,

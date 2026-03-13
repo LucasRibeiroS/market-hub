@@ -1,1 +1,1 @@
-export { UpdateMarketplaceCredential } from './UpdateMarketplaceCredential'
+export { RefreshMarketplaceCredential, RefreshMarketplaceCredentialRequest } from './RefreshMarketplaceCredential'

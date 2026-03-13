@@ -10,7 +10,8 @@ import { getAllSchemas } from '@utils/typebox'
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
 import { ConsoleLoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters/logger'
 import { MarketplaceAdapterSymbol } from '@adapters/IMarketplaceAdapter'
-import { MagaluAdapter, MercadoLivreAdapter, SmtpEmailAdapter } from '@adapters/implementations'
+import { QueueAdapterSymbol } from '@adapters/IQueueAadpter'
+import { BullMQQueueAdapter, MagaluAdapter, MercadoLivreAdapter, SmtpEmailAdapter } from '@adapters/implementations'
 
 import { MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
 import { MarketplaceAdapterFactory } from '@factories/implementations'
@@ -43,6 +44,7 @@ container.register(EmailAdapterSymbol, SmtpEmailAdapter)
 container.register(LoggerAdapterSymbol, ConsoleLoggerAdapter)
 container.register(MarketplaceAdapterSymbol, MagaluAdapter)
 container.register(MarketplaceAdapterSymbol, MercadoLivreAdapter)
+container.register(QueueAdapterSymbol, BullMQQueueAdapter)
 
 // Register factories
 container.register(MarketplaceAdapterFactorySymbol, MarketplaceAdapterFactory)

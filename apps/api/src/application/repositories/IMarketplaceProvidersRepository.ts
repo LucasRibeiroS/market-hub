@@ -12,6 +12,7 @@ export type IFindFirstParams = {
 export interface IMarketplaceProvidersRepository {
 	findMany(params: IFindManyParams): Promise<IMarketplaceProvider[]>
 	findFirst(params: IFindFirstParams): Promise<IMarketplaceProvider | null>
+	findById(id: string): Promise<IMarketplaceProvider | null>
 }
 
 export const MarketplaceProvidersRepositorySymbol = Symbol('IMarketplaceProvidersRepository')

@@ -16,9 +16,11 @@ export class DrizzleMarketplaceProvidersRepository
 		})
 		.prepare('findManyMarketplaceProviders')
 
-	async findMany({ is_active }: IFindManyParams): Promise<IMarketplaceProvider[]> {
-		return await this.findManyQuery.execute({ is_active })
-	}
+	private findByIdQuery = this.drizzleClient.query.marketplaceProviders
+		.findFirst({
+			where: eq(marketplaceProviders.id, sql.placeholder('id'))
+		})
+		.prepare('findMarketplaceProviderById')
 
 	private findFirstQuery = this.drizzleClient.query.marketplaceProviders
 		.findFirst({
@@ -28,6 +30,14 @@ export class DrizzleMarketplaceProvidersRepository
 			)
 		})
 		.prepare('findFirstMarketplaceProvider')
+
+	async findMany({ is_active }: IFindManyParams): Promise<IMarketplaceProvider[]> {
+		return await this.findManyQuery.execute({ is_active })
+	}
+
+	async findById(id: string): Promise<IMarketplaceProvider | null> {
+		return await this.findByIdQuery.execute({ id }) || null
+	}
 
 	async findFirst({ provider, is_active }: IFindFirstParams): Promise<IMarketplaceProvider | null> {
 		return await this.findFirstQuery.execute({ provider, is_active }) || null

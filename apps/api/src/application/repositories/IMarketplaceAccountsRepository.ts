@@ -18,7 +18,7 @@ export type IFindByIdResponse = {
 	provider: Pick<IMarketplaceProvider, 'provider' | 'display_name'>
 } & IMarketplaceAccount
 
-export type IFindByIdSimplifiedResponse = Pick<IMarketplaceAccount, 'id' | 'user_id'>
+export type IFindByIdSimplifiedResponse = Pick<IMarketplaceAccount, 'id' | 'user_id' | 'provider_id' | 'status'>
 
 export type ICountParams = {
 	user_id: string

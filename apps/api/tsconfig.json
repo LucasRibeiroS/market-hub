@@ -30,14 +30,14 @@
 		"paths": {
 			"@adapters/*": ["src/application/adapters/*"],
 			"@factories/*": ["src/application/factories/*"],
-			"@entities": ["src/application/entities/index.ts"],
-			"@entities/*": ["src/application/entities/*"],
 			"@repositories/*": ["src/application/repositories/*"],
 			"@use-cases/*": ["src/application/use-cases/*"],
 			"@config/*": ["src/config/*"],
 			"@utils/*": ["src/shared/utils/*"],
+			"@constants/*": ["src/shared/constants/*"],
 			"@clients/*": ["src/shared/clients/*"],
 			"@http/*": ["src/servers/http/*"],
+			"@queue/*": ["src/servers/queue/*"],
 			"@views/*": ["src/views/*"]
 		},
 		"jsx": "react-jsx",

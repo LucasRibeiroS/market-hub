@@ -1,12 +1,13 @@
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { AccountStatusEnum, IMarketplaceAccount, Provider } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IMarketplaceAccount, IMarketplaceCredential, IMarketplaceProvider, Provider } from '@integrator-packages/database/entities'
 import { Transactional } from '@integrator-packages/database/transaction'
 
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { Documentation } from '@integrator-packages/use-case/documentation'
+import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
 import { IMarketplaceCredentialsRepository, MarketplaceCredentialsRepositorySymbol } from '@repositories/IMarketplaceCredentialsRepository'
@@ -14,6 +15,9 @@ import { IMarketplaceProvidersRepository, MarketplaceProvidersRepositorySymbol }
 
 import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
 
+import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
+
+import { MARKETPLACE_REFRESH_CREDENTIALS_CRON } from '@constants/crons'
 import { marketplaceAccountJsonSchema, providerEnumSchema } from '@utils/typebox'
 
 type CreateMarketplaceAccountRequest = {
@@ -46,7 +50,9 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 		@inject(MarketplaceProvidersRepositorySymbol)
 		private marketplaceProvidersRepository: IMarketplaceProvidersRepository,
 		@inject(MarketplaceAdapterFactorySymbol)
-		private marketplaceAdapterFactory: IMarketplaceAdapterFactory
+		private marketplaceAdapterFactory: IMarketplaceAdapterFactory,
+		@inject(QueueAdapterSymbol)
+		private queueAdapter: IQueueAdapter
 	) {}
 
 	@Transactional()
@@ -56,33 +62,53 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 			is_active: true
 		})
 		if (mktProvider === null) {
-			throw new Error('Marketplace provider not found or inactive')
+			throw new NotFoundException('Marketplace provider not found or inactive')
 		}
 
-		const adapter = this.marketplaceAdapterFactory.get(provider)
+		const oauth = await this.processOAuthCallback({ provider: mktProvider, code })
 
-		const { credentials } = await adapter.exchangeCode({ code, provider: mktProvider })
-		const { account } = await adapter.getUserInfo({ credentials, provider: mktProvider })
-
-		const mktAccount = await this.marketplaceAccountsRepository.create({
+		const account = await this.marketplaceAccountsRepository.create({
 			user_id: user_id,
 			provider_id: mktProvider.id,
-			external_id: account.external_id,
-			external_email: account.external_email,
+			external_id: oauth.account.external_id,
+			external_email: oauth.account.external_email,
 			status: AccountStatusEnum.active
 		})
 
-		await this.marketplaceCredentialsRepository.create({
-			account_id: mktAccount.id,
-			access_token: credentials.access_token,
-			access_token_expires_at: credentials.access_token_expires_at,
-			refresh_token: credentials.refresh_token,
-			refresh_token_expires_at: credentials.refresh_token_expires_at,
-			scopes: credentials.scopes,
-			token_type: credentials.token_type
-		})
+		await Promise.all([
+			this.marketplaceCredentialsRepository.create({
+				...oauth.credentials,
+				account_id: account.id
+			}),
+			this.enqueueRefreshCredentialsJob({ account_id: account.id })
+		])
 
-		return { account: mktAccount }
+		return { account: account }
+	}
+
+	/**
+	 * Process the OAuth callback by exchanging the code for tokens and retrieving user info from the marketplace provider.
+	 */
+	private async processOAuthCallback({
+		provider, code
+	}: IProcessOAuthCallbackParams): Promise<IProcessOAuthCallbackResponse> {
+		const adapter = this.marketplaceAdapterFactory.get(provider.provider)
+
+		const { credentials } = await adapter.exchangeCode({ code, provider })
+		const { account } = await adapter.getUserInfo({ credentials, provider })
+
+		return { credentials, account }
+	}
+
+	private async enqueueRefreshCredentialsJob({ account_id }: IEnqueueRefreshCredentialsJobParams): Promise<void> {
+		await this.queueAdapter.addJob({
+			id: account_id,
+			name: 'refresh-marketplace-credentials',
+			data: { account_id },
+			scheduler: {
+				cron: MARKETPLACE_REFRESH_CREDENTIALS_CRON
+			}
+		})
 	}
 }
 
@@ -97,4 +123,25 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 	})
 
 	protected schema = Validator.schema
+}
+
+type IProcessOAuthCallbackParams = {
+	provider: IMarketplaceProvider
+	code: string
+}
+type IProcessOAuthCallbackResponse = {
+	credentials: Pick<
+		IMarketplaceCredential,
+		| 'access_token'
+		| 'access_token_expires_at'
+		| 'refresh_token'
+		| 'refresh_token_expires_at'
+		| 'scopes'
+		| 'token_type'
+	>
+	account: Pick<IMarketplaceAccount, 'external_id' | 'external_email'>
+}
+
+type IEnqueueRefreshCredentialsJobParams = {
+	account_id: string
 }

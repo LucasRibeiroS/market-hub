@@ -35,7 +35,9 @@ export class DrizzleMarketplaceAccountsRepository
 			where: eq(marketplaceAccounts.id, sql.placeholder('id')),
 			columns: {
 				id: true,
-				user_id: true
+				user_id: true,
+				provider_id: true,
+				status: true
 			}
 		})
 		.prepare('findMarketplaceAccountByIdSimplified')

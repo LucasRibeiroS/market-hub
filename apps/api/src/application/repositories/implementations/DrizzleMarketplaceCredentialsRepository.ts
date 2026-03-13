@@ -4,7 +4,14 @@ import { marketplaceCredentials } from '@integrator-packages/database/drizzle/ta
 import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
 import { IMarketplaceCredential } from '@integrator-packages/database/entities'
 
-import { ICreateParams, IFindFirstParams, IFindFirstResponse, IMarketplaceCredentialsRepository, IUpdateParams } from '@repositories/IMarketplaceCredentialsRepository'
+import {
+	ICreateParams,
+	IFindFirstParams,
+	IFindFirstResponse,
+	IMarketplaceCredentialsRepository,
+	IUpdateParams,
+	IUpsertParams
+} from '@repositories/IMarketplaceCredentialsRepository'
 
 export class DrizzleMarketplaceCredentialsRepository
 	extends DrizzleBaseRepository
@@ -38,5 +45,17 @@ export class DrizzleMarketplaceCredentialsRepository
 			.set(data)
 			.where(eq(marketplaceCredentials.id, id))
 			.returning()
+	}
+
+	async upsert(data: IUpsertParams): Promise<IMarketplaceCredential> {
+		return await this.drizzleClient
+			.insert(marketplaceCredentials)
+			.values(data)
+			.onConflictDoUpdate({
+				target: marketplaceCredentials.account_id,
+				set: data
+			})
+			.returning()
+			.then(([result]) => result)
 	}
 }

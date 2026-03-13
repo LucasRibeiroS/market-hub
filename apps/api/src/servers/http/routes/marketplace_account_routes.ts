@@ -5,6 +5,7 @@ import {
 	DeleteMarketplaceAccount,
 	GetMarketplaceAccount,
 	ListMarketplaceAccounts,
+	ReAuthenticateMarketplaceAccount,
 	UpdateMarketplaceAccount
 } from '@use-cases/marketplace-accounts'
 
@@ -33,6 +34,12 @@ export const marketplaceAccountRoutes = registerRoutes([
 		auth_method: 'jwt',
 		use_case_class: UpdateMarketplaceAccount,
 		handler_options: { separate_request_data: true }
+	},
+	{
+		method: 'put',
+		path: '/:id/credentials',
+		auth_method: 'jwt',
+		use_case_class: ReAuthenticateMarketplaceAccount
 	},
 	{
 		method: 'delete',

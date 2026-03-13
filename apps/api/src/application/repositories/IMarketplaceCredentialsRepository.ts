@@ -14,10 +14,13 @@ export type IUpdateParams = Partial<
 	CustomOmit<IMarketplaceCredential, 'id'>
 >
 
+export type IUpsertParams = ICreateParams
+
 export interface IMarketplaceCredentialsRepository {
 	findFirst(params: IFindFirstParams): Promise<IFindFirstResponse | null>
 	create(params: ICreateParams): Promise<IMarketplaceCredential>
 	update(id: string, params: IUpdateParams): Promise<void>
+	upsert(params: IUpsertParams): Promise<IMarketplaceCredential>
 }
 
 export const MarketplaceCredentialsRepositorySymbol = Symbol('IMarketplaceCredentialsRepository')
