@@ -1,0 +1,41 @@
+.provider-logo {
+	flex-shrink: 0;
+	border-radius: var(--radius-lg);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.provider-logo--md {
+	width: 3rem;
+	height: 3rem;
+}
+
+.provider-logo--lg {
+	width: 3.5rem;
+	height: 3.5rem;
+}
+
+.provider-logo--xl {
+	width: 4rem;
+	height: 4rem;
+}
+
+.provider-logo--mercado_livre {
+	background: #fff159;
+}
+
+.provider-logo--magalu {
+	background: #0086ff1a;
+}
+
+.logo-img {
+	width: 80%;
+	height: 80%;
+	object-fit: contain;
+}
+
+.provider-logo--md .logo-img {
+	width: 85%;
+	height: 85%;
+}

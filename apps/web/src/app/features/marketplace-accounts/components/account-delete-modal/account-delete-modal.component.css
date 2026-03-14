@@ -1,0 +1,18 @@
+.modal-description {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--p-surface-600);
+    line-height: 1.65;
+}
+
+.confirm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.confirm-label {
+    font-size: var(--font-size-label);
+    color: var(--p-surface-600);
+    line-height: 1.5;
+}

@@ -4,9 +4,9 @@ import { CommonModule } from '@angular/common'
 import { Router, RouterModule } from '@angular/router'
 import { SkeletonModule } from 'primeng/skeleton'
 
+import { MarketplaceProviderLogoComponent } from '@features/marketplace-accounts/components'
 import { ListMarketplaceProvidersResponse } from '@features/marketplace-accounts/models'
 import { MarketplaceProvidersService } from '@features/marketplace-accounts/services'
-import { ProviderLogoPipe } from '@features/marketplace-accounts/pipes'
 
 import { ButtonComponent, PageHeaderComponent } from '@shared/components'
 import { withLoadingDelay } from '@shared/utils/loading-delay'
@@ -22,7 +22,7 @@ type ProviderOption = ListMarketplaceProvidersResponse['providers'][number]
 		SkeletonModule,
 		ButtonComponent,
 		PageHeaderComponent,
-		ProviderLogoPipe
+		MarketplaceProviderLogoComponent
 	],
 	templateUrl: './account-connect.component.html',
 	styleUrl: './account-connect.component.css'

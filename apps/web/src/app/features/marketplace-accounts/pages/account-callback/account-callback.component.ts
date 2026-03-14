@@ -10,6 +10,8 @@ import { MarketplaceAccountsService } from '@features/marketplace-accounts/servi
 import { ButtonComponent } from '@shared/components'
 import { withLoadingDelay } from '@shared/utils/loading-delay'
 
+const RECONNECT_STORAGE_KEY = 'reconnect_account_id'
+
 @Component({
 	selector: 'app-account-callback',
 	standalone: true,
@@ -38,6 +40,17 @@ export class AccountCallbackComponent implements OnInit {
 			return
 		}
 
+		const reconnectAccountId = sessionStorage.getItem(RECONNECT_STORAGE_KEY)
+
+		if (reconnectAccountId) {
+			sessionStorage.removeItem(RECONNECT_STORAGE_KEY)
+			this.reAuthenticate(reconnectAccountId, code)
+		} else {
+			this.create(provider, code)
+		}
+	}
+
+	private create(provider: Provider, code: string): void {
 		this.accountsService.create({ code, provider }).pipe(
 			tap(() => {
 				this.messageService.add({
@@ -51,6 +64,27 @@ export class AccountCallbackComponent implements OnInit {
 				this.hasError.set(true)
 				this.errorMessage.set(
 					err?.error?.message ?? 'Não foi possível concluir a integração. Tente novamente.'
+				)
+				return throwError(() => err)
+			}),
+			finalize(() => this.loader.stop())
+		).subscribe()
+	}
+
+	private reAuthenticate(accountId: string, code: string): void {
+		this.accountsService.reAuthenticate(accountId, { code }).pipe(
+			tap(() => {
+				this.messageService.add({
+					severity: 'success',
+					summary: 'Integração reconectada',
+					detail: 'Sua conta foi reconectada com sucesso.'
+				})
+				this.router.navigate(['/integrations', accountId])
+			}),
+			catchError((err) => {
+				this.hasError.set(true)
+				this.errorMessage.set(
+					err?.error?.message ?? 'Não foi possível reconectar a integração. Tente novamente.'
 				)
 				return throwError(() => err)
 			}),

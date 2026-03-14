@@ -1,0 +1,44 @@
+<app-modal
+    [visible]="visible()"
+    (visibleChange)="visible.set($event)"
+    header="Excluir integração"
+    width="440px"
+>
+    <ng-container modalBody>
+        <p class="modal-description">
+            Esta ação é <strong>irreversível</strong>. A integração com
+            <strong>{{ providerName() }}</strong> será permanentemente removida
+            e a sincronização de dados será interrompida.
+        </p>
+
+        <div class="confirm-field">
+            <label class="confirm-label">
+                Para confirmar, digite o nome da integração:
+                <strong>{{ providerName() }}</strong>
+            </label>
+            <app-input-text
+                [control]="confirmValue"
+                [placeholder]="providerName() ?? ''"
+                autocomplete="off"
+            />
+        </div>
+    </ng-container>
+
+    <ng-container modalFooter>
+        <app-button
+            label="Cancelar"
+            severity="secondary"
+            [text]="true"
+            [disabled]="loading()"
+            (onClick)="onCancel()"
+        />
+        <app-button
+            label="Excluir integração"
+            severity="danger"
+            [isLoading]="loading()"
+            [disabled]="loading() || confirmValue.value !== providerName()"
+            [fluid]="false"
+            (onClick)="onConfirm()"
+        />
+    </ng-container>
+</app-modal>

@@ -1,0 +1,21 @@
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.modal-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+/* Decrease header title size */
+:host ::ng-deep .p-dialog .p-dialog-header  {
+    padding: 1rem 1.5rem 0.5rem !important;
+}
+:host ::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+    font-size: 1.2rem;
+}

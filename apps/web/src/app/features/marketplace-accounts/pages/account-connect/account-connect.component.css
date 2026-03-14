@@ -38,25 +38,6 @@
     gap: 1rem;
 }
 
-.provider-logo {
-    flex-shrink: 0;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.logo-img {
-    width: 80%;
-    height: 80%;
-    object-fit: contain;
-}
-
-.provider-logo--mercado_livre { background: #fff159; }
-.provider-logo--magalu        { background: #0086ff1a; }
-
 .card-info {
     display: flex;
     flex-direction: column;

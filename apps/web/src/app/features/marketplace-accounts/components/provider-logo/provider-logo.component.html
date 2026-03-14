@@ -1,0 +1,8 @@
+<div class="provider-logo" [ngClass]="['provider-logo--' + size(), 'provider-logo--' + provider()]">
+	<img
+		[src]="providerLogo"
+		[alt]="displayName() + ' logo'"
+		class="logo-img"
+		loading="lazy"
+	/>
+</div>

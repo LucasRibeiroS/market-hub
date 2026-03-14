@@ -12,5 +12,9 @@ export const marketplaceAccountRoutes: Routes = [
 	{
 		path: 'oauth/callback/:provider',
 		loadComponent: () => import('./pages/account-callback/account-callback.component').then(m => m.AccountCallbackComponent)
+	},
+	{
+		path: ':id',
+		loadComponent: () => import('./pages/account-detail/account-detail.component').then(m => m.AccountDetailComponent)
 	}
 ]

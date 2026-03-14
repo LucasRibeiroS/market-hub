@@ -1,0 +1,70 @@
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	border-radius: var(--radius-xl);
+	font-size: var(--text-sm);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	width: fit-content;
+}
+
+.status-badge--sm {
+	padding: 0.1rem 0.5rem;
+}
+
+.status-badge--md {
+	padding: 0.15rem 0.55rem;
+}
+
+.status-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+}
+
+.status-badge--active {
+	background: #f0fdf4;
+	color: #16a34a;
+}
+
+.status-badge--active .status-dot {
+	background: #16a34a;
+}
+
+.status-badge--disconnected {
+	background: var(--p-surface-100, #f3f1ee);
+	color: var(--p-surface-500, #a39e98);
+}
+
+.status-badge--disconnected .status-dot {
+	background: var(--p-surface-400, #c9c4be);
+}
+
+.status-badge--expired {
+	background: #fffbeb;
+	color: #d97706;
+}
+
+.status-badge--expired .status-dot {
+	background: #f59e0b;
+}
+
+.status-badge--revoked {
+	background: var(--p-surface-100, #f3f1ee);
+	color: var(--p-surface-500, #a39e98);
+}
+
+.status-badge--revoked .status-dot {
+	background: var(--p-surface-400, #c9c4be);
+}
+
+.status-badge--error {
+	background: #fef2f2;
+	color: #dc2626;
+}
+
+.status-badge--error .status-dot {
+	background: #dc2626;
+}

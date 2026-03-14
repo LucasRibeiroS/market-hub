@@ -42,14 +42,11 @@
         @for (provider of providers(); track provider.provider) {
             <div class="provider-card">
                 <div class="card-body">
-                    <div class="provider-logo" [ngClass]="'provider-logo--' + provider.provider">
-                        <img
-                            [src]="provider.provider | providerLogo"
-                            [alt]="provider.display_name + ' logo'"
-                            class="logo-img"
-                            loading="lazy"
-                        />
-                    </div>
+                    <app-marketplace-provider-logo
+                        [provider]="provider.provider"
+                        [displayName]="provider.display_name"
+                        size="lg"
+                    />
                     <div class="card-info">
                         <span class="provider-name">{{ provider.display_name }}</span>
                     </div>

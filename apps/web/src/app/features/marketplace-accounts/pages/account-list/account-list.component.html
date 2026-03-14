@@ -53,22 +53,12 @@
             >
                 <!-- Card top: logo + name + status badge -->
                 <div class="card-body">
-                    <div class="provider-logo" [ngClass]="'provider-logo--' + account.provider.provider">
-                        <img
-                            [src]="account.provider.provider | providerLogo"
-                            [alt]="account.provider.display_name + ' logo'"
-                            class="logo-img"
-                            loading="lazy"
-                        />
-                    </div>
-
-                    <span
-                        class="status-badge"
-                        [ngClass]="'status-badge--' + account.status"
-                    >
-                        <span class="status-dot"></span>
-                        {{ account.status | accountStatus }}
-                    </span>
+                    <app-marketplace-provider-logo
+                        [provider]="account.provider.provider"
+                        [displayName]="account.provider.display_name"
+                        size="md"
+                    />
+                    <app-marketplace-account-status-badge [status]="account.status" size="sm" />
                 </div>
 
                 <!-- Name + provider -->

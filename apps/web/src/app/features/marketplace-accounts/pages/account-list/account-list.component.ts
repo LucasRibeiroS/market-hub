@@ -5,8 +5,8 @@ import { Router } from '@angular/router'
 import { SkeletonModule } from 'primeng/skeleton'
 
 import { AccountStatusEnum, IMarketplaceAccount, ListMarketplaceAccountsResponse } from '@features/marketplace-accounts/models'
+import { MarketplaceAccountStatusBadgeComponent, MarketplaceProviderLogoComponent } from '@features/marketplace-accounts/components'
 import { MarketplaceAccountsService } from '@features/marketplace-accounts/services'
-import { AccountStatusPipe, ProviderLogoPipe } from '@features/marketplace-accounts/pipes'
 
 import { ButtonComponent, PageHeaderComponent } from '@shared/components'
 import { withLoadingDelay } from '@shared/utils/loading-delay'
@@ -19,8 +19,8 @@ import { withLoadingDelay } from '@shared/utils/loading-delay'
 		SkeletonModule,
 		ButtonComponent,
 		PageHeaderComponent,
-		ProviderLogoPipe,
-		AccountStatusPipe
+		MarketplaceProviderLogoComponent,
+		MarketplaceAccountStatusBadgeComponent
 	],
 	templateUrl: './account-list.component.html',
 	styleUrl: './account-list.component.css'

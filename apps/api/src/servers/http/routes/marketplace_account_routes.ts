@@ -39,7 +39,8 @@ export const marketplaceAccountRoutes = registerRoutes([
 		method: 'put',
 		path: '/:id/credentials',
 		auth_method: 'jwt',
-		use_case_class: ReAuthenticateMarketplaceAccount
+		use_case_class: ReAuthenticateMarketplaceAccount,
+		handler_options: { separate_request_data: true }
 	},
 	{
 		method: 'delete',

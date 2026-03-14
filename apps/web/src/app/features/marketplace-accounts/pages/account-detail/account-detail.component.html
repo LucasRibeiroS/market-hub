@@ -1,0 +1,102 @@
+<app-page-header
+    title="Detalhes da integração"
+    description="Visualize e gerencie as configurações desta conta conectada."
+    [showBackButton]="true"
+    (backClick)="goBack()"
+/>
+
+@if (isLoading() || account()) {
+    <div class="detail-card-wrapper">
+        <app-form-card [isLoading]="isLoading()" [skeletonRows]="4">
+            <ng-container formCardHeader>
+                <span class="card-header-helper">As informações abaixo podem ser consultadas a qualquer momento.</span>
+            </ng-container>
+
+            @if (account()) {
+                <div class="form-content">
+                    <div class="provider-summary">
+                        <app-marketplace-provider-logo
+                            [provider]="account()!.provider.provider"
+                            [displayName]="account()!.provider.display_name"
+                            size="md"
+                        />
+
+                        <div class="provider-summary-info">
+                            <span class="provider-name">{{ account()!.provider.display_name }}</span>
+                            <app-marketplace-account-status-badge [status]="account()!.status" size="md" />
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">ID externo</span>
+                            <span class="detail-value">{{ account()!.external_id }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">E-mail</span>
+                            <span class="detail-value">{{ account()!.external_email ?? '—' }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Integrado em</span>
+                            <span class="detail-value">{{ account()!.created_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                        </div>
+
+                        <div class="detail-item">
+                            <span class="detail-label">Última atualização</span>
+                            <span class="detail-value">{{ account()!.updated_at | date:'dd/MM/yyyy HH:mm' }}</span>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <ng-container formCardFooter>
+                @if (account()) {
+                    @if (canReconnect) {
+                        <app-button
+                            label="Reconectar"
+                            icon="pi pi-link"
+                            [isLoading]="isUpdating()"
+                            [disabled]="isUpdating()"
+                            [fluid]="false"
+                            (onClick)="reconnect()"
+                        />
+                    }
+
+                    @if (canDisconnect) {
+                        <app-button
+                            label="Desconectar"
+                            icon="pi pi-power-off"
+                            severity="secondary"
+                            [outlined]="true"
+                            [isLoading]="isUpdating()"
+                            [disabled]="isUpdating()"
+                            [fluid]="false"
+                            (onClick)="disconnect()"
+                        />
+                    }
+
+                    <app-button
+                        label="Excluir integração"
+                        icon="pi pi-trash"
+                        severity="danger"
+                        [text]="true"
+                        [fluid]="false"
+                        [disabled]="isUpdating() || isDeleting()"
+                        (onClick)="openDeleteDialog()"
+                    />
+                }
+            </ng-container>
+        </app-form-card>
+    </div>
+}
+
+<app-account-delete-modal
+    [visible]="showDeleteDialog()"
+    (visibleChange)="showDeleteDialog.set($event)"
+    [providerName]="account()?.provider?.display_name"
+    [loading]="isDeleting()"
+    (confirmed)="confirmDelete()"
+    (cancelled)="showDeleteDialog.set(false)"
+/>
