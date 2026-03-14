@@ -1,15 +1,14 @@
 import { Component, effect, input, model, output } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { DialogModule } from 'primeng/dialog'
 
 import { IApiKey } from '@features/api-keys/models'
 
-import { ButtonComponent, CodeComponent, InputComponent } from '@shared/components'
+import { ButtonComponent, CodeComponent, InputComponent, ModalComponent } from '@shared/components'
 
 @Component({
 	selector: 'app-api-key-delete-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule, DialogModule, ButtonComponent, CodeComponent, InputComponent],
+	imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, CodeComponent, InputComponent],
 	templateUrl: './api-key-delete-modal.component.html',
 	styleUrls: ['./api-key-delete-modal.component.css']
 })

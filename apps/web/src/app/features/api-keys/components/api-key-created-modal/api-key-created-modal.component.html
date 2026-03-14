@@ -1,14 +1,10 @@
-<p-dialog
+<app-modal
     [visible]="visible()"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
+    header="Chave criada com sucesso"
+    width="480px"
     [closable]="false"
-    [style]="{ width: '480px' }"
-    [header]="'Chave criada com sucesso'"
 >
-    <div class="modal-body">
-
+    <ng-container modalBody>
         <!-- Warning banner -->
         <div class="warning-banner">
             <i class="pi pi-exclamation-triangle warning-icon"></i>
@@ -41,20 +37,17 @@
                 }
             </p>
         </div>
-    </div>
+    </ng-container>
 
-    <ng-template pTemplate="footer">
-        <div class="modal-footer">
-            <span class="confirm-hint">
-                @if (!copied()) {
-                    Copie a chave antes de confirmar
-                }
-            </span>
-            <app-button
-                label="Entendi, fechar"
-                (click)="onConfirm()"
-            />
-        </div>
-    </ng-template>
-
-</p-dialog>
+    <ng-container modalFooter>
+        <span class="confirm-hint">
+            @if (!copied()) {
+                Copie a chave antes de confirmar
+            }
+        </span>
+        <app-button
+            label="Entendi, fechar"
+            (click)="onConfirm()"
+        />
+    </ng-container>
+</app-modal>

@@ -1,9 +1,8 @@
 import { Component, input, output, signal } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard'
-import { DialogModule } from 'primeng/dialog'
 
-import { ButtonComponent, CodeComponent } from '@shared/components'
+import { ButtonComponent, CodeComponent, ModalComponent } from '@shared/components'
 
 @Component({
 	selector: 'app-api-key-created-modal',
@@ -11,7 +10,7 @@ import { ButtonComponent, CodeComponent } from '@shared/components'
 	imports: [
 		CommonModule,
 		ClipboardModule,
-		DialogModule,
+		ModalComponent,
 		ButtonComponent,
 		CodeComponent
 	],
