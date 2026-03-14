@@ -67,9 +67,6 @@
 /* Footer */
 .confirm-hint {
     margin-right: auto;
-}
-
-.confirm-hint {
     font-size: 0.8rem;
     color: var(--p-surface-400);
 }

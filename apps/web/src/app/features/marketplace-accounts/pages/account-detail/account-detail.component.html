@@ -95,7 +95,7 @@
 <app-account-delete-modal
     [visible]="showDeleteDialog()"
     (visibleChange)="showDeleteDialog.set($event)"
-    [providerName]="account()?.provider?.display_name"
+    [providerName]="account()?.provider?.display_name!"
     [loading]="isDeleting()"
     (confirmed)="confirmDelete()"
     (cancelled)="showDeleteDialog.set(false)"

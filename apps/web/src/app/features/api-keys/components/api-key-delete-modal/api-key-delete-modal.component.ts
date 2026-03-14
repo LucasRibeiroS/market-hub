@@ -1,5 +1,5 @@
 import { Component, effect, input, model, output } from '@angular/core'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { FormControl } from '@angular/forms'
 
 import { IApiKey } from '@features/api-keys/models'
 
@@ -8,7 +8,7 @@ import { ButtonComponent, CodeComponent, InputComponent, ModalComponent } from '
 @Component({
 	selector: 'app-api-key-delete-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, CodeComponent, InputComponent],
+	imports: [ModalComponent, ButtonComponent, CodeComponent, InputComponent],
 	templateUrl: './api-key-delete-modal.component.html',
 	styleUrls: ['./api-key-delete-modal.component.css']
 })

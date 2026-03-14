@@ -6,14 +6,13 @@ import { MessageService } from 'primeng/api'
 import { SkeletonModule } from 'primeng/skeleton'
 
 import { AccountDeleteModalComponent, MarketplaceAccountStatusBadgeComponent, MarketplaceProviderLogoComponent } from '@features/marketplace-accounts/components'
-import { AccountStatusEnum, GetMarketplaceAccountResponse, ListMarketplaceProvidersResponse } from '@features/marketplace-accounts/models'
+import { AccountStatusEnum, GetMarketplaceAccountResponse } from '@features/marketplace-accounts/models'
 import { MarketplaceAccountsService, MarketplaceProvidersService } from '@features/marketplace-accounts/services'
 
 import { ButtonComponent, FormCardComponent, PageHeaderComponent } from '@shared/components'
 import { withLoadingDelay } from '@shared/utils/loading-delay'
 
 type AccountWithProvider = GetMarketplaceAccountResponse['account']
-type ProviderOption = ListMarketplaceProvidersResponse['providers'][number]
 
 @Component({
 	selector: 'app-account-detail',
@@ -40,7 +39,6 @@ export class AccountDetailComponent implements OnInit {
 	private messageService = inject(MessageService)
 
 	account = signal<AccountWithProvider | null>(null)
-	providers = signal<ProviderOption[]>([])
 
 	isLoading = signal(true)
 	private loader = withLoadingDelay(this.isLoading)
@@ -49,8 +47,6 @@ export class AccountDetailComponent implements OnInit {
 	isDeleting = signal(false)
 
 	showDeleteDialog = signal(false)
-
-	readonly AccountStatusEnum = AccountStatusEnum
 
 	ngOnInit(): void {
 		const id = this.route.snapshot.paramMap.get('id')
@@ -159,7 +155,6 @@ export class AccountDetailComponent implements OnInit {
 				this.router.navigate(['/integrations'])
 			}),
 			catchError(err => {
-				this.isDeleting.set(false)
 				this.messageService.add({
 					severity: 'error',
 					summary: 'Erro',

@@ -1,5 +1,4 @@
 import { Component, input, output, signal } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard'
 
 import { ButtonComponent, CodeComponent, ModalComponent } from '@shared/components'
@@ -8,7 +7,6 @@ import { ButtonComponent, CodeComponent, ModalComponent } from '@shared/componen
 	selector: 'app-api-key-created-modal',
 	standalone: true,
 	imports: [
-		CommonModule,
 		ClipboardModule,
 		ModalComponent,
 		ButtonComponent,
@@ -23,7 +21,6 @@ export class ApiKeyCreatedModalComponent {
 	dismiss = output<void>()
 
 	copied = signal(false)
-	blurred = signal(true)
 
 	private copyTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -39,14 +36,9 @@ export class ApiKeyCreatedModalComponent {
 		this.copyTimer = setTimeout(() => this.copied.set(false), 3000)
 	}
 
-	toggleBlur(): void {
-		this.blurred.update(v => !v)
-	}
-
 	onConfirm(): void {
 		this.dismiss.emit()
 		// Reset state for next use
 		this.copied.set(false)
-		this.blurred.set(true)
 	}
 }

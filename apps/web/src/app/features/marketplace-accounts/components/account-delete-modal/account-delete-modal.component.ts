@@ -1,12 +1,12 @@
 import { Component, effect, input, model, output } from '@angular/core'
-import { FormControl, ReactiveFormsModule } from '@angular/forms'
+import { FormControl } from '@angular/forms'
 
 import { ButtonComponent, InputComponent, ModalComponent } from '@shared/components'
 
 @Component({
 	selector: 'app-account-delete-modal',
 	standalone: true,
-	imports: [ReactiveFormsModule, ModalComponent, ButtonComponent, InputComponent],
+	imports: [ModalComponent, ButtonComponent, InputComponent],
 	templateUrl: './account-delete-modal.component.html',
 	styleUrl: './account-delete-modal.component.css'
 })
