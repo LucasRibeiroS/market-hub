@@ -44,7 +44,6 @@ export class DrizzleMarketplaceCredentialsRepository
 			.update(marketplaceCredentials)
 			.set(data)
 			.where(eq(marketplaceCredentials.id, id))
-			.returning()
 	}
 
 	async upsert(data: IUpsertParams): Promise<IMarketplaceCredential> {
