@@ -17,7 +17,6 @@ import { RedisCacheAdapter } from '@integrator-packages/adapters/cache'
 
 import { isHttpException, RateLimitException } from '@integrator-packages/use-case/exceptions'
 
-import '@config/bootstrap'
 import { env } from '@config/env'
 
 import { authenticate } from '@http/middlewares/authenticate'
@@ -33,7 +32,7 @@ import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_rou
 import { ACCESS_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
 import { defaultSchemas } from '@http/utils/schema'
 
-class HttpServer {
+export class HttpServer {
 	private app: FastifyInstance
 	private port = env.PORT
 
@@ -148,10 +147,8 @@ class HttpServer {
 			if (err) {
 				console.error({ err })
 			} else {
-				console.log(`[${env.APPLICATION_NAME}] Server running on ${this.port}`)
+				console.log(`[${env.APPLICATION_NAME}] Http server running on ${this.port}`)
 			}
 		})
 	}
 }
-
-export default new HttpServer()

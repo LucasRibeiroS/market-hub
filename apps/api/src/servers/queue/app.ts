@@ -3,7 +3,8 @@ import { Queue, QueueOptions, Worker, WorkerOptions } from 'bullmq'
 import { env } from '@config/env'
 import { ONE_HOUR_IN_MS } from '@constants/units'
 
-import { applyUseCase } from '@queue/utils/apply_use_case'
+import { UseCaseProcessor } from '@queue/worker/UseCaseProcessor'
+import { EventLogger } from '@queue/worker/EventLogger'
 
 import { RefreshMarketplaceCredential } from '@use-cases/marketplace-credentials'
 
@@ -11,8 +12,8 @@ export enum QueueName {
 	refresh_marketplace_credentials = 'refresh-marketplace-credentials'
 }
 
-class QueueServer {
-	private readonly config: QueueOptions & WorkerOptions = {
+export class QueueServer {
+	private static readonly config: QueueOptions & WorkerOptions = {
 		connection: {
 			host: env.REDIS_HOST,
 			port: env.REDIS_PORT
@@ -23,11 +24,11 @@ class QueueServer {
 		}
 	}
 
-	readonly queues: { [key in QueueName]: Queue } = {
+	static readonly queues: { [key in QueueName]: Queue } = {
 		[QueueName.refresh_marketplace_credentials]: new Queue(QueueName.refresh_marketplace_credentials, {
-			connection: this.config.connection,
+			connection: QueueServer.config.connection,
 			defaultJobOptions: {
-				...this.config.defaultJobOptions,
+				...QueueServer.config.defaultJobOptions,
 				attempts: 3,
 				backoff: {
 					type: 'fixed',
@@ -37,13 +38,17 @@ class QueueServer {
 		})
 	}
 
+	private readonly logger = new EventLogger()
+	private readonly processor = new UseCaseProcessor()
+
 	async start() {
-		new Worker(
+		console.log(`[${env.APPLICATION_NAME}] Queue running with pid ${process.pid}`)
+
+		const worker = new Worker(
 			QueueName.refresh_marketplace_credentials,
-			async({ data }) => applyUseCase(RefreshMarketplaceCredential, data),
-			this.config
+			async({ data }) => this.processor.apply(RefreshMarketplaceCredential, data),
+			QueueServer.config
 		)
+		this.logger.registerWorker(worker, QueueName.refresh_marketplace_credentials)
 	}
 }
-
-export default new QueueServer()

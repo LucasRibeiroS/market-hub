@@ -1,6 +1,6 @@
 import { Queue } from 'bullmq'
 
-import QueueServer from '@queue/app'
+import { QueueServer } from '@queue/app'
 
 import { IAddJobParams, IQueueAdapter, IRemoveJobParams, QueueName } from '@adapters/IQueueAadpter'
 
