@@ -119,9 +119,7 @@ export const authenticate = fp((fastify: FastifyInstance) => {
 				return Promise.any([
 					fastify.authenticateJwt(typedReq, res),
 					fastify.authenticateApiKey(typedReq, res)
-				]).catch((error) => {
-					console.log(error)
-
+				]).catch((_) => {
 					throw new UnauthorizedException()
 				})
 			},
