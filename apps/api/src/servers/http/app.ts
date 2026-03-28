@@ -151,4 +151,10 @@ export class HttpServer {
 			}
 		})
 	}
+
+	stop() {
+		this.app.close(() => {
+			console.log(`[${env.APPLICATION_NAME}] Http server stopped`)
+		})
+	}
 }

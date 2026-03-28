@@ -38,17 +38,29 @@ export class QueueServer {
 		})
 	}
 
+	private workers: Worker[] = []
+
 	private readonly logger = new EventLogger()
 	private readonly processor = new UseCaseProcessor()
 
 	async start() {
 		console.log(`[${env.APPLICATION_NAME}] Queue running with pid ${process.pid}`)
 
-		const worker = new Worker(
+		const refreshCredentialsWorker = new Worker(
 			QueueName.refresh_marketplace_credentials,
 			async({ data }) => this.processor.apply(RefreshMarketplaceCredential, data),
 			QueueServer.config
 		)
-		this.logger.registerWorker(worker, QueueName.refresh_marketplace_credentials)
+		this.logger.registerWorker(refreshCredentialsWorker, QueueName.refresh_marketplace_credentials)
+		this.workers.push(refreshCredentialsWorker)
+
+	}
+
+	async stop() {
+		await Promise.all(
+			this.workers.map(worker => worker.close())
+		)
+
+		console.log(`[${env.APPLICATION_NAME}] Queue stopped`)
 	}
 }
