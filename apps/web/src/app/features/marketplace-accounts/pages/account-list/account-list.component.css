@@ -44,6 +44,7 @@
 /* ---------- Card info: name + email ---------- */
 .card-info {
     display: flex;
+    justify-content: center;
     flex-direction: column;
     gap: 4px;
     padding: 0 1.125rem 1rem;
@@ -60,10 +61,13 @@
 
 .account-meta {
     display: flex;
-    align-items: center;
     gap: 5px;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--p-surface-500, #a39e98);
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .account-meta .pi {
