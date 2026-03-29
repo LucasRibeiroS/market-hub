@@ -51,41 +51,6 @@ export class ListMarketplaceAccounts implements IUseCase<T, K> {
 
 	async execute(params: T): Promise<K> {
 		const { data, pagination } = await this.marketplaceAccountsRepository.findMany(params)
-
-		if (data.length === 0) {
-			// mock data for test
-			data.push(
-				{
-					id: '1',
-					user_id: params.user_id,
-					provider_id: '1',
-					external_id: 'external-123',
-					external_email: 'user@example.com',
-					status: 'active',
-					created_at: new Date(),
-					updated_at: new Date(),
-					provider: {
-						provider: 'magalu',
-						display_name: 'Magazine Luiza'
-					}
-				},
-				{
-					id: '2',
-					user_id: params.user_id,
-					provider_id: '2',
-					external_id: 'external-456',
-					external_email: 'user2@example.com',
-					status: 'error',
-					created_at: new Date(),
-					updated_at: new Date(),
-					provider: {
-						provider: 'mercado_livre',
-						display_name: 'Mercado Livre'
-					}
-				}
-			)
-		}
-
 		return { accounts: data, pagination }
 	}
 }

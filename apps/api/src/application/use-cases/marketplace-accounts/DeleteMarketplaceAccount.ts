@@ -9,6 +9,7 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
+import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
 
 import { EmptyObject } from '@utils/types'
 
@@ -30,7 +31,9 @@ type K = DeleteMarketplaceAccountResponse
 export class DeleteMarketplaceAccount implements IUseCase<T, K> {
 	constructor(
 		@inject(MarketplaceAccountsRepositorySymbol)
-		private marketplaceAccountsRepository: IMarketplaceAccountsRepository
+		private marketplaceAccountsRepository: IMarketplaceAccountsRepository,
+		@inject(QueueAdapterSymbol)
+		private queueAdapter: IQueueAdapter
 	) {}
 
 	@Transactional()
@@ -42,7 +45,16 @@ export class DeleteMarketplaceAccount implements IUseCase<T, K> {
 
 		await this.marketplaceAccountsRepository.delete(account.id)
 
+		await this.removeRefreshCredentialsJob({ account_id: account.id })
+
 		return {}
+	}
+
+	private async removeRefreshCredentialsJob({ account_id }: IRemoveRefreshCredentialsJobParams): Promise<void> {
+		await this.queueAdapter.removeJob({
+			id: account_id,
+			name: 'refresh-marketplace-credentials'
+		})
 	}
 }
 
@@ -53,4 +65,8 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 	})
 
 	protected schema = Validator.schema
+}
+
+type IRemoveRefreshCredentialsJobParams = {
+	account_id: string
 }
