@@ -5,6 +5,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "build:api": "pnpm --filter @integrator/api build",
+    "build:packages": "pnpm --filter @integrator-packages/* build",
     "build:adapters": "pnpm --filter @integrator-packages/adapters build",
     "build:database": "pnpm --filter @integrator-packages/database build",
     "build:use-case": "pnpm --filter @integrator-packages/use-case build"

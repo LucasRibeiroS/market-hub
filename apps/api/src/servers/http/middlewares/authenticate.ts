@@ -112,7 +112,7 @@ export const authenticate = fp((fastify: FastifyInstance) => {
 				if (authMethod === 'jwt') {
 					return fastify.authenticateJwt(typedReq, res)
 				}
-				if (authMethod.includes('api_key')) {
+				if (authMethod === 'api_key') {
 					return fastify.authenticateApiKey(typedReq, res)
 				}
 				// Composed authentication middleware

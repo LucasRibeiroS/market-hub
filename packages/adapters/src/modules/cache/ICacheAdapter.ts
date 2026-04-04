@@ -37,3 +37,5 @@ export interface ICacheAdapter {
 	push(params: IPushParams): Promise<number> // Returns the length of the list after the push operation
 	length(params: ILengthParams): Promise<number>
 }
+
+export const CacheAdapterSymbol = Symbol('ICacheAdapter')

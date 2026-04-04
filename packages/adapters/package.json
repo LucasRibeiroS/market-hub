@@ -14,10 +14,13 @@
     "dependencies": {
         "@aws-sdk/client-s3": "^3.891.0",
         "@aws-sdk/lib-storage": "^3.891.0",
-        "ioredis": "^5.7.0"
+        "ioredis": "^5.7.0",
+        "winston": "^3.19.0",
+        "winston-daily-rotate-file": "^5.0.0"
     },
     "devDependencies": {
         "@types/node": "*",
+        "@types/winston": "^2.4.4",
         "concurrently": "*",
         "tsc-alias": "*",
         "typescript": "*"
