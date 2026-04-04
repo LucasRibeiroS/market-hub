@@ -11,6 +11,7 @@ export type IVariant = {
 	depth_cm: string
 	images: string[]
 	attributes: Record<string, string>
+	is_primary: boolean
 	created_at: Date
 	updated_at: Date
 }

@@ -109,8 +109,9 @@ export const variantJsonSchema = createSchema(Type.Object({
 	height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 	width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 	depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-	images: Type.Array(Type.String()),
+	images: Type.Array(Type.String(), { minItems: 1, maxItems: 20 }),
 	attributes: Type.Record(Type.String(), Type.Any()),
+	is_primary: Type.Boolean(),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IVariant')
@@ -119,9 +120,10 @@ assertTypes<Static<typeof variantJsonSchema>, SetDateAsString<IVariant, 'created
 // Marketplace management
 export const marketplaceListingJsonSchema = createSchema(Type.Object({
 	id: Type.String({ readOnly: true }),
+	account_id: Type.String({ readOnly: true }),
 	variant_id: Type.String({ readOnly: true }),
-	provider: Type.Ref(providerEnumSchema.$id, { readOnly: true }),
-	external_id: Type.String({ readOnly: true }),
+	external_product_id: TNullable(Type.String({ readOnly: true })),
+	external_variant_id: TNullable(Type.String({ readOnly: true })),
 	status: Type.Ref(listingStatusEnumSchema.$id),
 	last_sync_at: TNullable(DateType({ readOnly: true })),
 	sync_message: TNullable(Type.String({ readOnly: true })),

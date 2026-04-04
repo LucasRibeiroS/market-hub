@@ -67,6 +67,7 @@ export const variants = pgTable('variants', {
 	depth_cm: numeric({ precision: 10, scale: 2 }).notNull(),
 	images: text().array().default([]).notNull(),
 	attributes: jsonb().$type<Record<string, string>>().notNull().default({}), // Specific attributes. Ex: { "Color": "Red", "Size": "42", "Voltage": "220V" }
+	is_primary: boolean().default(false).notNull(), // Indicates the main variant of a product. A product can have multiple variants, but only one primary variant.
 	...timestamps
 }, (table) => [uniqueIndex().on(table.user_id, table.sku), index().on(table.product_id)])
 
@@ -118,12 +119,13 @@ export const marketplaceListings = pgTable('marketplace_listings', {
 	id: text().primaryKey().$defaultFn(() => `lis_${generateId()}`),
 	variant_id: text().references(() => variants.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
 	account_id: text().references(() => marketplaceAccounts.id, { onUpdate: 'cascade', onDelete: 'cascade' }).notNull(),
-	external_id: text().notNull(),
+	external_product_id: text(),
+	external_variant_id: text(),
 	status: listingStatus().notNull().default('pending'),
 	last_sync_at: timestamp(timestampConfig),
 	sync_message: text(),
-	metadata: jsonb().$type<Record<string, unknown>>().default({}) // Provider-specific metadata. Ex: { listing_type_id: "gold_pro", category_id: "MLB123" }
+	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}) // Provider-specific metadata. Ex: { listing_type_id: "gold_pro", category_id: "MLB123" }
 }, (table) => [
 	uniqueIndex().on(table.variant_id, table.account_id),
-	index().on(table.external_id)
+	index().on(table.external_product_id)
 ])

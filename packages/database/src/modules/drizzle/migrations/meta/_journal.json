@@ -85,6 +85,20 @@
       "when": 1772847196035,
       "tag": "20260307013316_rename_marketplace_providers_table_columns",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1773610738961,
+      "tag": "20260315213858_add_is_primary_to_variants_table",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773610841190,
+      "tag": "20260315214041_replace_marketplace_listing_external_id_with_product_and_variant_ids",
+      "breakpoints": true
     }
   ]
 }

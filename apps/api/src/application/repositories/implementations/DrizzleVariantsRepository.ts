@@ -1,18 +1,12 @@
-import { and, eq, inArray, sql } from 'drizzle-orm'
+import { and, eq, inArray, SQL } from 'drizzle-orm'
 
 import { variants } from '@integrator-packages/database/drizzle/tables'
-import { DrizzleBaseRepository, drizzleClient } from '@integrator-packages/database/drizzle/client'
+import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
 import { IVariant } from '@integrator-packages/database/entities'
 
-import { ICreateManyParams, IDeleteManyParams, IFindFirstParams, IFindManyParams, IFindManyResponse, IVariantsRepository } from '@repositories/IVariantsRepository'
+import { ICreateManyParams, IDeleteManyParams, IFindFirstParams, IFindManyParams, IFindManyResponse, IUpdateManyParams, IUpdateParams, IVariantsRepository } from '@repositories/IVariantsRepository'
 
 export class DrizzleVariantsRepository extends DrizzleBaseRepository implements IVariantsRepository {
-	private findFirstQuery = this.drizzleClient.query.variants
-		.findFirst({
-			where: eq(variants.sku, sql.placeholder('sku'))
-		})
-		.prepare('findFirstVariant')
-
 	async findMany({ user_id, product_id, sku }: IFindManyParams): Promise<IFindManyResponse> {
 		return await this.drizzleClient.query.variants.findMany({
 			columns: {
@@ -27,15 +21,39 @@ export class DrizzleVariantsRepository extends DrizzleBaseRepository implements 
 		})
 	}
 
-	async findFirst(data: IFindFirstParams): Promise<IVariant | null> {
-		return await this.findFirstQuery.execute({ sku: data.sku }) || null
+	async findFirst({ user_id, sku, is_primary }: IFindFirstParams): Promise<IVariant | null> {
+		const where: SQL[] = [eq(variants.user_id, user_id)]
+		if (sku !== undefined) {
+			where.push(eq(variants.sku, sku))
+		}
+		if (is_primary !== undefined) {
+			where.push(eq(variants.is_primary, is_primary))
+		}
+
+		return await this.drizzleClient.query.variants.findFirst({
+			where: and(...where)
+		}) || null
 	}
 
 	async createMany(data: ICreateManyParams): Promise<IVariant[]> {
-		return await drizzleClient.insert(variants).values(data).returning()
+		return await this.drizzleClient.insert(variants).values(data).returning()
+	}
+
+	async update(id: string, data: IUpdateParams): Promise<void> {
+		await this.drizzleClient
+			.update(variants)
+			.set(data)
+			.where(eq(variants.id, id))
+	}
+
+	async updateMany(product_id: string, data: IUpdateManyParams): Promise<void> {
+		await this.drizzleClient
+			.update(variants)
+			.set(data)
+			.where(eq(variants.product_id, product_id))
 	}
 
 	async deleteMany({ id }: IDeleteManyParams): Promise<void> {
-		await drizzleClient.delete(variants).where(inArray(variants.id, id))
+		await this.drizzleClient.delete(variants).where(inArray(variants.id, id))
 	}
 }

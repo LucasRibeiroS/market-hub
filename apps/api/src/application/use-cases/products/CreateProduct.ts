@@ -47,7 +47,10 @@ type K = CreateProductResponse
 	response: Type.Object({
 		product: Type.Object({
 			id: Type.String(),
-			variants: Type.Array(Type.Object({ id: Type.String() }))
+			variants: Type.Array(Type.Object({
+				id: Type.String(),
+				sku: Type.String()
+			}))
 		})
 	}, { $id: 'products/CreateProductResponse' })
 })
@@ -71,7 +74,7 @@ export class CreateProduct implements IUseCase<T, K> {
 			}
 		}
 
-		await this.validateSkuUniquenessOrThrow({
+		await this.validateSkuUniqueness({
 			user_id,
 			sku: data.product.variants.map(variant => variant.sku)
 		})
@@ -81,7 +84,8 @@ export class CreateProduct implements IUseCase<T, K> {
 				...variant,
 				user_id,
 				product_id: product.id,
-				attributes: {}
+				attributes: {},
+				is_primary: false
 			}))
 		)
 
@@ -93,7 +97,10 @@ export class CreateProduct implements IUseCase<T, K> {
 		}
 	}
 
-	private async validateSkuUniquenessOrThrow({ user_id, sku }: IValidateSkuUniquenessParams): Promise<void> {
+	/**
+	 * @throws ConflictException if any of the provided SKUs already exist for the user
+	 */
+	private async validateSkuUniqueness({ user_id, sku }: IValidateSkuUniquenessParams): Promise<void> {
 		const variants = await this.variantsRepository.findMany({ user_id, sku })
 		if (variants.length > 0) {
 			throw new ConflictException(`The following SKUs already exist: ${variants.map(v => v.sku).join(', ')}`)
@@ -119,13 +126,12 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 					height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 					width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 					depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-					images: Type.Array(Type.String({ format: 'uri', maxLength: 20 }))
+					images: Type.Array(Type.String({ format: 'uri' }), { minItems: 1, maxItems: 20 })
 				}), { default: [], maxItems: 100 }
 			)
 		})
 	})
 
-	protected $id = 'products/CreateProductValidator'
 	protected schema = Validator.schema
 }
 

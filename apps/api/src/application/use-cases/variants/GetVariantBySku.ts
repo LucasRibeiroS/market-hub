@@ -38,8 +38,8 @@ export class GetVariantBySku implements IUseCase<T, K> {
 	) {}
 
 	async execute({ sku, user_id }: T): Promise<K> {
-		const variant = await this.variantsRepository.findFirst({ sku })
-		if (variant === null || variant.user_id !== user_id) {
+		const variant = await this.variantsRepository.findFirst({ sku, user_id })
+		if (variant === null) {
 			throw new NotFoundException('Variant not found')
 		}
 

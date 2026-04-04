@@ -8,7 +8,8 @@ import { schemas } from '@integrator-packages/use-case/schemas'
 import { getAllSchemas } from '@utils/typebox'
 
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
-import { ConsoleLoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters/logger'
+import { FileLoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters/logger'
+import { CacheAdapterSymbol, RedisCacheAdapter } from '@integrator-packages/adapters/cache'
 import { MarketplaceAdapterSymbol } from '@adapters/IMarketplaceAdapter'
 import { QueueAdapterSymbol } from '@adapters/IQueueAadpter'
 import { BullMQQueueAdapter, MagaluAdapter, MercadoLivreAdapter, SmtpEmailAdapter } from '@adapters/implementations'
@@ -40,8 +41,9 @@ import {
 schemas.register(getAllSchemas())
 
 // Register adapters dependencies
+container.register(CacheAdapterSymbol, RedisCacheAdapter)
 container.register(EmailAdapterSymbol, SmtpEmailAdapter)
-container.register(LoggerAdapterSymbol, ConsoleLoggerAdapter)
+container.register(LoggerAdapterSymbol, FileLoggerAdapter)
 container.register(MarketplaceAdapterSymbol, MagaluAdapter)
 container.register(MarketplaceAdapterSymbol, MercadoLivreAdapter)
 container.register(QueueAdapterSymbol, BullMQQueueAdapter)

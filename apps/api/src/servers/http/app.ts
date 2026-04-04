@@ -1,5 +1,6 @@
 import 'dotenv/config'
 
+import { container } from 'tsyringe'
 import fastify, { FastifyInstance } from 'fastify'
 import cors from '@fastify/cors'
 import compress from '@fastify/compress'
@@ -13,7 +14,7 @@ import logger from '@specter-labs/fastify-logger'
 import swagger from '@fastify/swagger'
 import scalar from '@scalar/fastify-api-reference'
 
-import { RedisCacheAdapter } from '@integrator-packages/adapters/cache'
+import { CacheAdapterSymbol, ICacheAdapter } from '@integrator-packages/adapters/cache'
 
 import { isHttpException, RateLimitException } from '@integrator-packages/use-case/exceptions'
 
@@ -56,12 +57,12 @@ export class HttpServer {
 
 		// Custom plugins
 		this.app.register(rateLimit, {
-			storageAdapter: new RedisCacheAdapter(),
+			storageAdapter: container.resolve<ICacheAdapter>(CacheAdapterSymbol),
 			exception: RateLimitException,
 			prefix: `${env.APPLICATION_NAME}:http:rate-limit`
 		})
 		this.app.register(caching, {
-			storageAdapter: new RedisCacheAdapter(),
+			storageAdapter: container.resolve<ICacheAdapter>(CacheAdapterSymbol),
 			prefix: `${env.APPLICATION_NAME}:http:cache`
 		})
 		this.app.register(logger, {
