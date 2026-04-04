@@ -1,6 +1,7 @@
 export * from './DrizzleApiKeysRepository'
 export * from './DrizzleMarketplaceAccountsRepository'
 export * from './DrizzleMarketplaceCredentialsRepository'
+export * from './DrizzleMarketplaceListingsRepository'
 export * from './DrizzleMarketplaceProvidersRepository'
 export * from './DrizzlePasswordResetsRepository'
 export * from './DrizzleProductsRepository'
