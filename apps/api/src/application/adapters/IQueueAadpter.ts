@@ -1,7 +1,9 @@
 import { RefreshMarketplaceCredentialRequest } from '@use-cases/marketplace-credentials'
+import { PublishMarketplaceListingsRequest } from '@use-cases/marketplace-listings'
 
 type JobDataMap = {
 	'refresh-marketplace-credentials': RefreshMarketplaceCredentialRequest
+	'publish-marketplace-listings': PublishMarketplaceListingsRequest
 }
 
 export type QueueName = keyof JobDataMap

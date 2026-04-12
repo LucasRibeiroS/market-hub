@@ -1,6 +1,6 @@
 import { registerRoutes } from '@http/utils/routes'
 
-import { BulkCreateVariants, BulkDeleteVariants, GetVariantBySku } from '@use-cases/variants'
+import { BulkCreateVariants, BulkDeleteVariants, GetVariantBySku, UpdateVariantBySku } from '@use-cases/variants'
 
 export const variantsRoutes = registerRoutes([
 	{
@@ -8,6 +8,13 @@ export const variantsRoutes = registerRoutes([
 		path: '/variants/:sku',
 		auth_method: 'any',
 		use_case_class: GetVariantBySku
+	},
+	{
+		method: 'patch',
+		path: '/variants/:sku',
+		auth_method: 'any',
+		use_case_class: UpdateVariantBySku,
+		handler_options: { separate_request_data: true }
 	},
 	{
 		method: 'post',

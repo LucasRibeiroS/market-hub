@@ -39,11 +39,13 @@ export class DrizzleVariantsRepository extends DrizzleBaseRepository implements 
 		return await this.drizzleClient.insert(variants).values(data).returning()
 	}
 
-	async update(id: string, data: IUpdateParams): Promise<void> {
-		await this.drizzleClient
+	async update(id: string, data: IUpdateParams): Promise<IVariant> {
+		return await this.drizzleClient
 			.update(variants)
 			.set(data)
 			.where(eq(variants.id, id))
+			.returning()
+			.then(([variant]) => variant)
 	}
 
 	async updateMany(product_id: string, data: IUpdateManyParams): Promise<void> {

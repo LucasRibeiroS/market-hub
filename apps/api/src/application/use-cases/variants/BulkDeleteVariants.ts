@@ -13,6 +13,7 @@ import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVa
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 
 import { EmptyObject } from '@utils/types'
+import { variantJsonSchema } from '@utils/typebox'
 
 type BulkDeleteVariantsRequest = {
 	user_id: string
@@ -69,9 +70,7 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		user_id: Type.String(),
 		product_id: Type.String(),
 		variants: Type.Array(
-			Type.Object({
-				sku: Type.String({ minLength: 3, maxLength: 100 })
-			}), { minItems: 1, maxItems: 100 }
+			Type.Pick(variantJsonSchema, ['sku']), { minItems: 1, maxItems: 100 }
 		)
 	})
 

@@ -12,7 +12,7 @@ import { ConflictException } from '@integrator-packages/use-case/exceptions'
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
 
-import { TNullable, TNumeric } from '@utils/typebox'
+import { productJsonSchema, variantJsonSchema } from '@utils/typebox'
 
 type CreateProductRequest = {
 	user_id: string
@@ -27,8 +27,9 @@ type CreateProductRequest = {
             | 'width_cm'
             | 'depth_cm'
 			| 'images'
+			| 'attributes'
 		>>
-	} & Pick<IProduct, 'name' | 'description'>
+	} & Pick<IProduct, 'name' | 'description' | 'attributes'>
 }
 type T = CreateProductRequest
 type CreateProductResponse = {
@@ -66,7 +67,7 @@ export class CreateProduct implements IUseCase<T, K> {
 			user_id,
 			name: data.product.name,
 			description: data.product.description,
-			attributes: {}
+			attributes: data.product.attributes
 		})
 		if (data.product.variants.length === 0) {
 			return {
@@ -84,7 +85,6 @@ export class CreateProduct implements IUseCase<T, K> {
 				...variant,
 				user_id,
 				product_id: product.id,
-				attributes: {},
 				is_primary: false
 			}))
 		)
@@ -114,22 +114,24 @@ export class CreateProduct implements IUseCase<T, K> {
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		user_id: Type.String(),
-		product: Type.Object({
-			name: Type.String({ minLength: 3, maxLength: 150 }),
-			description: Type.String({ minLength: 0, maxLength: 1000 }),
-			variants: Type.Array(
-				Type.Object({
-					sku: Type.String({ minLength: 3, maxLength: 100 }),
-					ean: TNullable(Type.String({ minLength: 3, maxLength: 50 })),
-					price: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
-					weight_kg: TNumeric({ precision: 10, scale: 3, minimum: 0.001 }),
-					height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-					width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-					depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-					images: Type.Array(Type.String({ format: 'uri' }), { minItems: 1, maxItems: 20 })
-				}), { default: [], maxItems: 100 }
-			)
-		})
+		product: Type.Composite([
+			Type.Pick(productJsonSchema, ['name', 'description', 'attributes']),
+			Type.Object({
+				variants: Type.Array(Type.Pick(
+					variantJsonSchema, [
+						'sku',
+						'ean',
+						'price',
+						'weight_kg',
+						'height_cm',
+						'width_cm',
+						'depth_cm',
+						'images',
+						'attributes'
+					]
+				), { default: [], maxItems: 100 })
+			})
+		])
 	})
 
 	protected schema = Validator.schema

@@ -66,7 +66,7 @@ export const variants = pgTable('variants', {
 	width_cm: numeric({ precision: 10, scale: 2 }).notNull(),
 	depth_cm: numeric({ precision: 10, scale: 2 }).notNull(),
 	images: text().array().default([]).notNull(),
-	attributes: jsonb().$type<Record<string, string>>().notNull().default({}), // Specific attributes. Ex: { "Color": "Red", "Size": "42", "Voltage": "220V" }
+	attributes: jsonb().$type<Record<string, unknown>>().notNull().default({}), // Specific attributes. Ex: { "Color": "Red", "Size": "42", "Voltage": "220V" }
 	is_primary: boolean().default(false).notNull(), // Indicates the main variant of a product. A product can have multiple variants, but only one primary variant.
 	...timestamps
 }, (table) => [uniqueIndex().on(table.user_id, table.sku), index().on(table.product_id)])

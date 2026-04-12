@@ -1,3 +1,5 @@
 export { CreateProduct } from './CreateProduct'
 export { GetProduct } from './GetProduct'
+export { GetProductRequiredAttributes } from './GetProductRequiredAttributes'
 export { ListProducts } from './ListProducts'
+export { UpdateProduct } from './UpdateProduct'

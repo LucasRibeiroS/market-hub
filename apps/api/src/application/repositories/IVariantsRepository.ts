@@ -31,7 +31,7 @@ export interface IVariantsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findFirst(params: IFindFirstParams): Promise<IVariant | null>
 	createMany(data: ICreateManyParams): Promise<IVariant[]>
-	update(id: string, data: IUpdateParams): Promise<void>
+	update(id: string, data: IUpdateParams): Promise<IVariant>
 	/**
 	 * Updates multiple variants that belong to the same product.
 	 */

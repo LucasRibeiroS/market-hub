@@ -68,4 +68,11 @@ export class DrizzleMarketplaceListingsRepository
 			.set(data)
 			.where(eq(marketplaceListings.id, id))
 	}
+
+	async updateMany(ids: string[], data: IUpdateParams): Promise<void> {
+		await this.drizzleClient
+			.update(marketplaceListings)
+			.set(data)
+			.where(inArray(marketplaceListings.id, ids))
+	}
 }

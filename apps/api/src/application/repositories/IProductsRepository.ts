@@ -19,12 +19,17 @@ export type ICountParams = { user_id: string }
 
 export type ICreateParams = CustomOmit<IProduct, 'id' | 'created_at' | 'updated_at'>
 
+export type IUpdateParams = Partial<
+	CustomOmit<IProduct, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+>
+
 export interface IProductsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
 	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IProduct>
+	update(id: string, params: IUpdateParams): Promise<IProduct>
 }
 
 export const ProductsRepositorySymbol = Symbol('IProductsRepository')

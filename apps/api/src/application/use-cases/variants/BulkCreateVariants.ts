@@ -12,7 +12,7 @@ import { ConflictException, NotFoundException } from '@integrator-packages/use-c
 import { IVariantsRepository, VariantsRepositorySymbol } from '@repositories/IVariantsRepository'
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 
-import { TNullable, TNumeric } from '@utils/typebox'
+import { variantJsonSchema } from '@utils/typebox'
 
 type BulkCreateVariantsRequest = {
 	user_id: string
@@ -27,6 +27,7 @@ type BulkCreateVariantsRequest = {
         | 'width_cm'
         | 'depth_cm'
         | 'images'
+		| 'attributes'
 	>>
 }
 type T = BulkCreateVariantsRequest
@@ -65,7 +66,6 @@ export class BulkCreateVariants implements IUseCase<T, K> {
 				...variant,
 				user_id,
 				product_id,
-				attributes: {},
 				is_primary: false
 			}))
 		)
@@ -94,16 +94,17 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		user_id: Type.String(),
 		product_id: Type.String(),
 		variants: Type.Array(
-			Type.Object({
-				sku: Type.String({ minLength: 3, maxLength: 100 }),
-				ean: TNullable(Type.String({ minLength: 3, maxLength: 50 })),
-				price: Type.Integer({ minimum: 0, maximum: Number.MAX_SAFE_INTEGER }),
-				weight_kg: TNumeric({ precision: 10, scale: 3, minimum: 0.001 }),
-				height_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-				width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-				depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
-				images: Type.Array(Type.String({ format: 'uri' }), { minItems: 1, maxItems: 20 })
-			}), { minItems: 1, maxItems: 100 }
+			Type.Pick(variantJsonSchema, [
+				'sku',
+				'ean',
+				'price',
+				'weight_kg',
+				'height_cm',
+				'width_cm',
+				'depth_cm',
+				'images',
+				'attributes'
+			]), { minItems: 1, maxItems: 100 }
 		)
 	})
 

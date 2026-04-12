@@ -13,7 +13,7 @@ export const marketplaceAccountRoutes = registerRoutes([
 	{
 		method: 'get',
 		path: '/',
-		auth_method: 'jwt',
+		auth_method: 'any',
 		use_case_class: ListMarketplaceAccounts
 	},
 	{
@@ -25,7 +25,7 @@ export const marketplaceAccountRoutes = registerRoutes([
 	{
 		method: 'get',
 		path: '/:id',
-		auth_method: 'jwt',
+		auth_method: 'any',
 		use_case_class: GetMarketplaceAccount
 	},
 	{

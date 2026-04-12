@@ -1,4 +1,4 @@
-import { IMarketplaceAccount, IMarketplaceProvider } from '@integrator-packages/database/entities'
+import { AccountStatus, IMarketplaceAccount, IMarketplaceProvider } from '@integrator-packages/database/entities'
 
 import { IPagination, IPaginator } from '@utils/pagination'
 import { CustomOmit } from '@utils/types'
@@ -13,6 +13,14 @@ export type IFindManyResponse = {
 	} & IMarketplaceAccount>
 	pagination: IPagination
 }
+
+export type IFindManyWithDistinctProvidersParams = {
+	user_id: string
+	status: AccountStatus
+}
+export type IFindManyWithDistinctProvidersResponse = Array<{
+	provider: Pick<IMarketplaceProvider, 'provider' | 'base_url'>
+} & IMarketplaceAccount>
 
 export type IFindByIdResponse = {
 	provider: Pick<IMarketplaceProvider, 'provider' | 'display_name'>
@@ -32,6 +40,10 @@ export type IUpdateParams = Partial<
 
 export interface IMarketplaceAccountsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
+	/** A method that will not return a provider more than once */
+	findManyWithDistinctProviders(
+		params: IFindManyWithDistinctProvidersParams
+	): Promise<IFindManyWithDistinctProvidersResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
 	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
 	count(params: ICountParams): Promise<number>

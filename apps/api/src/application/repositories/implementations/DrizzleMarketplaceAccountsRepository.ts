@@ -1,4 +1,4 @@
-import { eq, getTableColumns, sql } from 'drizzle-orm'
+import { and, eq, getTableColumns, sql } from 'drizzle-orm'
 
 import { marketplaceAccounts, marketplaceProviders } from '@integrator-packages/database/drizzle/tables'
 import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
@@ -11,6 +11,8 @@ import {
 	IFindByIdSimplifiedResponse,
 	IFindManyParams,
 	IFindManyResponse,
+	IFindManyWithDistinctProvidersParams,
+	IFindManyWithDistinctProvidersResponse,
 	IMarketplaceAccountsRepository,
 	IUpdateParams
 } from '@repositories/IMarketplaceAccountsRepository'
@@ -59,6 +61,25 @@ export class DrizzleMarketplaceAccountsRepository
 			counter: this.count({ user_id }),
 			paginator
 		})
+	}
+
+	async findManyWithDistinctProviders({
+		user_id, status
+	}: IFindManyWithDistinctProvidersParams): Promise<IFindManyWithDistinctProvidersResponse> {
+		return await this.drizzleClient
+			.selectDistinctOn([marketplaceProviders.provider], {
+				...getTableColumns(marketplaceAccounts),
+				provider: {
+					provider: marketplaceProviders.provider,
+					base_url: marketplaceProviders.base_url
+				}
+			})
+			.from(marketplaceAccounts)
+			.innerJoin(marketplaceProviders, eq(marketplaceAccounts.provider_id, marketplaceProviders.id))
+			.where(and(
+				eq(marketplaceAccounts.user_id, user_id),
+				eq(marketplaceAccounts.status, status)
+			))
 	}
 
 	async findById(id: string): Promise<IFindByIdResponse | null> {

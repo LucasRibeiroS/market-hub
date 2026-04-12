@@ -1,11 +1,12 @@
 import { IFailedResponse, ProcessOptions } from '@utils/response'
 
-export abstract class HttpException {
+export abstract class HttpException extends Error {
 	process: ProcessOptions.FAILED = ProcessOptions.FAILED
 	status_code: number
 	body: string
 
 	constructor(response: Pick<IFailedResponse, 'status_code' | 'body'>) {
+		super(response.body)
 		this.status_code = response.status_code
 		this.body = response.body
 	}

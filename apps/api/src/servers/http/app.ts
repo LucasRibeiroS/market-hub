@@ -28,6 +28,7 @@ import { usersRoutes } from '@http/routes/users_routes'
 import { productsRoutes } from '@http/routes/products_routes'
 import { variantsRoutes } from '@http/routes/variants_routes'
 import { marketplaceAccountRoutes } from '@http/routes/marketplace_account_routes'
+import { marketplaceListingsRoutes } from '@http/routes/marketplace_listings_routes'
 import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_routes'
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
@@ -84,8 +85,6 @@ export class HttpServer {
 					.send({ process: error.process, body: error.body })
 			}
 
-			console.error('Unexpected error:', error)
-
 			return reply.status(500).send({
 				process: 'failed',
 				body: 'Internal server error'
@@ -140,6 +139,7 @@ export class HttpServer {
 		this.app.register(productsRoutes)
 		this.app.register(variantsRoutes)
 		this.app.register(marketplaceAccountRoutes)
+		this.app.register(marketplaceListingsRoutes)
 		this.app.register(marketplaceProviderRoutes)
 	}
 

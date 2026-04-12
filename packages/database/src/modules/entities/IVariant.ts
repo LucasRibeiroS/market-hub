@@ -10,7 +10,7 @@ export type IVariant = {
 	width_cm: string
 	depth_cm: string
 	images: string[]
-	attributes: Record<string, string>
+	attributes: Record<string, unknown>
 	is_primary: boolean
 	created_at: Date
 	updated_at: Date

@@ -9,5 +9,6 @@ describe('variants use-cases', () => {
 		expect(() => container.resolve(useCases.BulkCreateVariants)).not.toThrow()
 		expect(() => container.resolve(useCases.BulkDeleteVariants)).not.toThrow()
 		expect(() => container.resolve(useCases.GetVariantBySku)).not.toThrow()
+		expect(() => container.resolve(useCases.UpdateVariantBySku)).not.toThrow()
 	})
 })

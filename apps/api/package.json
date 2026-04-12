@@ -47,6 +47,8 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
+    "@bull-board/api": "^6.21.0",
+    "@bull-board/fastify": "^6.21.0",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "*",
     "@types/nodemailer": "^6.4.17",

@@ -4,7 +4,7 @@ import { products, variants } from '@integrator-packages/database/drizzle/tables
 import { DrizzleBaseRepository, jsonAggBuildObject } from '@integrator-packages/database/drizzle/client'
 import { IProduct } from '@integrator-packages/database/entities'
 
-import { ICountParams, ICreateParams, IFindByIdResponse, IFindByIdSimplifiedResponse, IFindManyParams, IFindManyResponse, IProductsRepository } from '@repositories/IProductsRepository'
+import { ICountParams, ICreateParams, IFindByIdResponse, IFindByIdSimplifiedResponse, IFindManyParams, IFindManyResponse, IProductsRepository, IUpdateParams } from '@repositories/IProductsRepository'
 
 export class DrizzleProductsRepository extends DrizzleBaseRepository implements IProductsRepository {
 	private findByIdQuery = this.drizzleClient.query.products
@@ -64,6 +64,15 @@ export class DrizzleProductsRepository extends DrizzleBaseRepository implements 
 		return await this.drizzleClient
 			.insert(products)
 			.values(data)
+			.returning()
+			.then(([product]) => product)
+	}
+
+	async update(id: string, data: IUpdateParams): Promise<IProduct> {
+		return await this.drizzleClient
+			.update(products)
+			.set(data)
+			.where(eq(products.id, id))
 			.returning()
 			.then(([product]) => product)
 	}

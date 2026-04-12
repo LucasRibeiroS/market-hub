@@ -92,7 +92,7 @@ export const productJsonSchema = createSchema(Type.Object({
 	user_id: Type.String({ readOnly: true }),
 	name: Type.String(),
 	description: Type.String(),
-	attributes: Type.Record(Type.String(), Type.Any()),
+	attributes: Type.Record(Type.String(), Type.Any(), { description: 'Product scoped attributes, like brand, manufacturer, etc.' }),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })
 }), 'entities/IProduct')
@@ -110,7 +110,7 @@ export const variantJsonSchema = createSchema(Type.Object({
 	width_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 	depth_cm: TNumeric({ precision: 10, scale: 2, minimum: 0.1 }),
 	images: Type.Array(Type.String(), { minItems: 1, maxItems: 20 }),
-	attributes: Type.Record(Type.String(), Type.Any()),
+	attributes: Type.Record(Type.String(), Type.Any(), { description: 'Variant scoped attributes, like color, size, etc.' }),
 	is_primary: Type.Boolean(),
 	created_at: DateType({ readOnly: true }),
 	updated_at: DateType({ readOnly: true })

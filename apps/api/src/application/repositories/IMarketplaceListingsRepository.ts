@@ -23,13 +23,12 @@ export type IUpdateParams = Partial<
 	CustomOmit<IMarketplaceListing, 'id'>
 >
 
-export type IUpsertParams = ICreateManyParams
-
 export interface IMarketplaceListingsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
 	createMany(params: ICreateManyParams): Promise<IMarketplaceListing[]>
 	update(id: string, params: IUpdateParams): Promise<void>
+	updateMany(ids: string[], params: IUpdateParams): Promise<void>
 }
 
 export const MarketplaceListingsRepositorySymbol = Symbol('IMarketplaceListingsRepository')
