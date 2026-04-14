@@ -41,7 +41,7 @@ export type ICategoryPredictionResponse = {
 	domain_name: string
 }
 
-export type IMeliAttributeResponse = {
+export type ICategoryAttributesResponse = {
 	id: string
 	name: string
 	value_type: string

@@ -2,25 +2,27 @@ import { addDays, addSeconds } from 'date-fns'
 import { inject, injectable } from 'tsyringe'
 
 import { IMarketplaceCredential, IMarketplaceProvider, Provider } from '@integrator-packages/database/entities'
+
 import { ILoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters'
+
 import { FailedDependencyException } from '@integrator-packages/use-case/exceptions'
 
 import { UnknownObject } from '@utils/types'
 
+import { MercadoLivreClient } from '@adapters/implementations/mercado-livre/MercadoLivreClient'
 import {
 	BuyingMode,
 	Condition,
 	IAttribute,
+	ICategoryAttributesResponse,
 	ICategoryPredictionResponse,
 	IItemPayload,
 	IItemResponse,
-	IMeliAttributeResponse,
 	IOAuthTokenPayload,
 	IOAuthTokenResponse,
 	IUserResponse,
 	ListingType
 } from '@adapters/implementations/mercado-livre/types'
-import { MercadoLivreClient } from '@adapters/implementations/mercado-livre/MercadoLivreClient'
 
 import {
 	IExchangeCodeParams,
@@ -70,7 +72,7 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 				access_token: res.access_token,
 				access_token_expires_at: addSeconds(new Date(), res.expires_in),
 				refresh_token: res.refresh_token,
-				// Mercado livre refresh tokens may have a longer expiration, but if it statys invalid for 60 days, it's likely to be expired or revoked
+				// Mercado livre refresh tokens may have a longer expiration, but if it stays invalid for 60 days, it's likely to be expired or revoked
 				refresh_token_expires_at: addDays(new Date(), 60),
 				scopes: res.scope.split(' ').reduce((acc, scope) => ({ ...acc, [scope]: true }), {}),
 				token_type: res.token_type
@@ -154,7 +156,7 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 
 		const { category_id, category_name } = predictions[0]
 
-		const [attributes, attrErr] = await client.get<IMeliAttributeResponse[]>(`/categories/${category_id}/attributes`)
+		const [attributes, attrErr] = await client.get<ICategoryAttributesResponse[]>(`/categories/${category_id}/attributes`)
 		if (attrErr) {
 			this.loggerAdapter.error(`Mercado Livre fetch category attributes error: ${attrErr.message}`)
 			throw new FailedDependencyException('Failed to fetch category attributes for mercado livre')
@@ -330,11 +332,11 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	}
 
 	// This is used to avoid unathenticated requests clearing the credentials of the authenticated client
-	private getUnauthenticatedClient({ base_url }: IGetUnauthenticatedClientParams): MercadoLivreClient {
+	protected getUnauthenticatedClient({ base_url }: IGetUnauthenticatedClientParams): MercadoLivreClient {
 		return new MercadoLivreClient(base_url, { access_token: '', token_type: 'Bearer' })
 	}
 
-	private getClient({ base_url, credentials }: IGetClientParams): MercadoLivreClient {
+	protected getClient({ base_url, credentials }: IGetClientParams): MercadoLivreClient {
 		if (!this.client) {
 			this.client = new MercadoLivreClient(base_url, credentials)
 		} else {
