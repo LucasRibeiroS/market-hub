@@ -18,20 +18,20 @@ export class BaseHttpClient {
 		return this.request<T>(endpoint, { ...options, method: 'GET' })
 	}
 
-	post<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	post<T>(endpoint: string, body: UnknownObject | string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'POST',
-			body: JSON.stringify(body),
-			headers: { 'Content-Type': 'application/json', ...options?.headers }
+			body: typeof body === 'string' ? body : JSON.stringify(body),
+			headers: options?.headers
 		})
 	}
 
-	patch<T>(endpoint: string, body: UnknownObject, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	patch<T>(endpoint: string, body: UnknownObject | string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'PATCH',
-			body: JSON.stringify(body),
+			body: typeof body === 'string' ? body : JSON.stringify(body),
 			headers: options?.headers
 		})
 	}
