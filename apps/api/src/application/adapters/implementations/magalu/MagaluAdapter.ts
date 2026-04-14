@@ -53,6 +53,8 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			throw new FailedDependencyException('Failed to exchange code for Magalu')
 		}
 
+		this.ensureRequiredScopes(res.scope)
+
 		return {
 			credentials: {
 				access_token: res.access_token,
@@ -129,6 +131,26 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 
 	async publishProduct(_params: IPublishProductParams): Promise<IPublishProductResponse> {
 		throw new Error('Not implemented')
+	}
+
+	/** @throws FailedDependencyException if any of the required scopes are missing from the granted scopes */
+	private ensureRequiredScopes(scopes: string): void {
+		const required = [
+			'open:portfolio-skus-seller:read',
+			'open:portfolio-skus-seller:write',
+			'open:portfolio-prices-seller:read',
+			'open:portfolio-prices-seller:write',
+			'open:portfolio-stocks-seller:read',
+			'open:portfolio-stocks-seller:write',
+			'open:portfolio-categories-seller:read',
+			'open:order-order-seller:read'
+		]
+
+		const granted = new Set(scopes.split(' '))
+		const missing = required.filter(s => !granted.has(s))
+		if (missing.length > 0) {
+			throw new FailedDependencyException(`Authorization incomplete — the following permissions were not granted: ${missing.join(', ')}`)
+		}
 	}
 
 	/** Decode the payload segment of a JWT without verifying the signature. */
