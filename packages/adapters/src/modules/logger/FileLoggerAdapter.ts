@@ -47,6 +47,10 @@ export class FileLoggerAdapter implements ILoggerAdapter {
 		this.infoLogger.log('info', message)
 	}
 
+	warn(message: string): void {
+		this.infoLogger.log('warn', message)
+	}
+
 	error(message: string): void {
 		this.errorLogger.log('error', message)
 	}
