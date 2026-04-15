@@ -5,7 +5,7 @@ import { ListingStatusEnum } from '@integrator-packages/database/entities'
 import { IUseCase } from '@integrator-packages/use-case'
 import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
-import { IFindManyResponse as IFindManyListingsResponse, IMarketplaceListingsRepository, MarketplaceListingsRepositorySymbol } from '@repositories/IMarketplaceListingsRepository'
+import { IFindManyForPublishResponse as IFindManyListingsResponse, IMarketplaceListingsRepository, MarketplaceListingsRepositorySymbol } from '@repositories/IMarketplaceListingsRepository'
 import { IMarketplaceCredentialsRepository, MarketplaceCredentialsRepositorySymbol } from '@repositories/IMarketplaceCredentialsRepository'
 
 import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
@@ -33,7 +33,7 @@ export class PublishMarketplaceListings implements IUseCase<T, K> {
 	) {}
 
 	async execute({ listing_ids }: T): Promise<K> {
-		const listings = await this.marketplaceListingsRepository.findMany({ id: listing_ids })
+		const listings = await this.marketplaceListingsRepository.findManyForPublish({ id: listing_ids })
 		if (listings.length === 0) {
 			throw new NotFoundException('No marketplace listings found for the provided IDs')
 		}

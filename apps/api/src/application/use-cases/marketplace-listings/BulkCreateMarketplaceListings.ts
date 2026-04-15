@@ -25,7 +25,7 @@ type BulkCreateMarketplaceListingsRequest = {
 	main_variant_id: string
 }
 type BulkCreateMarketplaceListingsResponse = {
-	listings: Array<Pick<IMarketplaceListing, 'id' | 'status'>>
+	listings: Array<Pick<IMarketplaceListing, 'id' | 'variant_id'>>
 }
 
 type T = BulkCreateMarketplaceListingsRequest
@@ -38,7 +38,7 @@ type K = BulkCreateMarketplaceListingsResponse
 	description: 'Creates a marketplace listing for a specified product and marketplace account. The listing will be created with a pending status and will be synchronized with the marketplace in the background.',
 	tags: ['Marketplace Listings'],
 	response: Type.Object({
-		listings: Type.Array(Type.Pick(Type.Ref(marketplaceListingJsonSchema.$id), ['id', 'status']))
+		listings: Type.Array(Type.Pick(Type.Ref(marketplaceListingJsonSchema.$id), ['id', 'variant_id']))
 	}, { $id: 'marketplace-listings/BulkCreateMarketplaceListingsResponse' })
 })
 export class BulkCreateMarketplaceListings implements IUseCase<T, K> {
@@ -90,7 +90,7 @@ export class BulkCreateMarketplaceListings implements IUseCase<T, K> {
 		return {
 			listings: listings.map(listing => ({
 				id: listing.id,
-				status: listing.status
+				variant_id: listing.variant_id
 			}))
 		}
 	}
@@ -138,7 +138,7 @@ export class BulkCreateMarketplaceListings implements IUseCase<T, K> {
 	private async validateListingUniqueness({
 		account_id, variant_ids
 	}: IValidateListingUniquenessParams): Promise<void> {
-		const listings = await this.marketplaceListingsRepository.findMany({
+		const listings = await this.marketplaceListingsRepository.findManyForPublish({
 			account_id,
 			variant_id: variant_ids
 		})
