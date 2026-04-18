@@ -1,8 +1,6 @@
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { Transactional } from '@integrator-packages/database/transaction'
-
 import { IUseCase } from '@integrator-packages/use-case'
 import { BaseValidator, ValidateWith } from '@integrator-packages/use-case/validator'
 import { NotFoundException } from '@integrator-packages/use-case/exceptions'
@@ -32,7 +30,6 @@ export class RefreshMarketplaceCredential implements IUseCase<T, K> {
 		private marketplaceAdapterFactory: IMarketplaceAdapterFactory
 	) {}
 
-	@Transactional()
 	async execute({ account_id }: T): Promise<K> {
 		const existingCredential = await this.marketplaceCredentialsRepository.findFirst({ account_id })
 		if (existingCredential === null) {
