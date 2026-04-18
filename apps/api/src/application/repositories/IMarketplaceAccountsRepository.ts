@@ -1,4 +1,4 @@
-import { AccountStatus, IMarketplaceAccount, IMarketplaceProvider } from '@integrator-packages/database/entities'
+import { AccountStatus, IMarketplaceAccount, IMarketplaceCredential, IMarketplaceProvider, Provider } from '@integrator-packages/database/entities'
 
 import { IPagination, IPaginator } from '@utils/pagination'
 import { CustomOmit } from '@utils/types'
@@ -17,8 +17,10 @@ export type IFindManyResponse = {
 export type IFindManyWithDistinctProvidersParams = {
 	user_id: string
 	status: AccountStatus
+	provider?: Provider[]
 }
 export type IFindManyWithDistinctProvidersResponse = Array<{
+	credentials: Pick<IMarketplaceCredential, 'access_token' | 'token_type'>
 	provider: Pick<IMarketplaceProvider, 'provider' | 'base_url'>
 } & IMarketplaceAccount>
 

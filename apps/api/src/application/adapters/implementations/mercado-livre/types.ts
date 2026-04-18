@@ -44,6 +44,9 @@ export type ICategoryPredictionResponse = {
 export type ICategoryAttributesResponse = {
 	id: string
 	name: string
+	tooltip?: string
+	hint?: string
+	example?: string
 	value_type: string
 	tags?: {
 		required?: boolean

@@ -1,7 +1,7 @@
-import { and, eq, getTableColumns, sql } from 'drizzle-orm'
+import { and, eq, getTableColumns, inArray, sql } from 'drizzle-orm'
 
-import { marketplaceAccounts, marketplaceProviders } from '@integrator-packages/database/drizzle/tables'
-import { DrizzleBaseRepository } from '@integrator-packages/database/drizzle/client'
+import { marketplaceAccounts, marketplaceCredentials, marketplaceProviders } from '@integrator-packages/database/drizzle/tables'
+import { DrizzleBaseRepository, jsonBuildObject } from '@integrator-packages/database/drizzle/client'
 import { IMarketplaceAccount } from '@integrator-packages/database/entities'
 
 import {
@@ -64,21 +64,27 @@ export class DrizzleMarketplaceAccountsRepository
 	}
 
 	async findManyWithDistinctProviders({
-		user_id, status
+		user_id, status, provider
 	}: IFindManyWithDistinctProvidersParams): Promise<IFindManyWithDistinctProvidersResponse> {
 		return await this.drizzleClient
 			.selectDistinctOn([marketplaceProviders.provider], {
 				...getTableColumns(marketplaceAccounts),
-				provider: {
+				credentials: jsonBuildObject({
+					access_token: marketplaceCredentials.access_token,
+					token_type: marketplaceCredentials.token_type
+				}),
+				provider: jsonBuildObject({
 					provider: marketplaceProviders.provider,
 					base_url: marketplaceProviders.base_url
-				}
+				})
 			})
 			.from(marketplaceAccounts)
-			.innerJoin(marketplaceProviders, eq(marketplaceAccounts.provider_id, marketplaceProviders.id))
+			.innerJoin(marketplaceProviders, eq(marketplaceProviders.id, marketplaceAccounts.provider_id))
+			.innerJoin(marketplaceCredentials, eq(marketplaceCredentials.account_id, marketplaceAccounts.id))
 			.where(and(
 				eq(marketplaceAccounts.user_id, user_id),
-				eq(marketplaceAccounts.status, status)
+				eq(marketplaceAccounts.status, status),
+				provider !== undefined ? inArray(marketplaceProviders.provider, provider) : undefined
 			))
 	}
 

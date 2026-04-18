@@ -57,6 +57,7 @@ export type IRevokeAuthorizationResponse = {
 }
 
 export type IGetAttributesParams = {
+	credentials: IMarketplaceCredentials
 	provider: Pick<IMarketplaceProvider, 'base_url'>
 	product: {
 		name: string
@@ -68,6 +69,7 @@ export type IGetAttributesResponse = {
 	attributes: Array<{
 		id: string
 		name: string
+		description?: string
 		required: boolean
 		allowed_in_variants?: boolean // indicates if the attribute is required for variants or just for the main product
 		allowed_values?: string[] // if the marketplace restricts to an enum

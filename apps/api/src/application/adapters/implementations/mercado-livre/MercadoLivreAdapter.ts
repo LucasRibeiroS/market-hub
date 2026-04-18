@@ -165,14 +165,18 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		return {
 			category_id,
 			category_name,
-			attributes: attributes
-				.map(attr => ({
-					id: attr.id,
-					name: attr.name,
-					required: attr.tags?.required || false,
-					allowed_in_variants: attr.tags?.allow_variations || false,
-					allowed_values: attr.values?.map(v => v.name)
-				}))
+			attributes: attributes.map(attr => ({
+				id: attr.id,
+				name: attr.name,
+				description: this.buildAttributeDescription({
+					tooltip: attr.tooltip,
+					example: attr.example,
+					hint: attr.hint
+				}),
+				required: attr.tags?.required || false,
+				allowed_in_variants: attr.tags?.allow_variations || false,
+				allowed_values: attr.values?.map(v => v.name)
+			}))
 		}
 	}
 
@@ -184,6 +188,7 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		const client = this.getClient({ base_url: provider.base_url, credentials })
 
 		const { category_id, attributes } = await this.getAttributes({
+			credentials,
 			provider,
 			product: { name: product.name }
 		})
@@ -266,6 +271,17 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		}
 	}
 
+	private buildAttributeDescription({
+		tooltip, hint, example
+	}: IBuildAttributeDescriptionParams): string | undefined {
+		const parts = [tooltip, hint].filter((value): value is string => Boolean(value))
+		if (example !== undefined) {
+			parts.push(`Eg: ${example}`)
+		}
+
+		return parts.length > 0 ? parts.join(' ') : undefined
+	}
+
 	private mapAttributeCombinations({
 		product,
 		allowed_variation_attributes
@@ -346,6 +362,8 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		return this.client
 	}
 }
+
+type IBuildAttributeDescriptionParams = Pick<ICategoryAttributesResponse, 'tooltip' | 'example' | 'hint'>
 
 type IMapAttributeCombinationsParams = {
 	product: {

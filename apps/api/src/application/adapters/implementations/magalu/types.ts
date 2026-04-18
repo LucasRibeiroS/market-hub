@@ -32,6 +32,55 @@ export type IJwtPayload = {
 
 /**
  * ========================================
+ * Product listing types
+ * ========================================
+ */
+
+export type ICategoryResponse = {
+	id: string
+	name: string
+	path: string
+	parent_id: string | null
+	created_at: string
+	updated_at: string | null
+	created_by: string
+	updated_by: string | null
+}
+
+export type IAttributeResponse = {
+	id: string
+	name: string
+	display_name: string
+	type: 'text' | 'choice' | 'number'
+	required: 'required' | 'recommended' | 'optional'
+	variation: boolean
+	choices: string[] | null
+	example: string | null
+	position: number
+	required_is_default: boolean
+	required_matching: boolean
+	is_inherited: boolean
+}
+
+export type IPaginatedResponse<T> = {
+	meta: {
+		page: {
+			offset: number
+			limit: number
+			count: number
+			max_limit?: number
+		}
+		links: {
+			self: string
+			next: string | null
+			previous: string | null
+		}
+	}
+	results: T[]
+}
+
+/**
+ * ========================================
  * Error response types
  * ========================================
  */

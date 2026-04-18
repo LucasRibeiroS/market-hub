@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { AccountStatusEnum, IMarketplaceProvider, IProduct, IVariant } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IMarketplaceCredential, IMarketplaceProvider, IProduct, IVariant, Provider } from '@integrator-packages/database/entities'
 
 import { IUseCase } from '@integrator-packages/use-case'
 import { Documentation } from '@integrator-packages/use-case/documentation'
@@ -14,10 +14,12 @@ import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } f
 import { MarketplaceAdapterFactory } from '@factories/implementations/MarketplaceAdapterFactory'
 
 import { CustomOmit } from '@utils/types'
+import { providerEnumSchema } from '@utils/typebox'
 
 type IGetProductRequiredAttributesRequest = {
 	id: string
 	user_id: string
+	provider?: Provider[]
 }
 type IGetProductRequiredAttributesResponse = {
 	required_attributes: IAttribute[]
@@ -41,8 +43,10 @@ type K = IGetProductRequiredAttributesResponse
 		required_attributes: Type.Array(Type.Object({
 			id: Type.String(),
 			name: Type.String(),
+			description: Type.Optional(Type.String()),
 			allowed_in_variants: Type.Boolean(),
-			allowed_values: Type.Optional(Type.Array(Type.String()))
+			allowed_values: Type.Optional(Type.Array(Type.String())),
+			provider: Type.Ref(providerEnumSchema.$id)
 		})),
 		variants: Type.Array(Type.Object({
 			id: Type.String(),
@@ -50,7 +54,9 @@ type K = IGetProductRequiredAttributesResponse
 			missing_attributes: Type.Array(Type.Object({
 				id: Type.String(),
 				name: Type.String(),
-				allowed_values: Type.Optional(Type.Array(Type.String()))
+				description: Type.Optional(Type.String()),
+				allowed_values: Type.Optional(Type.Array(Type.String())),
+				provider: Type.Ref(providerEnumSchema.$id)
 			}))
 		}))
 	}, { $id: 'products/GetProductRequiredAttributesResponse' })
@@ -65,15 +71,16 @@ export class GetProductRequiredAttributes implements IUseCase<T, K> {
 		private readonly marketplaceAdapterFactory: MarketplaceAdapterFactory
 	) {}
 
-	async execute({ id, user_id }: T): Promise<K> {
+	async execute({ id, user_id, provider }: T): Promise<K> {
 		const [{ product }, { accounts }] = await Promise.all([
 			this.loadAndValidateProduct({ id, user_id }),
-			this.loadAccounts({ user_id })
+			this.loadAccounts({ user_id, provider })
 		])
 
 		const requiredAttributesList = await Promise.all(
 			accounts.map(account => this.getRequiredAttributesForProvider({
 				provider: account.provider,
+				credentials: account.credentials,
 				product: { name: product.name }
 			}))
 		)
@@ -124,10 +131,11 @@ export class GetProductRequiredAttributes implements IUseCase<T, K> {
 	/**
 	 * @throws NotFoundException if no marketplace account is found
 	 */
-	private async loadAccounts({ user_id }: ILoadAccountsParams): Promise<ILoadAccountsResponse> {
+	private async loadAccounts({ user_id, provider }: ILoadAccountsParams): Promise<ILoadAccountsResponse> {
 		const accounts = await this.marketplaceAccountsRepository.findManyWithDistinctProviders({
 			user_id,
-			status: AccountStatusEnum.active
+			status: AccountStatusEnum.active,
+			provider
 		})
 		if (accounts.length === 0) {
 			throw new NotFoundException('No active marketplace accounts found for user')
@@ -138,29 +146,48 @@ export class GetProductRequiredAttributes implements IUseCase<T, K> {
 				provider: {
 					provider: account.provider.provider,
 					base_url: account.provider.base_url
+				},
+				credentials: {
+					access_token: account.credentials.access_token,
+					token_type: account.credentials.token_type
 				}
 			}))
 		}
 	}
 
 	private async getRequiredAttributesForProvider({
-		provider, product
+		provider, credentials, product
 	}: IGetRequiredAttributesForProviderParams): Promise<IAttribute[]> {
 		const adapter = this.marketplaceAdapterFactory.get(provider.provider)
 
 		const { attributes } = await adapter.getAttributes({
 			provider: { base_url: provider.base_url },
+			credentials: {
+				access_token: credentials.access_token,
+				token_type: credentials.token_type
+			},
 			product: { name: product.name }
 		})
 
-		return attributes.filter(attr => attr.required)
+		return attributes
+			.filter(attr => attr.required)
+			.map(attr => ({
+				...attr,
+				provider: provider.provider
+			}))
 	}
 }
 
+@Documentation({
+	request: Type.Omit(Validator.schema, ['id', 'user_id'], { $id: 'products/GetProductRequiredAttributesRequest' })
+})
 class Validator extends BaseValidator<T, typeof Validator.schema> {
 	static schema = Type.Object({
 		id: Type.String(),
-		user_id: Type.String()
+		user_id: Type.String(),
+		provider: Type.Optional(
+			Type.Array(Type.Ref(providerEnumSchema.$id), { minItems: 1 })
+		)
 	})
 
 	protected schema = Validator.schema
@@ -169,8 +196,10 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 type IAttribute = {
 	id: string
 	name: string
+	description?: string
 	allowed_values?: string[]
 	allowed_in_variants?: boolean
+	provider: Provider
 }
 
 type ILoadAndValidateProductParams = Pick<T, 'id' | 'user_id'>
@@ -178,14 +207,16 @@ type ILoadAndValidateProductResponse = {
 	product: { variants: IVariant[] } & IProduct
 }
 
-type ILoadAccountsParams = Pick<T, 'user_id'>
+type ILoadAccountsParams = Pick<T, 'user_id' | 'provider'>
 type ILoadAccountsResponse = {
 	accounts: Array<{
 		provider: Pick<IMarketplaceProvider, 'provider' | 'base_url'>
+		credentials: Pick<IMarketplaceCredential, 'access_token' | 'token_type'>
 	}>
 }
 
 type IGetRequiredAttributesForProviderParams = {
 	provider: Pick<IMarketplaceProvider, 'provider' | 'base_url'>
+	credentials: Pick<IMarketplaceCredential, 'access_token' | 'token_type'>
 	product: { name: string }
 }

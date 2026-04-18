@@ -8,7 +8,7 @@ import { ILoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapte
 import { FailedDependencyException } from '@integrator-packages/use-case/exceptions'
 
 import { MagaluClient } from '@adapters/implementations/magalu/MagaluClient'
-import { IJwtPayload, IOAuthTokenPayload, IOAuthTokenResponse } from '@adapters/implementations/magalu/types'
+import { IAttributeResponse, ICategoryResponse, IJwtPayload, IOAuthTokenPayload, IOAuthTokenResponse, IPaginatedResponse } from '@adapters/implementations/magalu/types'
 
 import {
 	IExchangeCodeParams,
@@ -66,7 +66,6 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 				token_type: res.token_type
 			}
 		}
-
 	}
 
 	async getUserInfo({ credentials }: IGetUserInfoParams): Promise<IGetUserInfoResponse> {
@@ -125,8 +124,44 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		return { external_id: account.external_id }
 	}
 
-	async getAttributes(_params: IGetAttributesParams): Promise<IGetAttributesResponse> {
-		throw new Error('Not implemented')
+	async getAttributes({ provider, credentials, product }: IGetAttributesParams): Promise<IGetAttributesResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const [categories, catErr] = await client.get<IPaginatedResponse<ICategoryResponse>>(
+			`/seller/v1/portfolios/categories?name=${encodeURIComponent(product.name)}&_limit=1`
+		)
+		if (catErr || categories.results.length === 0) {
+			this.loggerAdapter.error(`Magalu category search error: ${catErr?.message ?? 'No results'}`)
+			throw new FailedDependencyException('Failed to find category for Magalu')
+		}
+
+		const category = categories.results[0]
+
+		const [
+			[attrRes, attrErr],
+			[datasheetRes, datasheetErr]
+		] = await Promise.all([
+			client.get<IPaginatedResponse<IAttributeResponse>>(`/seller/v1/portfolios/categories/${category.id}/attributes`),
+			client.get<IPaginatedResponse<IAttributeResponse>>(`/seller/v1/portfolios/categories/${category.id}/datasheet`)
+		])
+
+		if (attrErr) {
+			this.loggerAdapter.error(`Magalu fetch variation attributes error: ${attrErr.message}`)
+			throw new FailedDependencyException('Failed to fetch variation attributes for Magalu')
+		}
+		if (datasheetErr) {
+			this.loggerAdapter.error(`Magalu fetch datasheet attributes error: ${datasheetErr.message}`)
+			throw new FailedDependencyException('Failed to fetch datasheet attributes for Magalu')
+		}
+
+		return {
+			category_id: category.id,
+			category_name: category.name,
+			attributes: [
+				...this.mapAttributes({ attributes: attrRes.results, type: 'variation' }),
+				...this.mapAttributes({ attributes: datasheetRes.results, type: 'datasheet' })
+			]
+		}
 	}
 
 	async publishProduct(_params: IPublishProductParams): Promise<IPublishProductResponse> {
@@ -164,6 +199,17 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 	}
 
+	private mapAttributes({ attributes, type }: IMapAttributesParams): IGetAttributesResponse['attributes'] {
+		return attributes.map(attr => ({
+			id: attr.name,
+			name: attr.display_name,
+			description: attr.example || undefined,
+			required: attr.required === 'required',
+			allowed_in_variants: type === 'variation',
+			allowed_values: attr.choices !== null ? attr.choices : undefined
+		}))
+	}
+
 	protected getUnauthenticatedClient({ base_url }: IGetUnauthenticatedClientParams): MagaluClient {
 		return new MagaluClient(base_url, { access_token: '', token_type: 'Bearer' })
 	}
@@ -177,6 +223,11 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 
 		return this.client
 	}
+}
+
+type IMapAttributesParams = {
+	attributes: IAttributeResponse[]
+	type: 'variation' | 'datasheet'
 }
 
 type IGetUnauthenticatedClientParams = Pick<IMarketplaceProvider, 'base_url'>
