@@ -1,7 +1,7 @@
 import { ILoggerAdapter } from '@logger/ILoggerAdapter'
 
 export class ConsoleLoggerAdapter implements ILoggerAdapter {
-	log(message: string): void {
+	info(message: string): void {
 		console.log(message)
 	}
 

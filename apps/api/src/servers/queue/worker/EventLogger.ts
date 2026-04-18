@@ -37,7 +37,7 @@ export class EventLogger {
 				this.jobStartTimes.delete(key)
 			}
 
-			this.loggerAdapter.log(
+			this.loggerAdapter.info(
 				this.formatLog({
 					result: 'OK',
 					queue_name: queueName,

@@ -43,7 +43,7 @@ export class FileLoggerAdapter implements ILoggerAdapter {
 		]
 	})
 
-	log(message: string): void {
+	info(message: string): void {
 		this.infoLogger.log('info', message)
 	}
 
