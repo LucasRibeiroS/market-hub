@@ -51,7 +51,7 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	) {}
 
 	async exchangeCode({ code, provider }: IExchangeCodeParams): Promise<IExchangeCodeResponse> {
-		const client = this.getUnauthenticatedClient({ base_url: provider.base_url })
+		const client = this.getUnauthenticatedClient({ base_url: provider.token_url })
 
 		const payload: IOAuthTokenPayload = {
 			client_id: provider.client_id,
@@ -98,7 +98,7 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 	}
 
 	async refreshToken({ refresh_token, provider }: IRefreshTokenParams): Promise<IRefreshTokenResponse> {
-		const client = this.getUnauthenticatedClient({ base_url: provider.base_url })
+		const client = this.getUnauthenticatedClient({ base_url: provider.token_url })
 
 		const payload: IOAuthTokenPayload = {
 			client_id: provider.client_id,

@@ -9,5 +9,6 @@ export type IMarketplaceProvider = {
 	client_secret: string
 	redirect_uri: string
 	base_url: string
+	token_url: string
 	auth_url: string
 }

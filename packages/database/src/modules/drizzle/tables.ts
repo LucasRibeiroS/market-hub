@@ -81,6 +81,7 @@ export const marketplaceProviders = pgTable('marketplace_providers', {
 	client_secret: text().notNull(),
 	redirect_uri: text().notNull(),
 	base_url: text().notNull(),
+	token_url: text().notNull(), // the URL to exchange authorization code for access token
 	auth_url: text().notNull()
 })
 

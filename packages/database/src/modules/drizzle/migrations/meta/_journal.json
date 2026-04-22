@@ -99,6 +99,13 @@
       "when": 1773610841190,
       "tag": "20260315214041_replace_marketplace_listing_external_id_with_product_and_variant_ids",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1776890131265,
+      "tag": "20260422203531_add_token_url_to_marketplace_providers_table",
+      "breakpoints": true
     }
   ]
 }

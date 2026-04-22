@@ -37,7 +37,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 	) {}
 
 	async exchangeCode({ code, provider }: IExchangeCodeParams): Promise<IExchangeCodeResponse> {
-		const client = this.getUnauthenticatedClient({ base_url: 'https://id.magalu.com' })
+		const client = this.getUnauthenticatedClient({ base_url: provider.token_url })
 
 		const payload: IOAuthTokenPayload = {
 			client_id: provider.client_id,
@@ -85,7 +85,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 	}
 
 	async refreshToken({ provider, refresh_token }: IRefreshTokenParams): Promise<IRefreshTokenResponse> {
-		const client = this.getUnauthenticatedClient({ base_url: provider.base_url })
+		const client = this.getUnauthenticatedClient({ base_url: provider.token_url })
 
 		const payload: IOAuthTokenPayload = {
 			client_id: provider.client_id,

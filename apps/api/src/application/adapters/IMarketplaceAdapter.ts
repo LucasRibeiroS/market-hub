@@ -25,7 +25,7 @@ export type IMarketplaceCredentials = Pick<OAuthCredentials, 'access_token' | 't
 
 export type IExchangeCodeParams = {
 	code: string
-	provider: ProviderClientConfig
+	provider: Pick<IMarketplaceProvider, 'token_url'> & ProviderClientConfig
 }
 export type IExchangeCodeResponse = {
 	credentials: OAuthCredentials
@@ -41,7 +41,7 @@ export type IGetUserInfoResponse = {
 
 export type IRefreshTokenParams = {
 	refresh_token: string
-	provider: ProviderClientConfig
+	provider: Pick<IMarketplaceProvider, 'token_url'> & ProviderClientConfig
 }
 export type IRefreshTokenResponse = {
 	credentials: OAuthCredentials
