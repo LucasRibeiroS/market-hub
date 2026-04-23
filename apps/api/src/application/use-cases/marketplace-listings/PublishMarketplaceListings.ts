@@ -77,7 +77,7 @@ export class PublishMarketplaceListings implements IUseCase<T, K> {
 				return this.marketplaceListingsRepository.update(listing.id, {
 					external_product_id: adapterListing.external_product_id,
 					external_variant_id: adapterListing.external_variant_id,
-					status: ListingStatusEnum.active,
+					status: adapterListing.status,
 					last_sync_at: new Date(),
 					sync_message: adapterListing.sync_message
 				})
