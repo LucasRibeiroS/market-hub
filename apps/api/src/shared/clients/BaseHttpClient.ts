@@ -1,8 +1,9 @@
 import { UnknownObject } from '@utils/types'
 import { TryCatchResult } from '@utils/try_catch'
 
-// A base fetch client that can be extended for specific APIs, providing common functionality like error handling, request configuration, etc.
+export type IRequestOptions = Omit<RequestInit, 'method' | 'body'>
 
+// A base fetch client that can be extended for specific APIs, providing common functionality like error handling, request configuration, etc.
 export class BaseHttpClient {
 	protected baseURL: string
 	protected defaultHeaders: Record<string, string> = {
@@ -14,11 +15,11 @@ export class BaseHttpClient {
 		this.defaultHeaders = { ...this.defaultHeaders, ...headers }
 	}
 
-	get<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	get<T>(endpoint: string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, { ...options, method: 'GET' })
 	}
 
-	post<T>(endpoint: string, body: UnknownObject | string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	post<T>(endpoint: string, body: UnknownObject | string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'POST',
@@ -27,7 +28,7 @@ export class BaseHttpClient {
 		})
 	}
 
-	patch<T>(endpoint: string, body: UnknownObject | string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	patch<T>(endpoint: string, body: UnknownObject | string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'PATCH',
@@ -36,8 +37,27 @@ export class BaseHttpClient {
 		})
 	}
 
-	delete<T>(endpoint: string, options?: Omit<RequestInit, 'method' | 'body'>): Promise<TryCatchResult<T>> {
+	delete<T>(endpoint: string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, { ...options, method: 'DELETE' })
+	}
+
+	protected async request<T>(endpoint: string, options?: RequestInit): Promise<TryCatchResult<T>> {
+		try {
+			const url = `${this.baseURL}${endpoint}`
+			const response = await fetch(url, {
+				...options,
+				headers: { ...this.defaultHeaders, ...options?.headers }
+			})
+
+			if (!response.ok) {
+				const errorText = await response.text()
+				throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
+			}
+
+			return [await response.json() as T, null]
+		} catch(error) {
+			return [null, error instanceof Error ? error : new Error(String(error))]
+		}
 	}
 
 	protected getRawErrorMessage(error: Error): string {
@@ -66,24 +86,5 @@ export class BaseHttpClient {
 		}
 
 		return message
-	}
-
-	private async request<T>(endpoint: string, options?: RequestInit): Promise<TryCatchResult<T>> {
-		try {
-			const url = `${this.baseURL}${endpoint}`
-			const response = await fetch(url, {
-				...options,
-				headers: { ...this.defaultHeaders, ...options?.headers }
-			})
-
-			if (!response.ok) {
-				const errorText = await response.text()
-				throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
-			}
-
-			return [await response.json() as T, null]
-		} catch(error) {
-			return [null, error instanceof Error ? error : new Error(String(error))]
-		}
 	}
 }
