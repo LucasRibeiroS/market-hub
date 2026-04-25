@@ -1,5 +1,7 @@
 import { IMarketplaceCredential } from '@integrator-packages/database/entities/IMarketplaceCredential'
 
+import { tryParseJson } from '@utils/try_catch'
+
 import { BaseHttpClient } from '@clients/BaseHttpClient'
 import { IMeliErrorResponse } from '@adapters/implementations/mercado-livre/types'
 
@@ -26,11 +28,14 @@ export class MercadoLivreClient extends BaseHttpClient {
 	getMessageFromError(error: Error): string {
 		const message = this.getRawErrorMessage(error)
 
-		const response = JSON.parse(message) as IMeliErrorResponse
+		const [payload, parseError] = tryParseJson<IMeliErrorResponse>(message)
+		if (parseError) {
+			return message
+		}
 
-		const errors = response.cause.filter(c => c.type === 'error')
+		const errors = payload.cause.filter(c => c.type === 'error')
 		if (errors.length === 0) {
-			return response.message
+			return payload.message
 		}
 
 		const messages = errors.map(cause => {

@@ -85,14 +85,25 @@ export type IPaginatedResponse<T> = {
  * ========================================
  */
 
-export type IMagaluErrorDetail = {
-	field: string
-	description: string
+export type IMagaluErrorResponse = {
+	slug: string
+	message: string
+	details?: IMagaluErrorDetail[]
 }
 
-export type IMagaluErrorResponse = {
-	title: string
-	status: number
-	detail: string
-	errors?: IMagaluErrorDetail[]
+export type IMagaluErrorDetail = {
+	field: string
+	location: string
+	slug: string
+	message: string
+}
+
+export type IMagaluValidationErrorResponse = {
+	detail: IMagaluValidationErrorDetail[]
+}
+
+export type IMagaluValidationErrorDetail = {
+	type: string
+	loc: Array<string | number>
+	msg: string
 }

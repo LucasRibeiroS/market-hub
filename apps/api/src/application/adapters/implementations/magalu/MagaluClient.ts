@@ -1,7 +1,14 @@
 import { IMarketplaceCredential } from '@integrator-packages/database/entities/IMarketplaceCredential'
 
+import { tryParseJson } from '@utils/try_catch'
+
 import { BaseHttpClient } from '@clients/BaseHttpClient'
-import { IMagaluErrorResponse } from '@adapters/implementations/magalu/types'
+import {
+	IMagaluErrorDetail,
+	IMagaluErrorResponse,
+	IMagaluValidationErrorDetail,
+	IMagaluValidationErrorResponse
+} from '@adapters/implementations/magalu/types'
 
 export class MagaluClient extends BaseHttpClient {
 	constructor(
@@ -24,21 +31,69 @@ export class MagaluClient extends BaseHttpClient {
 	}
 
 	getMessageFromError(error: Error): string {
-		const message = this.getRawErrorMessage(error)
+		const rawMessage = this.getRawErrorMessage(error)
+		const [payload, parseError] = tryParseJson<IMagaluErrorResponse | IMagaluValidationErrorResponse>(rawMessage)
 
-		let response: IMagaluErrorResponse
-		try {
-			response = JSON.parse(message) as IMagaluErrorResponse
-		} catch {
+		if (parseError !== null) {
+			return rawMessage.trim() || 'Unknown Magalu error'
+		}
+
+		// First, try to extract message from standard error response
+		if ('message' in payload) {
+			const message = payload.message.trim()
+			const details = this.formatErrorDetails(payload.details)
+
+			if (details !== null) {
+				return `${message}. ${details}`
+			}
+
 			return message
 		}
 
-		if (!response.errors || response.errors.length === 0) {
-			return response.detail ?? response.title
+		// If it's not a standard error response, try to extract details from validation error response
+		const details = this.formatValidationErrorDetails(payload.detail)
+		if (details !== null) {
+			return details
 		}
 
-		return response.errors
-			.map(e => `${e.field}: ${e.description}`)
-			.join('. ')
+		return rawMessage.trim() || 'Unknown Magalu error'
+	}
+
+	private formatErrorDetails(details: IMagaluErrorDetail[] | undefined): string | null {
+		return details
+			?.map(detail => {
+				const message = detail.message.trim()
+				if (message.length === 0) {
+					return null
+				}
+
+				const path = [detail.location, detail.field].filter(item => item.length > 0).join('.')
+				if (path.length > 0) {
+					return `${path}: ${message}`
+				}
+
+				return message
+			})
+			.filter((item): item is string => item !== null)
+			.join('. ') || null
+	}
+
+	private formatValidationErrorDetails(details: IMagaluValidationErrorDetail[]): string | null {
+		return details
+			?.map(detail => {
+				const message = detail.msg.trim()
+				if (message.length === 0) {
+					return null
+				}
+
+				const path = detail.loc.map(String).join('.')
+				if (path.length > 0) {
+					return `${path}: ${message}`
+				}
+
+				return message
+			})
+			.filter((item): item is string => item !== null)
+			.join('. ') || null
 	}
 }
