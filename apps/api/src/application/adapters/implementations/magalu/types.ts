@@ -79,6 +79,82 @@ export type IPaginatedResponse<T> = {
 	results: T[]
 }
 
+export type ITraceResponse = {
+	trace_id: string
+}
+
+export enum Condition {
+	NEW = 'NEW',
+	USED = 'USED',
+	REFURBISHED = 'REFURBISHED'
+}
+
+export enum DimensionType {
+	PRODUCT = 'product',
+	PACKAGE = 'package'
+}
+
+export enum Origin {
+	NATIONAL = 'national',
+	IMPORTED = 'imported'
+}
+
+export enum SkuType {
+	product = 'product'
+}
+
+export type ISkuPayload = {
+	active: boolean
+	attributes: Array<{ name: string, value: string }>
+	brand: string
+	category: { id: string }
+	channels: Array<{ id: string }>
+	condition: Condition
+	datasheet: Array<{ name: string, value: string }>
+	description: string
+	dimensions: Array<{
+		name: DimensionType
+		height: { unit: 'cm', value: number }
+		width: { unit: 'cm', value: number }
+		length: { unit: 'cm', value: number }
+		weight: { unit: 'g', value: number }
+	}>
+	extra_data: Array<{ name: string, value: string }>
+	fulfillment: boolean
+	group: { id: string }
+	has_ean: boolean
+	identifiers: Array<{ type: 'ean', value: string }>
+	images: Array<{ reference: string, type: string }>
+	metadata: Record<string, unknown>
+	origin: Origin
+	perishable: boolean
+	podcasts: unknown[]
+	sku: string
+	title: string
+	type: SkuType
+	videos: unknown[]
+}
+
+export type IPricePayload = {
+	channel: { id: string }
+	currency: 'BRL'
+	list_price: number
+	price: number
+	normalizer?: 100
+	metadata: Record<string, unknown>
+}
+
+export enum StockType {
+	AVAILABLE = 'AVAILABLE'
+}
+
+export type IStockPayload = {
+	channel: { id: string }
+	quantity: number
+	type: StockType
+	metadata: Record<string, unknown>
+}
+
 /**
  * ========================================
  * Error response types
