@@ -180,6 +180,17 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		}
 	}
 
+	private buildAttributeDescription({
+		tooltip, hint, example
+	}: IBuildAttributeDescriptionParams): string | undefined {
+		const parts = [tooltip, hint].filter((value): value is string => Boolean(value))
+		if (example !== undefined) {
+			parts.push(`Eg: ${example}`)
+		}
+
+		return parts.length > 0 ? parts.join(' ') : undefined
+	}
+
 	async publishProduct({
 		product,
 		credentials,
@@ -269,17 +280,6 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 				sync_message: 'Published successfully'
 			}]
 		}
-	}
-
-	private buildAttributeDescription({
-		tooltip, hint, example
-	}: IBuildAttributeDescriptionParams): string | undefined {
-		const parts = [tooltip, hint].filter((value): value is string => Boolean(value))
-		if (example !== undefined) {
-			parts.push(`Eg: ${example}`)
-		}
-
-		return parts.length > 0 ? parts.join(' ') : undefined
 	}
 
 	private mapAttributeCombinations({
