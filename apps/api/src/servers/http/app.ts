@@ -28,6 +28,7 @@ import { usersRoutes } from '@http/routes/users_routes'
 import { productsRoutes } from '@http/routes/products_routes'
 import { variantsRoutes } from '@http/routes/variants_routes'
 import { marketplaceAccountRoutes } from '@http/routes/marketplace_account_routes'
+import { orchestratorDemoRoutes } from './routes/orchestrator_demo_routes'
 import { marketplaceListingsRoutes } from '@http/routes/marketplace_listings_routes'
 import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_routes'
 
@@ -139,6 +140,7 @@ export class HttpServer {
 		this.app.register(productsRoutes)
 		this.app.register(variantsRoutes)
 		this.app.register(marketplaceAccountRoutes)
+		this.app.register(orchestratorDemoRoutes)
 		this.app.register(marketplaceListingsRoutes)
 		this.app.register(marketplaceProviderRoutes)
 	}

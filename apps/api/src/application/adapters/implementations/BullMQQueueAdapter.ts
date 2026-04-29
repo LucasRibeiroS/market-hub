@@ -3,8 +3,9 @@ import { Queue } from 'bullmq'
 import { QueueServer } from '@queue/app'
 
 import { IAddJobParams, IQueueAdapter, IRemoveJobParams, QueueName } from '@adapters/IQueueAadpter'
+import { IOrchestratorDispatcher, OrchestratorDispatchParams } from '@integrator-packages/use-case/orchestrator'
 
-export class BullMQQueueAdapter implements IQueueAdapter {
+export class BullMQQueueAdapter implements IQueueAdapter, IOrchestratorDispatcher {
 	async addJob({ id, name, data, scheduler }: IAddJobParams): Promise<void> {
 		const queue = this.getQueue(name)
 
@@ -19,6 +20,16 @@ export class BullMQQueueAdapter implements IQueueAdapter {
 	async removeJob({ id, name }: IRemoveJobParams): Promise<void> {
 		const queue = this.getQueue(name)
 		await queue.remove(id)
+	}
+
+	async dispatch<TInput = unknown, TState extends Record<string, unknown> = Record<string, unknown>>({
+		queue_name,
+		job_data
+	}: OrchestratorDispatchParams<TInput, TState>): Promise<void> {
+		const queue = this.getQueue(queue_name as QueueName)
+		await queue.add(queue_name, job_data, {
+			jobId: `${job_data.orchestration_id}:${job_data.phase}:${job_data.step_index}`
+		})
 	}
 
 	private getQueue(name: QueueName): Queue {

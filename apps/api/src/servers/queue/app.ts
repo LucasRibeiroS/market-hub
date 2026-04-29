@@ -4,6 +4,7 @@ import { env } from '@config/env'
 import { ONE_HOUR_IN_MS } from '@constants/units'
 
 import { UseCaseProcessor, UseCaseProcessorParams } from '@queue/worker/UseCaseProcessor'
+import { OrchestratorProcessor } from '@queue/worker/OrchestratorProcessor'
 import { EventLogger } from '@queue/worker/EventLogger'
 import { QueueMonitoring } from '@queue/monitoring'
 
@@ -12,7 +13,8 @@ import { PublishMarketplaceListings } from '@use-cases/marketplace-listings'
 
 export enum QueueName {
 	refresh_marketplace_credentials = 'refresh-marketplace-credentials',
-	publish_marketplace_listings = 'publish-marketplace-listings'
+	publish_marketplace_listings = 'publish-marketplace-listings',
+	orchestrations = 'orchestrations'
 }
 
 export class QueueServer {
@@ -40,12 +42,15 @@ export class QueueServer {
 			}
 		}),
 		[QueueName.publish_marketplace_listings]: new Queue(QueueName.publish_marketplace_listings, QueueServer.config)
+		,
+		[QueueName.orchestrations]: new Queue(QueueName.orchestrations, QueueServer.config)
 	}
 
 	private workers: Worker[] = []
 
 	private readonly logger = new EventLogger()
 	private readonly processor = new UseCaseProcessor()
+	private readonly orchestratorProcessor = new OrchestratorProcessor()
 	private readonly monitoring = new QueueMonitoring()
 
 	async start() {
@@ -61,6 +66,8 @@ export class QueueServer {
 			queue: QueueServer.queues[QueueName.publish_marketplace_listings]
 		})
 
+		this.createOrchestratorWorker(QueueName.orchestrations)
+
 		if (env.NODE_ENV === 'local') {
 			this.monitoring.setQueues(Object.values(QueueServer.queues))
 			this.monitoring.start()
@@ -71,6 +78,17 @@ export class QueueServer {
 		const worker = new Worker(
 			queueName,
 			this.processor.apply(params),
+			QueueServer.config
+		)
+
+		this.logger.registerWorker(worker, queueName)
+		this.workers.push(worker)
+	}
+
+	private createOrchestratorWorker(queueName: QueueName) {
+		const worker = new Worker(
+			queueName,
+			this.orchestratorProcessor.apply(),
 			QueueServer.config
 		)
 

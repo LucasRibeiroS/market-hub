@@ -4,8 +4,11 @@ import 'reflect-metadata'
 import { container } from 'tsyringe'
 
 import { schemas } from '@integrator-packages/use-case/schemas'
+import { OrchestratorDispatcherSymbol } from '@integrator-packages/use-case/orchestrator'
 
 import { getAllSchemas } from '@utils/typebox'
+
+import '@orchestrators/implementations'
 
 import { EmailAdapterSymbol } from '@adapters/IEmailAdapter'
 import { FileLoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters/logger'
@@ -49,6 +52,7 @@ container.register(LoggerAdapterSymbol, FileLoggerAdapter)
 container.register(MarketplaceAdapterSymbol, MagaluAdapter)
 container.register(MarketplaceAdapterSymbol, MercadoLivreAdapter)
 container.register(QueueAdapterSymbol, BullMQQueueAdapter)
+container.register(OrchestratorDispatcherSymbol, BullMQQueueAdapter)
 
 // Register factories
 container.register(MarketplaceAdapterFactorySymbol, MarketplaceAdapterFactory)

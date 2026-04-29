@@ -46,6 +46,14 @@
             "types": "./dist/modules/validator/index.d.ts",
             "default": "./dist/modules/validator/index.js"
         },
+        "./orchestrator/*": {
+            "types": "./dist/modules/orchestrator/*.d.ts",
+            "default": "./dist/modules/orchestrator/*.js"
+        },
+        "./orchestrator": {
+            "types": "./dist/modules/orchestrator/index.d.ts",
+            "default": "./dist/modules/orchestrator/index.js"
+        },
         "./response": {
             "types": "./dist/shared/utils/response.d.ts",
             "default": "./dist/shared/utils/response.js"
@@ -75,6 +83,12 @@
             ],
             "validator": [
                 "./dist/modules/validator/index.d.ts"
+            ],
+            "orchestrator/*": [
+                "./dist/modules/orchestrator/*.d.ts"
+            ],
+            "orchestrator": [
+                "./dist/modules/orchestrator/index.d.ts"
             ],
             "response": [
                 "./dist/shared/utils/response.d.ts"

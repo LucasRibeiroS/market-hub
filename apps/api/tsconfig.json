@@ -30,6 +30,7 @@
 		"paths": {
 			"@adapters/*": ["src/application/adapters/*"],
 			"@factories/*": ["src/application/factories/*"],
+			"@orchestrators/*": ["src/application/orchestrators/*"],
 			"@repositories/*": ["src/application/repositories/*"],
 			"@use-cases/*": ["src/application/use-cases/*"],
 			"@config/*": ["src/config/*"],
