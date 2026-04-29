@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe'
 import { addDays, addSeconds } from 'date-fns'
 
-import { IMarketplaceCredential, IMarketplaceProvider, IVariant, Provider } from '@integrator-packages/database/entities'
+import { IMarketplaceCredential, IMarketplaceProvider, IProduct, IVariant, Provider } from '@integrator-packages/database/entities'
 
 import { ILoggerAdapter, LoggerAdapterSymbol } from '@integrator-packages/adapters'
 
@@ -9,7 +9,6 @@ import { FailedDependencyException } from '@integrator-packages/use-case/excepti
 
 import { tryCatch } from '@utils/try_catch'
 import { parseDimension, parseWeightToGrams } from '@utils/dimensions'
-import { UnknownObject } from '@utils/types'
 
 import { MagaluClient } from '@adapters/implementations/magalu/MagaluClient'
 import {
@@ -71,7 +70,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 
 		const [res, err] = await client.post<IOAuthTokenResponse>('/oauth/token', payload)
-		if (err) {
+		if (err !== null) {
 			this.loggerAdapter.error(`Magalu exchange code error: ${err}`)
 			throw new FailedDependencyException('Failed to exchange code for Magalu')
 		}
@@ -154,7 +153,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			{ headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
 		)
 
-		if (err) {
+		if (err !== null) {
 			this.loggerAdapter.error(`Magalu refresh token error: ${err.message}`)
 			throw new FailedDependencyException('Failed to refresh token for Magalu')
 		}
@@ -199,11 +198,11 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			client.get<IPaginatedResponse<IAttributeResponse>>(`/seller/v1/portfolios/categories/${category.id}/datasheet`)
 		])
 
-		if (attrErr) {
+		if (attrErr !== null) {
 			this.loggerAdapter.error(`Magalu fetch variation attributes error: ${attrErr.message}`)
 			throw new FailedDependencyException('Failed to fetch variation attributes for Magalu')
 		}
-		if (datasheetErr) {
+		if (datasheetErr !== null) {
 			this.loggerAdapter.error(`Magalu fetch datasheet attributes error: ${datasheetErr.message}`)
 			throw new FailedDependencyException('Failed to fetch datasheet attributes for Magalu')
 		}
@@ -218,6 +217,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 	}
 
+	/** Maps magalu IAttributeResponse to the interface IGetAttributesResponse */
 	private mapAttributes({ attributes, type }: IMapAttributesParams): IGetAttributesResponse['attributes'] {
 		return attributes.map(attr => ({
 			id: attr.name,
@@ -321,8 +321,6 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 				.map(attribute => attribute.id)
 		})
 
-		const hasEan = variant.ean !== null && variant.ean.length > 0
-
 		const payload: ISkuPayload = {
 			active: true,
 			attributes: skuAttributes,
@@ -341,10 +339,10 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			extra_data: [],
 			fulfillment: false,
 			group: { id: product.id },
-			has_ean: hasEan,
-			identifiers: hasEan ? [{ type: 'ean', value: variant.ean! }] : [],
-			images: variant.images.map(reference => ({
-				reference,
+			has_ean: variant.ean !== null,
+			identifiers: variant.ean !== null ? [{ type: 'ean', value: variant.ean }] : [],
+			images: variant.images.map(image => ({
+				reference: image,
 				type: 'image/jpeg'
 			})),
 			metadata: {},
@@ -358,7 +356,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 
 		const [res, err] = await client.post<ITraceResponse>('/seller/v1/portfolios/skus', payload)
-		if (err) {
+		if (err !== null) {
 			if (err.message.includes('status: 409') && err.message.includes('already exists')) {
 				this.loggerAdapter.warn(`Magalu SKU already exists for ${variant.sku}, updating existing SKU`)
 
@@ -376,6 +374,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		return { trace_id: res.trace_id }
 	}
 
+	/** Maps application product and variant attributes to magalu sku properties */
 	private mapSkuAttributes({
 		product, variant, allowed_variation_attributes
 	}: IMapSkuAttributesParams): IMapSkuAttributesResponse {
@@ -395,6 +394,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 	}
 
+	/** Maps product dimensions to the interface IMapProductDimensionsResponse */
 	private mapProductDimensions({ variant, type }: IMapProductDimensionsParams): IMapProductDimensionsResponse {
 		const height = parseDimension(variant.height_cm)
 		const width = parseDimension(variant.width_cm)
@@ -417,11 +417,13 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			`/seller/v1/portfolios/skus/${encodeURIComponent(sku)}`,
 			payload
 		)
-		if (err) {
+		if (err !== null) {
+			const message = client.getMessageFromError(err)
+
 			this.loggerAdapter.error(`Magalu update SKU payload: ${JSON.stringify(payload)}`)
 			this.loggerAdapter.error(`Magalu update SKU error: ${err.message}`)
 
-			throw new Error(`Failed to update existing SKU ${sku} in Magalu - ${client.getMessageFromError(err)}`)
+			throw new Error(`Failed to update existing SKU ${sku} in Magalu - ${message}`)
 		}
 
 		return { trace_id: res.trace_id }
@@ -442,7 +444,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			`/seller/v1/portfolios/prices/${encodeURIComponent(variant.sku)}`,
 			payload
 		)
-		if (err) {
+		if (err !== null) {
 			const message = client.getMessageFromError(err)
 
 			this.loggerAdapter.error(`Magalu publish price payload: ${JSON.stringify(payload)}`)
@@ -466,7 +468,7 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			`/seller/v1/portfolios/stocks/${encodeURIComponent(variant.sku)}`,
 			payload
 		)
-		if (err) {
+		if (err !== null) {
 			const message = client.getMessageFromError(err)
 
 			this.loggerAdapter.error(`Magalu publish stock payload: ${JSON.stringify(payload)}`)
@@ -516,12 +518,8 @@ type IPublishSkuResponse = {
 }
 
 type IMapSkuAttributesParams = {
-	product: {
-		attributes: UnknownObject
-	}
-	variant: {
-		attributes: UnknownObject
-	}
+	product: Pick<IProduct, 'attributes'>
+	variant: Pick<IVariant, 'attributes'>
 	allowed_variation_attributes: string[]
 }
 type IMapSkuAttributesResponse = {
