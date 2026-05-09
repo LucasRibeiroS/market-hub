@@ -37,7 +37,11 @@ import {
 	IRefreshTokenParams,
 	IRefreshTokenResponse,
 	IRevokeAuthorizationParams,
-	IRevokeAuthorizationResponse
+	IRevokeAuthorizationResponse,
+	ISubscribeOrderWebhooksParams,
+	ISubscribeOrderWebhooksResponse,
+	IUnsubscribeOrderWebhooksParams,
+	IUnsubscribeOrderWebhooksResponse
 } from '@adapters/IMarketplaceAdapter'
 
 @injectable()
@@ -139,6 +143,18 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		}
 
 		return { external_id: account.external_id }
+	}
+
+	async subscribeOrderWebhooks(_: ISubscribeOrderWebhooksParams): Promise<ISubscribeOrderWebhooksResponse> {
+		this.loggerAdapter.warn('Mercado Livre order notifications are configured at app/provider level, not per account. Skipping account webhook setup.')
+
+		return {}
+	}
+
+	async unsubscribeOrderWebhooks(_: IUnsubscribeOrderWebhooksParams): Promise<IUnsubscribeOrderWebhooksResponse> {
+		this.loggerAdapter.warn('Mercado Livre order notifications are configured at app/provider level, not per account. Skipping account webhook removal.')
+
+		return
 	}
 
 	async getAttributes({

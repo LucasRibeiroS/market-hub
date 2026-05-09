@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe'
 import { Type } from '@sinclair/typebox'
 
-import { AccountStatusEnum, IMarketplaceAccount, IMarketplaceCredential } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IMarketplaceAccount, IMarketplaceCredential, IMarketplaceProvider } from '@integrator-packages/database/entities'
 import { Transactional } from '@integrator-packages/database/transaction'
 
 import { IUseCase } from '@integrator-packages/use-case'
@@ -16,6 +16,8 @@ import { IMarketplaceProvidersRepository, MarketplaceProvidersRepositorySymbol }
 import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
 
 import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
+
+import { UpsertMarketplaceWebhook, UpsertMarketplaceWebhookSymbol } from '@use-cases/marketplace-webhooks/UpsertMarketplaceWebhook'
 
 import { MARKETPLACE_REFRESH_CREDENTIALS_CRON } from '@constants/crons'
 import { marketplaceAccountJsonSchema } from '@utils/typebox'
@@ -54,30 +56,30 @@ export class ReAuthenticateMarketplaceAccount implements IUseCase<T, K> {
 		@inject(MarketplaceAdapterFactorySymbol)
 		private marketplaceAdapterFactory: IMarketplaceAdapterFactory,
 		@inject(QueueAdapterSymbol)
-		private queueAdapter: IQueueAdapter
+		private queueAdapter: IQueueAdapter,
+		@inject(UpsertMarketplaceWebhookSymbol)
+		private upsertMarketplaceWebhook: UpsertMarketplaceWebhook
 	) {}
 
 	@Transactional()
 	async execute({ id, user_id, data }: T): Promise<K> {
-		const existingAccount = await this.marketplaceAccountsRepository.findByIdSimplified(id)
-		if (existingAccount === null || existingAccount.user_id !== user_id) {
-			throw new NotFoundException('Marketplace account not found')
-		}
-		if (existingAccount.status === AccountStatusEnum.active) {
-			throw new ConflictException('Marketplace account is already active')
-		}
+		const { account: existingAccount, provider } = await this.loadAccountAndProvider({ account_id: id, user_id })
 
-		const oauth = await this.processOAuthCallback({
-			provider_id: existingAccount.provider_id,
-			code: data.code
-		})
+		const oauth = await this.processOAuthCallback({ provider, code: data.code })
 
-		const account = await this.marketplaceAccountsRepository.update(id, {
-			...oauth.account,
-			status: AccountStatusEnum.active
-		})
-
-		await Promise.all([
+		const [account] = await Promise.all([
+			this.marketplaceAccountsRepository.update(id, {
+				...oauth.account,
+				status: AccountStatusEnum.active
+			}),
+			this.upsertMarketplaceWebhook.execute({
+				account_id: existingAccount.id,
+				provider,
+				credentials: {
+					access_token: oauth.credentials.access_token,
+					token_type: oauth.credentials.token_type
+				}
+			}),
 			this.marketplaceCredentialsRepository.upsert({
 				...oauth.credentials,
 				account_id: existingAccount.id
@@ -89,23 +91,43 @@ export class ReAuthenticateMarketplaceAccount implements IUseCase<T, K> {
 	}
 
 	/**
-	 * Process the OAuth callback by exchanging the code for tokens and updating the marketplace credentials for the account.
+	 * @throws NotFoundException if the marketplace account is not found
+	 * @throws ConflictException if the marketplace account is not active
+	 * @throws NotFoundException if the marketplace provider is not found
+	 * @throws ConflictException if the marketplace provider is not active
 	 */
-	private async processOAuthCallback({
-		provider_id, code
-	}: IProcessOAuthCallbackParams): Promise<IProcessOAuthCallbackResponse> {
-		const mktProvider = await this.marketplaceProvidersRepository.findById(provider_id)
-		if (mktProvider === null) {
+	private async loadAccountAndProvider({
+		account_id, user_id
+	}: ILoadAccountAndProviderParams): Promise<ILoadAccountAndProviderResponse> {
+		const account = await this.marketplaceAccountsRepository.findByIdSimplified(account_id)
+		if (account === null || account.user_id !== user_id) {
+			throw new NotFoundException('Marketplace account not found')
+		}
+		if (account.status === AccountStatusEnum.active) {
+			throw new ConflictException('Marketplace account is already active')
+		}
+
+		const provider = await this.marketplaceProvidersRepository.findById(account.provider_id)
+		if (provider === null) {
 			throw new NotFoundException('Marketplace provider not found')
 		}
-		if (!mktProvider.is_active) {
+		if (!provider.is_active) {
 			throw new ConflictException('Marketplace provider is inactive')
 		}
 
-		const adapter = this.marketplaceAdapterFactory.get(mktProvider.provider)
+		return { account, provider }
+	}
 
-		const { credentials } = await adapter.exchangeCode({ code, provider: mktProvider })
-		const { account } = await adapter.getUserInfo({ credentials, provider: mktProvider })
+	/**
+	 * Process the OAuth callback by exchanging the code for tokens and updating the marketplace credentials for the account.
+	 */
+	private async processOAuthCallback({
+		provider, code
+	}: IProcessOAuthCallbackParams): Promise<IProcessOAuthCallbackResponse> {
+		const adapter = this.marketplaceAdapterFactory.get(provider.provider)
+
+		const { credentials } = await adapter.exchangeCode({ code, provider })
+		const { account } = await adapter.getUserInfo({ credentials, provider })
 
 		return { credentials, account }
 	}
@@ -137,8 +159,17 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 	protected schema = Validator.schema
 }
 
+type ILoadAccountAndProviderParams = {
+	account_id: string
+	user_id: string
+}
+type ILoadAccountAndProviderResponse = {
+	account: Pick<IMarketplaceAccount, 'id' | 'user_id' | 'provider_id' | 'status'>
+	provider: IMarketplaceProvider
+}
+
 type IProcessOAuthCallbackParams = {
-	provider_id: string
+	provider: IMarketplaceProvider
 	code: string
 }
 type IProcessOAuthCallbackResponse = {

@@ -23,7 +23,7 @@ export class BaseHttpClient {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'POST',
-			body: typeof body === 'string' ? body : JSON.stringify(body),
+			body: this.serializeBody(body),
 			headers: options?.headers
 		})
 	}
@@ -32,13 +32,26 @@ export class BaseHttpClient {
 		return this.request<T>(endpoint, {
 			...options,
 			method: 'PATCH',
-			body: typeof body === 'string' ? body : JSON.stringify(body),
+			body: this.serializeBody(body),
+			headers: options?.headers
+		})
+	}
+
+	put<T>(endpoint: string, body: UnknownObject | string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
+		return this.request<T>(endpoint, {
+			...options,
+			method: 'PUT',
+			body: this.serializeBody(body),
 			headers: options?.headers
 		})
 	}
 
 	delete<T>(endpoint: string, options?: IRequestOptions): Promise<TryCatchResult<T>> {
 		return this.request<T>(endpoint, { ...options, method: 'DELETE' })
+	}
+
+	private serializeBody(body: UnknownObject | string): string {
+		return typeof body === 'string' ? body : JSON.stringify(body)
 	}
 
 	protected async request<T>(endpoint: string, options?: RequestInit): Promise<TryCatchResult<T>> {

@@ -83,6 +83,18 @@ export type ITraceResponse = {
 	trace_id: string
 }
 
+export type IWebhookSignupPayload = {
+	webhook: string
+	topic_id: string
+}
+
+export type IWebhookSignupResponse = {
+	subscriptions: Array<{
+		id: string
+		topic: string
+	}>
+}
+
 export enum Condition {
 	NEW = 'NEW',
 	USED = 'USED',

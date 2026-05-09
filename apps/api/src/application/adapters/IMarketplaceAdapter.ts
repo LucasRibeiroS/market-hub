@@ -89,6 +89,27 @@ export type IPublishProductResponse = {
 	>
 }
 
+export type ISubscribeOrderWebhooksParams = {
+	credentials: IMarketplaceCredentials
+	provider: ProviderClientConfig
+	webhook_url: string
+}
+export type ISubscribeOrderWebhooksResponse = {
+	subscription?: {
+		topic: string
+		external_webhook_id: string
+	}
+}
+
+export type IUnsubscribeOrderWebhooksParams = {
+	credentials: IMarketplaceCredentials
+	provider: ProviderClientConfig
+	subscription: {
+		external_webhook_id: string
+	}
+}
+export type IUnsubscribeOrderWebhooksResponse = void
+
 export interface IMarketplaceAdapter {
 	readonly provider: Provider
 
@@ -97,6 +118,10 @@ export interface IMarketplaceAdapter {
 	getUserInfo(params: IGetUserInfoParams): Promise<IGetUserInfoResponse>
 	refreshToken(params: IRefreshTokenParams): Promise<IRefreshTokenResponse>
 	revokeAuthorization(params: IRevokeAuthorizationParams): Promise<IRevokeAuthorizationResponse>
+
+	// Orders methods
+	subscribeOrderWebhooks(params: ISubscribeOrderWebhooksParams): Promise<ISubscribeOrderWebhooksResponse>
+	unsubscribeOrderWebhooks(params: IUnsubscribeOrderWebhooksParams): Promise<IUnsubscribeOrderWebhooksResponse>
 
 	// Products methods
 	getAttributes(params: IGetAttributesParams): Promise<IGetAttributesResponse>

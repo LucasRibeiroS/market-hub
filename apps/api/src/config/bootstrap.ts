@@ -22,6 +22,7 @@ import { MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceA
 import { MarketplaceCredentialsRepositorySymbol } from '@repositories/IMarketplaceCredentialsRepository'
 import { MarketplaceListingsRepositorySymbol } from '@repositories/IMarketplaceListingsRepository'
 import { MarketplaceProvidersRepositorySymbol } from '@repositories/IMarketplaceProvidersRepository'
+import { MarketplaceWebhooksRepositorySymbol } from '@repositories/IMarketplaceWebhooksRepository'
 import { PasswordResetsRepositorySymbol } from '@repositories/IPasswordResetsRepository'
 import { UsersRepositorySymbol } from '@repositories/IUsersRepository'
 import { ProductsRepositorySymbol } from '@repositories/IProductsRepository'
@@ -33,11 +34,15 @@ import {
 	DrizzleMarketplaceCredentialsRepository,
 	DrizzleMarketplaceListingsRepository,
 	DrizzleMarketplaceProvidersRepository,
+	DrizzleMarketplaceWebhooksRepository,
 	DrizzlePasswordResetsRepository,
 	DrizzleProductsRepository,
 	DrizzleUsersRepository,
 	DrizzleVariantsRepository
 } from '@repositories/implementations'
+
+import { UseCaseFactory } from '@integrator-packages/use-case'
+import { DeleteMarketplaceWebhook, DeleteMarketplaceWebhookSymbol, UpsertMarketplaceWebhook, UpsertMarketplaceWebhookSymbol } from '@use-cases/marketplace-webhooks'
 
 // Register common schemas in the use-case layer
 schemas.register(getAllSchemas())
@@ -59,7 +64,16 @@ container.register(MarketplaceAccountsRepositorySymbol, DrizzleMarketplaceAccoun
 container.register(MarketplaceCredentialsRepositorySymbol, DrizzleMarketplaceCredentialsRepository)
 container.register(MarketplaceListingsRepositorySymbol, DrizzleMarketplaceListingsRepository)
 container.register(MarketplaceProvidersRepositorySymbol, DrizzleMarketplaceProvidersRepository)
+container.register(MarketplaceWebhooksRepositorySymbol, DrizzleMarketplaceWebhooksRepository)
 container.register(PasswordResetsRepositorySymbol, DrizzlePasswordResetsRepository)
 container.register(UsersRepositorySymbol, DrizzleUsersRepository)
 container.register(ProductsRepositorySymbol, DrizzleProductsRepository)
 container.register(VariantsRepositorySymbol, DrizzleVariantsRepository)
+
+// Register use-cases dependencies
+container.register(UpsertMarketplaceWebhookSymbol, {
+	useFactory: c => UseCaseFactory.create(c.resolve(UpsertMarketplaceWebhook))
+})
+container.register(DeleteMarketplaceWebhookSymbol, {
+	useFactory: c => UseCaseFactory.create(c.resolve(DeleteMarketplaceWebhook))
+})

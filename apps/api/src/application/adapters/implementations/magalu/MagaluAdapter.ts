@@ -24,6 +24,8 @@ import {
 	ISkuPayload,
 	IStockPayload,
 	ITraceResponse,
+	IWebhookSignupPayload,
+	IWebhookSignupResponse,
 	Origin,
 	SkuType,
 	StockType
@@ -42,7 +44,11 @@ import {
 	IRefreshTokenParams,
 	IRefreshTokenResponse,
 	IRevokeAuthorizationParams,
-	IRevokeAuthorizationResponse
+	IRevokeAuthorizationResponse,
+	ISubscribeOrderWebhooksParams,
+	ISubscribeOrderWebhooksResponse,
+	IUnsubscribeOrderWebhooksParams,
+	IUnsubscribeOrderWebhooksResponse
 } from '@adapters/IMarketplaceAdapter'
 
 @injectable()
@@ -175,6 +181,46 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		this.loggerAdapter.warn(`Magalu does not expose a revoke endpoint. Marking account ${account.external_id} as revoked locally only.`)
 
 		return { external_id: account.external_id }
+	}
+
+	async subscribeOrderWebhooks({
+		provider, credentials, webhook_url
+	}: ISubscribeOrderWebhooksParams): Promise<ISubscribeOrderWebhooksResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const payload: IWebhookSignupPayload = {
+			webhook: webhook_url,
+			topic_id: 'orders_order'
+		}
+
+		const [res, err] = await client.put<IWebhookSignupResponse>('/v0/onboarding/signup', payload)
+		if (err !== null) {
+			this.loggerAdapter.error(`Magalu subscribe order webhook error: ${err.message}`)
+			throw new FailedDependencyException('Failed to subscribe order webhook on Magalu')
+		}
+
+		const subscription = res.subscriptions[0]
+
+		return {
+			subscription: {
+				topic: subscription.topic,
+				external_webhook_id: subscription.id
+			}
+		}
+	}
+
+	async unsubscribeOrderWebhooks({
+		credentials,
+		provider,
+		subscription
+	}: IUnsubscribeOrderWebhooksParams): Promise<IUnsubscribeOrderWebhooksResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const [, err] = await client.delete(`/v0/onboarding/signup/${encodeURIComponent(subscription.external_webhook_id)}`)
+		if (err !== null) {
+			this.loggerAdapter.error(`Magalu unsubscribe order webhook error: ${err.message}`)
+			throw new FailedDependencyException('Failed to unsubscribe order webhook on Magalu')
+		}
 	}
 
 	async getAttributes({ provider, credentials, product }: IGetAttributesParams): Promise<IGetAttributesResponse> {

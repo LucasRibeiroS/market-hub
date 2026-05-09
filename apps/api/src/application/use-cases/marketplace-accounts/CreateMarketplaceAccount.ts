@@ -17,6 +17,8 @@ import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@fa
 
 import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
 
+import { UpsertMarketplaceWebhook, UpsertMarketplaceWebhookSymbol } from '@use-cases/marketplace-webhooks/UpsertMarketplaceWebhook'
+
 import { MARKETPLACE_REFRESH_CREDENTIALS_CRON } from '@constants/crons'
 import { marketplaceAccountJsonSchema, providerEnumSchema } from '@utils/typebox'
 
@@ -52,7 +54,9 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 		@inject(MarketplaceAdapterFactorySymbol)
 		private marketplaceAdapterFactory: IMarketplaceAdapterFactory,
 		@inject(QueueAdapterSymbol)
-		private queueAdapter: IQueueAdapter
+		private queueAdapter: IQueueAdapter,
+		@inject(UpsertMarketplaceWebhookSymbol)
+		private upsertMarketplaceWebhook: UpsertMarketplaceWebhook
 	) {}
 
 	@Transactional()
@@ -76,6 +80,11 @@ export class CreateMarketplaceAccount implements IUseCase<T, K> {
 		})
 
 		await Promise.all([
+			this.upsertMarketplaceWebhook.execute({
+				account_id: account.id,
+				provider: mktProvider,
+				credentials: oauth.credentials
+			}),
 			this.marketplaceCredentialsRepository.create({
 				...oauth.credentials,
 				account_id: account.id
