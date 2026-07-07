@@ -142,6 +142,65 @@ export type IItemResponse = {
 
 /**
  * ========================================
+ * Order types
+ * ========================================
+ */
+export type OrderStatus =
+	| 'confirmed'
+	| 'payment_required'
+	| 'payment_in_process'
+	| 'partially_paid'
+	| 'paid'
+	| 'partially_refunded'
+	| 'pending_cancel'
+	| 'cancelled'
+	| 'invalid'
+	| 'refunded'
+
+type IOrderItem = {
+	item: {
+		id: string
+		title: string
+		category_id: string
+		variation_id: string | null
+		seller_custom_field: string | null
+		seller_sku: string | null
+	}
+	quantity: number
+	unit_price: number
+	gross_price: number
+}
+
+export type IOrderResponse = {
+	id: number
+	date_created: string
+	last_updated: string
+	status: OrderStatus
+	buyer: {
+		id: number
+		name?: string
+		email?: string
+		phone?: string
+		document?: string
+	}
+	shipping?: {
+		receiver_address?: {
+			state?: string
+		}
+	}
+	payments?: Array<{
+		status: string
+		method: string
+	}>
+	total_amount: number
+	shipping_cost?: number
+	coupon_amount?: number
+	currency_id: string
+	order_items: IOrderItem[]
+}
+
+/**
+ * ========================================
  * Error response types
  * ========================================
  */

@@ -20,6 +20,7 @@ import {
 	IItemResponse,
 	IOAuthTokenPayload,
 	IOAuthTokenResponse,
+	IOrderResponse,
 	IUserResponse,
 	ListingType
 } from '@adapters/implementations/mercado-livre/types'
@@ -29,6 +30,8 @@ import {
 	IExchangeCodeResponse,
 	IGetAttributesParams,
 	IGetAttributesResponse,
+	IGetOrderDetailsParams,
+	IGetOrderDetailsResponse,
 	IGetUserInfoParams,
 	IGetUserInfoResponse,
 	IMarketplaceAdapter,
@@ -155,6 +158,70 @@ export class MercadoLivreAdapter implements IMarketplaceAdapter {
 		this.loggerAdapter.warn('Mercado Livre order notifications are configured at app/provider level, not per account. Skipping account webhook removal.')
 
 		return
+	}
+
+	async getOrderDetails({
+		credentials,
+		provider,
+		external_order_id
+	}: IGetOrderDetailsParams): Promise<IGetOrderDetailsResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const [res, err] = await client.get<IOrderResponse>(`/orders/${external_order_id}`)
+		if (err) {
+			this.loggerAdapter.error(`Mercado Livre get order details error: ${err.message}`)
+			throw new FailedDependencyException('Failed to fetch order details on mercado livre')
+		}
+
+		const status = this.mapMercadoLivreStatus(res.status)
+
+		return {
+			external_order_id: external_order_id,
+			external_status: res.status,
+			status,
+			ordered_at: new Date(res.date_created),
+			approved_at: status === 'paid' ? new Date(res.last_updated) : null,
+			total_amount: res.total_amount * 100, // Convert to cents
+			shipping_amount: (res.shipping_cost || 0) * 100,
+			discount_amount: (res.coupon_amount || 0) * 100,
+			buyer: {
+				name: res.buyer.name || null,
+				document: res.buyer.document || null,
+				email: res.buyer.email || null,
+				phone: res.buyer.phone || null
+			},
+			items: res.order_items.map(orderItem => ({
+				external_item_id: orderItem.item.id,
+				external_variant_id: orderItem.item.variation_id?.toString() || null,
+				title: orderItem.item.title,
+				sku: orderItem.item.seller_custom_field || orderItem.item.seller_sku || null,
+				quantity: orderItem.quantity,
+				unit_amount: Math.round(orderItem.unit_price * 100), // Convert to cents
+				total_amount: Math.round(orderItem.gross_price * 100) // Convert to cents
+			}))
+		}
+	}
+
+	private mapMercadoLivreStatus(status: string): IGetOrderDetailsResponse['status'] {
+		const s = status.toLowerCase()
+
+		switch (s) {
+			case 'paid':
+				return 'paid'
+			case 'shipped':
+				return 'shipped'
+			case 'delivered':
+				return 'delivered'
+			case 'cancelled':
+			case 'cancel':
+			case 'canceled':
+				return 'cancelled'
+			case 'refunded':
+			case 'partially_refunded':
+				return 'refunded'
+			default:
+				return 'pending'
+		}
 	}
 
 	async getAttributes({
