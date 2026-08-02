@@ -42,7 +42,7 @@ export class AppLayoutComponent implements OnInit {
 
 	pageTitle = signal('Dashboard')
 	collapsed = signal(localStorage.getItem('sidebarCollapsed') === 'true')
-	expandedItems = signal<Set<string>>(new Set(['Configurações']))
+	expandedItems = signal<Set<string>>(new Set(['Integrações', 'Configurações']))
 	activePopoverChildren: MenuItem[] = []
 
 	menuItems: MenuItem[] = [
@@ -54,7 +54,18 @@ export class AppLayoutComponent implements OnInit {
 		{
 			label: 'Integrações',
 			icon: 'pi-link',
-			route: '/integrations'
+			children: [
+				{
+					label: 'Contas',
+					icon: 'pi-list',
+					route: '/integrations'
+				},
+				{
+					label: 'Área de testes',
+					icon: 'pi-bolt',
+					route: '/integrations/test'
+				}
+			]
 		},
 		{
 			label: 'Configurações',
@@ -78,7 +89,8 @@ export class AppLayoutComponent implements OnInit {
 
 	private updatePageTitle(): void {
 		const url = this.router.url
-		if (url.includes('api-keys')) this.pageTitle.set('Chaves de API')
+		if (url.includes('test')) this.pageTitle.set('Área de testes')
+		else if (url.includes('api-keys')) this.pageTitle.set('Chaves de API')
 		else if (url.includes('dashboard')) this.pageTitle.set('Dashboard')
 		else if (url.includes('integrations')) this.pageTitle.set('Integrações')
 		else if (url.includes('settings')) this.pageTitle.set('Configurações')
@@ -124,6 +136,15 @@ export class AppLayoutComponent implements OnInit {
 	get activeRouteOptions(): IsActiveMatchOptions {
 		return {
 			paths: 'subset',
+			queryParams: 'ignored',
+			fragment: 'ignored',
+			matrixParams: 'ignored'
+		}
+	}
+
+	get childRouteOptions(): IsActiveMatchOptions {
+		return {
+			paths: 'exact',
 			queryParams: 'ignored',
 			fragment: 'ignored',
 			matrixParams: 'ignored'

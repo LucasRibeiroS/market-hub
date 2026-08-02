@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "lint": "eslint '**/src/**/*.{ts,tsx}' --fix",
     "test": "vitest -c vitest.config.ts",
-    "email:dev": "email dev --dir src/views --port 7652"
+    "email:dev": "email dev --dir src/views --port 7652",
+    "clean": "rm -rf dist node_modules"
   },
   "type": "module",
   "keywords": [],

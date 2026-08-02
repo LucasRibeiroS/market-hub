@@ -1,7 +1,7 @@
 import { Queue, QueueOptions, Worker, WorkerOptions } from 'bullmq'
 
 import { env } from '@config/env'
-import { ONE_HOUR_IN_MS } from '@constants/units'
+import { ONE_HOUR_IN_MS, ONE_MINUTE_IN_MS } from '@constants/units'
 
 import { UseCaseProcessor, UseCaseProcessorParams } from '@queue/worker/UseCaseProcessor'
 import { EventLogger } from '@queue/worker/EventLogger'
@@ -9,10 +9,12 @@ import { QueueMonitoring } from '@queue/monitoring'
 
 import { RefreshMarketplaceCredential } from '@use-cases/marketplace-credentials'
 import { PublishMarketplaceListings } from '@use-cases/marketplace-listings'
+import { SyncMercadoLivreOrder } from '@use-cases/orders'
 
 export enum QueueName {
 	refresh_marketplace_credentials = 'refresh-marketplace-credentials',
-	publish_marketplace_listings = 'publish-marketplace-listings'
+	publish_marketplace_listings = 'publish-marketplace-listings',
+	sync_mercado_livre_order = 'sync-mercado-livre-order'
 }
 
 export class QueueServer {
@@ -39,7 +41,18 @@ export class QueueServer {
 				}
 			}
 		}),
-		[QueueName.publish_marketplace_listings]: new Queue(QueueName.publish_marketplace_listings, QueueServer.config)
+		[QueueName.publish_marketplace_listings]: new Queue(QueueName.publish_marketplace_listings, QueueServer.config),
+		[QueueName.sync_mercado_livre_order]: new Queue(QueueName.sync_mercado_livre_order, {
+			connection: QueueServer.config.connection,
+			defaultJobOptions: {
+				...QueueServer.config.defaultJobOptions,
+				attempts: 5,
+				backoff: {
+					type: 'exponential',
+					delay: ONE_MINUTE_IN_MS
+				}
+			}
+		})
 	}
 
 	private workers: Worker[] = []
@@ -59,6 +72,11 @@ export class QueueServer {
 		this.createWorker(QueueName.publish_marketplace_listings, {
 			use_case_class: PublishMarketplaceListings,
 			queue: QueueServer.queues[QueueName.publish_marketplace_listings]
+		})
+
+		this.createWorker(QueueName.sync_mercado_livre_order, {
+			use_case_class: SyncMercadoLivreOrder,
+			queue: QueueServer.queues[QueueName.sync_mercado_livre_order]
 		})
 
 		if (env.NODE_ENV === 'local') {

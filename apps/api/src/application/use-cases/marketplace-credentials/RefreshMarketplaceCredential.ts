@@ -49,7 +49,10 @@ export class RefreshMarketplaceCredential implements IUseCase<T, K> {
 			throw err
 		}
 
-		await this.marketplaceCredentialsRepository.update(existingCredential.id, res.credentials)
+		await Promise.all([
+			this.marketplaceCredentialsRepository.update(existingCredential.id, res.credentials),
+			this.marketplaceAccountsRepository.update(existingCredential.account_id, { status: 'active' })
+		])
 	}
 }
 

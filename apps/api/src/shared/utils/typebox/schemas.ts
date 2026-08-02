@@ -1,6 +1,6 @@
 import { Static, TSchema, Type } from '@sinclair/typebox'
 
-import { AccountStatusEnum, IApiKey, IMarketplaceAccount, IMarketplaceListing, IProduct, IUser, IVariant, ListingStatusEnum, ProviderEnum } from '@integrator-packages/database/entities'
+import { AccountStatusEnum, IApiKey, IMarketplaceAccount, IMarketplaceListing, IOrder, IOrderItem, IProduct, IUser, IVariant, ListingStatusEnum, OrderStatusEnum, ProviderEnum, ShipmentStatusEnum } from '@integrator-packages/database/entities'
 
 import { Permissions } from '@utils/permissions'
 import { defaultPageSize, IPagination, IPaginator } from '@utils/pagination'
@@ -45,6 +45,22 @@ export const providerEnumSchema = createSchema(TEnumObject(ProviderEnum, {
 	mercado_livre: 'Mercado Livre - Marketplace de vendas online',
 	magalu: 'Magazine Luiza - Marketplace de vendas online'
 }), '/enums/ProviderEnum')
+export const orderStatusEnumSchema = createSchema(TEnumObject(OrderStatusEnum, {
+	pending: 'The order has been created but not yet processed',
+	paid: 'The order has been paid',
+	shipped: 'The order has been shipped',
+	delivered: 'The order has been delivered',
+	cancelled: 'The order has been cancelled',
+	refunded: 'The order has been refunded'
+}), '/enums/OrderStatusEnum')
+export const shipmentStatusEnumSchema = createSchema(TEnumObject(ShipmentStatusEnum, {
+	pending: 'The shipment has been created but not yet processed',
+	invoiced: 'The shipment has been invoiced and is waiting to be shipped',
+	shipped: 'The shipment has been shipped',
+	delivered: 'The shipment has been delivered',
+	returned: 'The shipment has been returned',
+	cancelled: 'The shipment has been cancelled'
+}), '/enums/ShipmentStatusEnum')
 export const permissionsEnumSchema = createSchema(TEnumObject(Permissions.user, {
 	products: 'Manage products and variants',
 	webhooks: 'Manage webhooks'
@@ -131,6 +147,41 @@ export const marketplaceListingJsonSchema = createSchema(Type.Object({
 }), 'entities/IMarketplaceListing')
 assertTypes<Static<typeof marketplaceListingJsonSchema>, SetDateAsString<IMarketplaceListing, 'last_sync_at'>>()
 
+export const orderJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	user_id: Type.String({ readOnly: true }),
+	account_id: Type.String({ readOnly: true }),
+	external_order_id: Type.String({ readOnly: true }),
+	status: Type.Ref(orderStatusEnumSchema.$id),
+	external_status: Type.String(),
+	total_amount: Type.Number(),
+	shipping_amount: Type.Number(),
+	discount_amount: Type.Number(),
+	buyer_name: TNullable(Type.String()),
+	buyer_document: TNullable(Type.String()),
+	buyer_email: TNullable(Type.String()),
+	buyer_phone: TNullable(Type.String()),
+	ordered_at: DateType({ readOnly: true }),
+	approved_at: TNullable(DateType({ readOnly: true })),
+	metadata: Type.Record(Type.String(), Type.Any()),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IOrder')
+assertTypes<Static<typeof orderJsonSchema>, SetDateAsString<IOrder, 'ordered_at' | 'approved_at' | 'created_at' | 'updated_at'>>()
+
+export const orderItemJsonSchema = createSchema(Type.Object({
+	id: Type.String({ readOnly: true }),
+	order_id: Type.String({ readOnly: true }),
+	variant_id: TNullable(Type.String({ readOnly: true })),
+	listing_id: TNullable(Type.String({ readOnly: true })),
+	quantity: Type.Integer({ minimum: 1 }),
+	unit_amount: Type.Number(),
+	total_amount: Type.Number(),
+	created_at: DateType({ readOnly: true }),
+	updated_at: DateType({ readOnly: true })
+}), 'entities/IOrderItem')
+assertTypes<Static<typeof orderItemJsonSchema>, SetDateAsString<IOrderItem, 'created_at' | 'updated_at'>>()
+
 // Objects
 export const paginatorJsonSchema = createSchema(Type.Object({
 	page: Type.Integer({ minimum: 1, default: 1 }),
@@ -160,6 +211,8 @@ export const getAllSchemas = () => [
 	accountStatusEnumSchema,
 	listingStatusEnumSchema,
 	providerEnumSchema,
+	orderStatusEnumSchema,
+	shipmentStatusEnumSchema,
 	permissionsEnumSchema,
 	userJsonSchema,
 	apiKeyJsonSchema,
@@ -167,6 +220,8 @@ export const getAllSchemas = () => [
 	productJsonSchema,
 	variantJsonSchema,
 	marketplaceListingJsonSchema,
+	orderJsonSchema,
+	orderItemJsonSchema,
 	paginatorJsonSchema,
 	paginationJsonSchema,
 	appTokensJsonSchema

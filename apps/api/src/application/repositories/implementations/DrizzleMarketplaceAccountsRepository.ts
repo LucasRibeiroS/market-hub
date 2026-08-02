@@ -9,6 +9,7 @@ import {
 	ICreateParams,
 	IFindByIdResponse,
 	IFindByIdSimplifiedResponse,
+	IFindFirstByExternalIdResponse,
 	IFindManyParams,
 	IFindManyResponse,
 	IFindManyWithDistinctProvidersParams,
@@ -94,6 +95,13 @@ export class DrizzleMarketplaceAccountsRepository
 
 	async findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null> {
 		return await this.findByIdSimplifiedQuery.execute({ id }) || null
+	}
+
+	async findFirstByExternalId(external_id: string): Promise<IFindFirstByExternalIdResponse | null> {
+		return await this.drizzleClient.query.marketplaceAccounts.findFirst({
+			where: eq(marketplaceAccounts.external_id, external_id),
+			columns: { id: true, user_id: true }
+		}) || null
 	}
 
 	async count({ user_id }: ICountParams): Promise<number> {
