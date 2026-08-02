@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+**/.angular
+**/logs
+**/.git
+**/.env
+**/.env.docker
+*.md
+*.txt

@@ -19,6 +19,8 @@
   "author": "Lucas Ribeiro <lucas.ribeiro@specterlabs.com.br>",
   "license": "ISC",
   "dependencies": {
+    "@bull-board/api": "^6.21.0",
+    "@bull-board/fastify": "^6.21.0",
     "@fastify/compress": "^8.0.1",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.0.1",
@@ -45,11 +47,10 @@
     "nodemailer": "^7.0.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.10.0"
   },
   "devDependencies": {
-    "@bull-board/api": "^6.21.0",
-    "@bull-board/fastify": "^6.21.0",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "*",
     "@types/nodemailer": "^6.4.17",
@@ -57,7 +58,6 @@
     "concurrently": "*",
     "react-email": "^4.0.16",
     "tsc-alias": "*",
-    "tsyringe": "^4.10.0",
     "typescript": "*",
     "vite": "^7.1.10",
     "vite-tsconfig-paths": "^5.1.4",
