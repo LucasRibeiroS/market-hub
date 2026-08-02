@@ -5,8 +5,9 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { finalize, startWith } from 'rxjs'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { MessageService } from 'primeng/api'
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from 'primeng/tabs'
 
-import { ButtonComponent, CodeComponent, DropdownComponent, FormCardComponent, InputComponent, PageHeaderComponent } from '@shared/components'
+import { ButtonComponent, CodeComponent, DropdownComponent, FormCardComponent, InputComponent, ModalComponent, PageHeaderComponent } from '@shared/components'
 import { MarketplaceProviderLogoComponent } from '@features/marketplace-accounts/components'
 import { MarketplaceAccountsService } from '@features/marketplace-accounts/services'
 import {
@@ -77,6 +78,12 @@ const HISTORY_STORAGE_KEY = 'test-history'
 		InputComponent,
 		DropdownComponent,
 		CodeComponent,
+		ModalComponent,
+		Tabs,
+		TabList,
+		Tab,
+		TabPanels,
+		TabPanel,
 		MarketplaceProviderLogoComponent
 	],
 	templateUrl: './test-section.component.html',
@@ -102,6 +109,20 @@ export class TestSectionComponent implements OnInit {
 	isAttributesLoading = signal(false)
 	isProductSubmitting = signal(false)
 	isWebhookSubmitting = signal(false)
+
+	isPayloadPreviewVisible = signal(false)
+	payloadPreviewTitle = signal('')
+	payloadPreviewContent = signal('')
+
+	areAttributesLoaded = signal(false)
+
+	activeTab = signal<'product' | 'webhook'>('product')
+
+	onTabChange(value: string | number | undefined): void {
+		if (value === 'product' || value === 'webhook') {
+			this.activeTab.set(value)
+		}
+	}
 
 	selectedAccountId = signal('')
 	selectedAccount = computed(() => this.accounts().find(account => account.id === this.selectedAccountId()) ?? null)
@@ -146,6 +167,14 @@ export class TestSectionComponent implements OnInit {
 			this.selectedAccountId.set(accountId)
 			this.clearRequiredAttributes()
 			this.mercadoLivreWebhookStatusControl.setValue('')
+		})
+
+		this.productForm.controls.name.valueChanges.pipe(
+			takeUntilDestroyed(this.destroyRef)
+		).subscribe(() => {
+			if (this.areAttributesLoaded()) {
+				this.clearRequiredAttributes()
+			}
 		})
 
 		this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
@@ -214,6 +243,7 @@ export class TestSectionComponent implements OnInit {
 			next: ({ required_attributes }) => {
 				this.requiredAttributes.set(required_attributes)
 				this.rebuildAttributeForms(required_attributes)
+				this.areAttributesLoaded.set(true)
 				this.messageService.add({
 					severity: 'success',
 					summary: 'Atributos carregados',
@@ -228,6 +258,14 @@ export class TestSectionComponent implements OnInit {
 				})
 			}
 		})
+	}
+
+	get canCreateProduct(): boolean {
+		return this.productForm.valid
+			&& this.areAttributesLoaded()
+			&& this.productAttributesForm.valid
+			&& this.variantAttributesForm.valid
+			&& !this.isProductSubmitting()
 	}
 
 	get canSubmitWebhook(): boolean {
@@ -280,7 +318,27 @@ export class TestSectionComponent implements OnInit {
 	}
 
 	createProduct(): void {
-		if (this.productForm.invalid || this.isProductSubmitting()) return
+		if (!this.canCreateProduct) {
+			this.productForm.markAllAsTouched()
+			this.productAttributesForm.markAllAsTouched()
+			this.variantAttributesForm.markAllAsTouched()
+
+			if (!this.areAttributesLoaded()) {
+				this.messageService.add({
+					severity: 'warn',
+					summary: 'Atributos obrigatórios',
+					detail: 'Clique em "Carregar atributos" antes de criar o produto.'
+				})
+			} else if (this.productAttributesForm.invalid || this.variantAttributesForm.invalid) {
+				this.messageService.add({
+					severity: 'warn',
+					summary: 'Atributos obrigatórios',
+					detail: 'Preencha todos os atributos obrigatórios do provedor antes de criar o produto.'
+				})
+			}
+
+			return
+		}
 
 		this.isProductSubmitting.set(true)
 		this.testSectionService.createProduct(this.buildProductPayload()).pipe(
@@ -388,6 +446,29 @@ export class TestSectionComponent implements OnInit {
 		}
 	}
 
+	openProductPayloadPreview(): void {
+		this.openPayloadPreview('Payload de criação de produto · POST /products', this.buildProductPayload())
+	}
+
+	openHistoryPayloadPreview(item: TestHistoryItem): void {
+		this.payloadPreviewTitle.set(item.title)
+		this.payloadPreviewContent.set(item.payload)
+		this.isPayloadPreviewVisible.set(true)
+	}
+
+	openWebhookPayloadPreview(): void {
+		const account = this.selectedAccount()
+		if (!account) return
+
+		this.openPayloadPreview(`Payload de webhook · POST ${this.webhookEndpointLabel()}`, this.buildWebhookPayload(account))
+	}
+
+	private openPayloadPreview(title: string, payload: unknown): void {
+		this.payloadPreviewTitle.set(title)
+		this.payloadPreviewContent.set(JSON.stringify(payload, null, 2))
+		this.isPayloadPreviewVisible.set(true)
+	}
+
 	buildWebhookPayload(account: TestAccountOption) {
 		if (account.provider === 'magalu') {
 			return this.buildMagaluWebhookPayload(account)
@@ -416,17 +497,20 @@ export class TestSectionComponent implements OnInit {
 		this.productAttributesForm = new FormGroup({})
 		this.variantAttributesForm = new FormGroup({})
 
+		// Todo atributo retornado por GetMarketplaceAccountRequiredAttributes já é obrigatório
+		// (a API filtra por required=true antes de responder), por isso o Validators.required aqui.
 		for (const attribute of attributes.product) {
-			this.productAttributesForm.addControl(attribute.id, new FormControl('', { nonNullable: true }))
+			this.productAttributesForm.addControl(attribute.id, new FormControl('', { nonNullable: true, validators: [Validators.required] }))
 		}
 
 		for (const attribute of attributes.variant) {
-			this.variantAttributesForm.addControl(attribute.id, new FormControl('', { nonNullable: true }))
+			this.variantAttributesForm.addControl(attribute.id, new FormControl('', { nonNullable: true, validators: [Validators.required] }))
 		}
 	}
 
 	private clearRequiredAttributes(): void {
 		this.requiredAttributes.set({ product: [], variant: [] })
+		this.areAttributesLoaded.set(false)
 		this.productAttributesForm = new FormGroup({})
 		this.variantAttributesForm = new FormGroup({})
 	}

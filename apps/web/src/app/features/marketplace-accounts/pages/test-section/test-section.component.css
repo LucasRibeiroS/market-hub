@@ -22,7 +22,6 @@
 }
 
 .intro-copy p,
-.intro-step p,
 .selected-account-copy span,
 .history-item p,
 .history-item small,
@@ -57,38 +56,12 @@
 	background: var(--p-primary-100);
 }
 
-.intro-steps {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: 0.75rem;
-}
-
-.intro-step {
-	display: flex;
-	align-items: flex-start;
-	gap: 0.75rem;
-	padding: 1rem 0.5rem 0.5rem 0.75rem;
-	border-radius: 0.9rem;
-	background: var(--p-surface-0);
+.test-tabs-card {
+	background-color: var(--p-surface-0);
 	border: 1px solid var(--p-surface-200);
-}
-
-.step-index {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 1.6rem;
-	height: 1.6rem;
-	border-radius: 100%;
-	background: var(--p-primary-100);
-	color: var(--p-primary-700);
-	font-weight: 700;
-	font-size: 0.85rem;
-	align-self: flex-start;
-}
-
-.step-index-text p {
-    margin: 0.5rem 0;
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-xs);
+	overflow: hidden;
 }
 
 .form-content {
@@ -96,6 +69,69 @@
 	flex-direction: column;
 	gap: 1rem;
 	padding: 1rem 1.5rem;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	border-top: 1px solid var(--p-surface-200);
+	padding: 0.75rem 1.5rem;
+}
+
+/* ============================================================
+   TABS — align p-tabs to the app-form-card look (single surface,
+   tablist acting as the card header instead of PrimeNG's default
+   borderless/transparent style)
+============================================================ */
+.test-tabs-card ::ng-deep .p-tabs {
+	background: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tablist {
+	background: var(--p-surface-0) !important;
+	border-bottom: 1px solid var(--p-surface-200) !important;
+	padding: 0;
+}
+
+.test-tabs-card ::ng-deep .p-tablist-tab-list {
+	border-bottom: none !important;
+	padding: 0;
+	margin: 0;
+}
+
+.test-tabs-card ::ng-deep .p-tab {
+	padding: 0.85rem 1.1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--p-surface-500) !important;
+	background: transparent !important;
+	border-color: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tab:not(.p-tab-active):hover {
+	color: var(--p-surface-800) !important;
+	background: var(--p-surface-100) !important;
+}
+
+.test-tabs-card ::ng-deep .p-tab-active {
+	color: var(--p-primary-700) !important;
+	background: var(--p-surface-0) !important;
+	border-color: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tablist-active-bar {
+	background: var(--p-primary-500) !important;
+	height: 2px !important;
+}
+
+.test-tabs-card ::ng-deep .p-tabpanels {
+	background: var(--p-surface-0) !important;
+	padding: 0 !important;
+}
+
+.test-tabs-card ::ng-deep .p-tabpanel {
+	background: var(--p-surface-0) !important;
 }
 
 .account-details-row .selected-account,
@@ -270,15 +306,17 @@
 	color: var(--p-surface-500);
 }
 
-.preview-block pre,
-.history-item pre {
+.payload-preview {
 	margin: 0;
+	max-height: 60vh;
+	overflow: auto;
 	padding: 0.9rem;
 	border-radius: 0.9rem;
 	background: var(--p-surface-50);
 	border: 1px solid var(--p-surface-200);
 	white-space: pre-wrap;
 	word-break: break-word;
+	font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
 	font-size: 0.8rem;
 	line-height: 1.5;
 	color: var(--p-surface-700);
@@ -286,6 +324,17 @@
 
 .webhook-layout {
 	padding-bottom: 0.15rem;
+}
+
+.webhook-disclaimer {
+	margin: 0 0 0.25rem;
+	padding: 0.7rem 0.9rem;
+	border-radius: 0.85rem;
+	background: var(--p-surface-50);
+	border: 1px solid var(--p-surface-200);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--p-surface-500);
 }
 
 .webhook-layout .field-row {
@@ -369,7 +418,6 @@
 		grid-template-columns: 1fr;
 	}
 
-	.intro-steps,
 	.attribute-list,
 	.field-row {
 		grid-template-columns: 1fr;
