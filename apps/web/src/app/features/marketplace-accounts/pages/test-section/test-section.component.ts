@@ -42,6 +42,50 @@ type TestAttributeGroup = {
 
 type MercadoLivreWebhookStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
 
+type ExampleProduct = {
+	name: string
+	description: string
+	sku: string
+	ean: string
+	price: string
+	weightKg: string
+	heightCm: string
+	widthCm: string
+	depthCm: string
+	imageUrl: string
+}
+
+// Caderno: produto neutro, sem exigências regulatórias extras (ex.: homologação Anatel
+// exigida pelo Mercado Livre para eletrônicos), e é o produto usado na venda de teste do ML.
+const MERCADO_LIVRE_EXAMPLE_PRODUCT: ExampleProduct = {
+	name: 'Caderno Universitário Capa Dura 10 Matérias',
+	description: 'Caderno universitário de alta qualidade, capa dura, 10 matérias, espiral reforçada. Ideal para estudos e organização.',
+	sku: 'CAD-UNI-10M-001',
+	ean: '7898297693936',
+	price: '2590',
+	weightKg: '0.5',
+	heightCm: '27.5',
+	widthCm: '20',
+	depthCm: '2',
+	imageUrl: 'https://i.postimg.cc/QxhJwwKw/caderno-de-disco-sistema-inteligente-color-classico-reposicionavel-azul-nobre-921-1-9b1a0c484f51581a.webp'
+}
+
+// Camiseta: retorna atributos obrigatórios reais (não vazios) na busca de categoria do
+// sandbox Magalu — ver magalu_divergencias.md — e, ao contrário do Smartphone, não exige
+// homologação Anatel nem tem atributos de variante, o que simplifica o teste.
+const MAGALU_EXAMPLE_PRODUCT: ExampleProduct = {
+	name: 'Camiseta',
+	description: 'Camiseta de algodão, confortável e resistente. Ideal para uso casual do dia a dia.',
+	sku: 'CAMISETA-TEST-001',
+	ean: '7898297693936',
+	price: '4990',
+	weightKg: '0.2',
+	heightCm: '3',
+	widthCm: '30',
+	depthCm: '25',
+	imageUrl: 'https://placehold.co/800x800/png'
+}
+
 const MERCADO_LIVRE_WEBHOOK_BASE = {
 	_id: 'a3a08133-6d4e-41db-914f-dacf6a1a15c4',
 	topic: 'orders_v2' as const,
@@ -141,16 +185,16 @@ export class TestSectionComponent implements OnInit {
 	variantAttributesForm = new FormGroup({})
 
 	productForm = new FormGroup({
-		name: new FormControl('Caderno Universitário Capa Dura 10 Matérias', { nonNullable: true, validators: [Validators.required] }),
-		description: new FormControl('Caderno universitário de alta qualidade, capa dura, 10 matérias, espiral reforçada. Ideal para estudos e organização.', { nonNullable: true, validators: [Validators.required] }),
-		sku: new FormControl('CAD-UNI-10M-001', { nonNullable: true, validators: [Validators.required] }),
-		ean: new FormControl('7898297693936', { nonNullable: true }),
-		price: new FormControl('2590', { nonNullable: true, validators: [Validators.required] }),
-		weightKg: new FormControl('0.5', { nonNullable: true, validators: [Validators.required] }),
-		heightCm: new FormControl('27.5', { nonNullable: true, validators: [Validators.required] }),
-		widthCm: new FormControl('20', { nonNullable: true, validators: [Validators.required] }),
-		depthCm: new FormControl('2', { nonNullable: true, validators: [Validators.required] }),
-		imageUrl: new FormControl('https://i.postimg.cc/QxhJwwKw/caderno-de-disco-sistema-inteligente-color-classico-reposicionavel-azul-nobre-921-1-9b1a0c484f51581a.webp', { nonNullable: true, validators: [Validators.required] })
+		name: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.name, { nonNullable: true, validators: [Validators.required] }),
+		description: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.description, { nonNullable: true, validators: [Validators.required] }),
+		sku: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.sku, { nonNullable: true, validators: [Validators.required] }),
+		ean: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.ean, { nonNullable: true }),
+		price: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.price, { nonNullable: true, validators: [Validators.required] }),
+		weightKg: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.weightKg, { nonNullable: true, validators: [Validators.required] }),
+		heightCm: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.heightCm, { nonNullable: true, validators: [Validators.required] }),
+		widthCm: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.widthCm, { nonNullable: true, validators: [Validators.required] }),
+		depthCm: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.depthCm, { nonNullable: true, validators: [Validators.required] }),
+		imageUrl: new FormControl(MERCADO_LIVRE_EXAMPLE_PRODUCT.imageUrl, { nonNullable: true, validators: [Validators.required] })
 	})
 
 	mercadoLivreWebhookStatusControl = new FormControl<MercadoLivreWebhookStatus | ''>('', { nonNullable: true, validators: [Validators.required] })
@@ -164,9 +208,16 @@ export class TestSectionComponent implements OnInit {
 			startWith(this.accountControl.value),
 			takeUntilDestroyed(this.destroyRef)
 		).subscribe(accountId => {
+			const previousProvider = this.selectedProvider()
+
 			this.selectedAccountId.set(accountId)
 			this.clearRequiredAttributes()
 			this.mercadoLivreWebhookStatusControl.setValue('')
+
+			const nextProvider = this.selectedProvider()
+			if (nextProvider !== null && nextProvider !== previousProvider) {
+				this.resetExample()
+			}
 		})
 
 		this.productForm.controls.name.valueChanges.pipe(
@@ -288,33 +339,15 @@ export class TestSectionComponent implements OnInit {
 	}
 
 	fillExampleProduct(): void {
-		this.productForm.patchValue({
-			name: 'Caderno Universitário Capa Dura 10 Matérias',
-			description: 'Caderno universitário de alta qualidade, capa dura, 10 matérias, espiral reforçada. Ideal para estudos e organização.',
-			sku: 'CAD-UNI-10M-001',
-			ean: '7898297693936',
-			price: '2590',
-			weightKg: '0.5',
-			heightCm: '27.5',
-			widthCm: '20',
-			depthCm: '2',
-			imageUrl: 'https://placehold.co/800x800/png'
-		})
+		this.productForm.patchValue(this.exampleProductForSelectedProvider())
 	}
 
 	resetExample(): void {
-		this.productForm.reset({
-			name: 'Caderno Universitário Capa Dura 10 Matérias',
-			description: 'Caderno universitário de alta qualidade, capa dura, 10 matérias, espiral reforçada. Ideal para estudos e organização.',
-			sku: 'CAD-UNI-10M-001',
-			ean: '7898297693936',
-			price: '2590',
-			weightKg: '0.5',
-			heightCm: '27.5',
-			widthCm: '20',
-			depthCm: '2',
-			imageUrl: 'https://placehold.co/800x800/png'
-		})
+		this.productForm.reset(this.exampleProductForSelectedProvider())
+	}
+
+	private exampleProductForSelectedProvider(): ExampleProduct {
+		return this.selectedProvider() === 'magalu' ? MAGALU_EXAMPLE_PRODUCT : MERCADO_LIVRE_EXAMPLE_PRODUCT
 	}
 
 	createProduct(): void {

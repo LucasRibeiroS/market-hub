@@ -21,6 +21,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/node": "20.12",
     "concurrently": "^9.1.2",
+    "repomix": "^1.17.0",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3"
   }
