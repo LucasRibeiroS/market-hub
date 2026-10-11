@@ -5,7 +5,7 @@
 	"rewrites": [
 		{
 			"source": "/api/:path*",
-			"destination": "https://TROQUE-PELO-SEU-SERVICO.onrender.com/:path*"
+			"destination": "https://integrator-api-abld.onrender.com/:path*"
 		},
 		{
 			"source": "/(.*)",
