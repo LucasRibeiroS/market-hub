@@ -26,9 +26,16 @@ export type IRemoveJobParams = {
 	name: QueueName
 }
 
+export type IHasScheduledJobParams = {
+	id: string
+	name: QueueName
+}
+
 export interface IQueueAdapter {
 	addJob(params: IAddJobParams): Promise<void>
 	removeJob(params: IRemoveJobParams): Promise<void>
+	/** Checks if a job added with the `scheduler` option is still scheduled */
+	hasScheduledJob(params: IHasScheduledJobParams): Promise<boolean>
 }
 
 export const QueueAdapterSymbol = Symbol('IQueueAdapter')

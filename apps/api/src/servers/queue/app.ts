@@ -1,3 +1,4 @@
+import { container } from 'tsyringe'
 import { Queue, QueueOptions, Worker, WorkerOptions } from 'bullmq'
 
 import { env } from '@config/env'
@@ -7,7 +8,7 @@ import { UseCaseProcessor, UseCaseProcessorParams } from '@queue/worker/UseCaseP
 import { EventLogger } from '@queue/worker/EventLogger'
 import { QueueMonitoring } from '@queue/monitoring'
 
-import { RefreshMarketplaceCredential } from '@use-cases/marketplace-credentials'
+import { RefreshMarketplaceCredential, RescheduleMarketplaceCredentialRefreshes } from '@use-cases/marketplace-credentials'
 import { PublishMarketplaceListings } from '@use-cases/marketplace-listings'
 import { SyncMercadoLivreOrder } from '@use-cases/orders'
 
@@ -82,6 +83,24 @@ export class QueueServer {
 		if (env.NODE_ENV === 'local') {
 			this.monitoring.setQueues(Object.values(QueueServer.queues))
 			this.monitoring.start()
+		}
+
+		await this.rescheduleCredentialRefreshes()
+	}
+
+	/**
+	 * The refresh schedules live only in Redis, so they are lost if it restarts without persistence.
+	 * Restores them for the active accounts, so the server can start even if it fails.
+	 */
+	private async rescheduleCredentialRefreshes() {
+		try {
+			const { rescheduled } = await container.resolve(RescheduleMarketplaceCredentialRefreshes).execute()
+
+			if (rescheduled.length > 0) {
+				console.log(`[${env.APPLICATION_NAME}] Rescheduled credentials refresh for ${rescheduled.length} account(s)`)
+			}
+		} catch(error) {
+			console.error(`[${env.APPLICATION_NAME}] Failed to reschedule credentials refresh`, error)
 		}
 	}
 

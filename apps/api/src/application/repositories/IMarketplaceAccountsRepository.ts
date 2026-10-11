@@ -51,6 +51,7 @@ export interface IMarketplaceAccountsRepository {
 	findById(id: string): Promise<IFindByIdResponse | null>
 	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
 	findFirstByExternalId(external_id: string): Promise<IFindFirstByExternalIdResponse | null>
+	findManyIdsByStatus(status: AccountStatus): Promise<string[]>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IMarketplaceAccount>
 	update(id: string, data: IUpdateParams): Promise<IMarketplaceAccount>

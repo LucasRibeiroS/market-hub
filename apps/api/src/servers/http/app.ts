@@ -135,6 +135,9 @@ export class HttpServer {
 	}
 
 	private addRoutes() {
+		// Lightweight target for uptime checks and for the keep alive requests
+		this.app.get('/health', { schema: { hide: true } }, () => ({ process: 'success', body: { status: 'ok' } }))
+
 		this.app.register(authRoutes)
 		this.app.register(apiKeysRoutes)
 		this.app.register(usersRoutes)

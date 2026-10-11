@@ -18,6 +18,7 @@ type IEnv = {
 	PORT: number
 	QUEUE_MONITORING_PORT: number
 	CLUSTER_WORKERS?: number
+	KEEP_ALIVE_URL?: string
 	APP_URL: string
 	DATABASE_URL: string
 	REDIS_HOST: string
@@ -53,6 +54,8 @@ const schema = Type.Object({
 	QUEUE_MONITORING_PORT: Type.Number({ default: 13000 }),
 	// Defaults to one worker per CPU. Containers with CPU quotas still report the host CPUs, so set it explicitly there
 	CLUSTER_WORKERS: Type.Optional(Type.Number({ minimum: 1 })),
+	// When set, the API requests this URL periodically so hosts that suspend idle services keep it running
+	KEEP_ALIVE_URL: Type.Optional(Type.String({ pattern: '^https?://' })),
 	APP_URL: Type.String({ default: 'http://localhost' }),
 	DATABASE_URL: Type.String(),
 	REDIS_HOST: Type.String(),

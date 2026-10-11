@@ -1,1 +1,2 @@
 export { RefreshMarketplaceCredential, RefreshMarketplaceCredentialRequest } from './RefreshMarketplaceCredential'
+export { RescheduleMarketplaceCredentialRefreshes } from './RescheduleMarketplaceCredentialRefreshes'

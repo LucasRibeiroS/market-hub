@@ -2,7 +2,7 @@ import { and, eq, getTableColumns, inArray, sql } from 'drizzle-orm'
 
 import { marketplaceAccounts, marketplaceCredentials, marketplaceProviders } from '@integrator-packages/database/drizzle/tables'
 import { DrizzleBaseRepository, jsonBuildObject } from '@integrator-packages/database/drizzle/client'
-import { IMarketplaceAccount } from '@integrator-packages/database/entities'
+import { AccountStatus, IMarketplaceAccount } from '@integrator-packages/database/entities'
 
 import {
 	ICountParams,
@@ -102,6 +102,14 @@ export class DrizzleMarketplaceAccountsRepository
 			where: eq(marketplaceAccounts.external_id, external_id),
 			columns: { id: true, user_id: true }
 		}) || null
+	}
+
+	async findManyIdsByStatus(status: AccountStatus): Promise<string[]> {
+		return await this.drizzleClient
+			.select({ id: marketplaceAccounts.id })
+			.from(marketplaceAccounts)
+			.where(eq(marketplaceAccounts.status, status))
+			.then(rows => rows.map(row => row.id))
 	}
 
 	async count({ user_id }: ICountParams): Promise<number> {

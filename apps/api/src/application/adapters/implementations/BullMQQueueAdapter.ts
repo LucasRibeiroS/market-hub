@@ -2,7 +2,7 @@ import { Queue } from 'bullmq'
 
 import { QueueServer } from '@queue/app'
 
-import { IAddJobParams, IQueueAdapter, IRemoveJobParams, QueueName } from '@adapters/IQueueAadpter'
+import { IAddJobParams, IHasScheduledJobParams, IQueueAdapter, IRemoveJobParams, QueueName } from '@adapters/IQueueAadpter'
 
 export class BullMQQueueAdapter implements IQueueAdapter {
 	async addJob({ id, name, data, scheduler }: IAddJobParams): Promise<void> {
@@ -19,6 +19,13 @@ export class BullMQQueueAdapter implements IQueueAdapter {
 	async removeJob({ id, name }: IRemoveJobParams): Promise<void> {
 		const queue = this.getQueue(name)
 		await queue.remove(id)
+	}
+
+	async hasScheduledJob({ id, name }: IHasScheduledJobParams): Promise<boolean> {
+		const queue = this.getQueue(name)
+		const scheduler = await queue.getJobScheduler(id)
+
+		return scheduler !== undefined && scheduler !== null
 	}
 
 	private getQueue(name: QueueName): Queue {

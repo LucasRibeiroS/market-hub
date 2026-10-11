@@ -8,7 +8,13 @@ import { env } from '@config/env'
 import { HttpServer } from '@http/app'
 import { QueueServer } from '@queue/app'
 
+import { KeepAlive } from './keep_alive'
 import { gracefulShutdown } from './shutdown'
+
+// A single instance is enough, so it never runs on the forked workers
+if (cluster.isPrimary && env.KEEP_ALIVE_URL !== undefined) {
+	new KeepAlive(env.KEEP_ALIVE_URL).start()
+}
 
 if (cluster.isPrimary && env.NODE_ENV === 'production') {
 	console.log(`[${env.APPLICATION_NAME}] Primary cluster with pid ${process.pid} is running`)
