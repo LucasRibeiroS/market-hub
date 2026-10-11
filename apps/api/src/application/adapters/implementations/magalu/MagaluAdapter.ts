@@ -17,6 +17,7 @@ import {
 	IAttributeResponse,
 	ICategoryResponse,
 	IJwtPayload,
+	IMagaluOrderResponse,
 	IOAuthTokenPayload,
 	IOAuthTokenResponse,
 	IPaginatedResponse,
@@ -24,6 +25,8 @@ import {
 	ISkuPayload,
 	IStockPayload,
 	ITraceResponse,
+	IWebhookSignupPayload,
+	IWebhookSignupResponse,
 	Origin,
 	SkuType,
 	StockType
@@ -34,6 +37,8 @@ import {
 	IExchangeCodeResponse,
 	IGetAttributesParams,
 	IGetAttributesResponse,
+	IGetOrderDetailsParams,
+	IGetOrderDetailsResponse,
 	IGetUserInfoParams,
 	IGetUserInfoResponse,
 	IMarketplaceAdapter,
@@ -42,7 +47,11 @@ import {
 	IRefreshTokenParams,
 	IRefreshTokenResponse,
 	IRevokeAuthorizationParams,
-	IRevokeAuthorizationResponse
+	IRevokeAuthorizationResponse,
+	ISubscribeOrderWebhooksParams,
+	ISubscribeOrderWebhooksResponse,
+	IUnsubscribeOrderWebhooksParams,
+	IUnsubscribeOrderWebhooksResponse
 } from '@adapters/IMarketplaceAdapter'
 
 @injectable()
@@ -175,6 +184,126 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		this.loggerAdapter.warn(`Magalu does not expose a revoke endpoint. Marking account ${account.external_id} as revoked locally only.`)
 
 		return { external_id: account.external_id }
+	}
+
+	async subscribeOrderWebhooks({
+		provider, credentials, webhook_url
+	}: ISubscribeOrderWebhooksParams): Promise<ISubscribeOrderWebhooksResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const payload: IWebhookSignupPayload = {
+			webhook: webhook_url,
+			topic_id: 'orders_order'
+		}
+
+		const [res, err] = await client.put<IWebhookSignupResponse>('/v0/onboarding/signup', payload)
+		if (err !== null) {
+			this.loggerAdapter.error(`Magalu subscribe order webhook error: ${err.message}`)
+			throw new FailedDependencyException('Failed to subscribe order webhook on Magalu')
+		}
+
+		const subscription = res.subscriptions[0]
+
+		return {
+			subscription: {
+				topic: subscription.topic,
+				external_webhook_id: subscription.id
+			}
+		}
+	}
+
+	async unsubscribeOrderWebhooks({
+		credentials,
+		provider,
+		subscription
+	}: IUnsubscribeOrderWebhooksParams): Promise<IUnsubscribeOrderWebhooksResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const [, err] = await client.delete(`/v0/onboarding/signup/${encodeURIComponent(subscription.external_webhook_id)}`)
+		if (err !== null) {
+			this.loggerAdapter.error(`Magalu unsubscribe order webhook error: ${err.message}`)
+			throw new FailedDependencyException('Failed to unsubscribe order webhook on Magalu')
+		}
+	}
+
+	async getOrderDetails({
+		credentials,
+		provider,
+		external_order_id,
+		resource
+	}: IGetOrderDetailsParams): Promise<IGetOrderDetailsResponse> {
+		const client = this.getClient({ base_url: provider.base_url, credentials })
+
+		const endpoint = resource
+			? this.normalizeResourcePath({ base_url: provider.base_url, resource })
+			: `/seller/v1/orders/${external_order_id}`
+
+		const [res, err] = await client.get<IMagaluOrderResponse>(endpoint)
+		if (err !== null) {
+			const message = client.getMessageFromError(err)
+
+			this.loggerAdapter.error(`Magalu get order details error: ${err.message}`)
+
+			throw new FailedDependencyException(`Failed to fetch order details on Magalu - ${message}`)
+		}
+
+		// Map Magalu status to internal status
+		const status = this.mapMagaluStatus(res.status)
+		const approved_at = status === 'paid' ? new Date(res.updated_at) : null
+
+		return {
+			external_order_id: external_order_id,
+			external_status: res.status,
+			status,
+			ordered_at: new Date(res.created_at),
+			approved_at,
+			total_amount: res.totals.amount,
+			shipping_amount: res.totals.shipping,
+			discount_amount: res.totals.discount,
+			buyer: {
+				name: res.customer.name || null,
+				document: res.customer.document || null,
+				email: res.customer.email || null,
+				phone: res.customer.phone || null
+			},
+			items: res.items.map(item => ({
+				external_item_id: item.id,
+				external_variant_id: item.variant.id.toString() || item.seller_sku,
+				title: item.title,
+				sku: item.seller_sku || item.sku || null,
+				quantity: item.quantity,
+				unit_amount: item.price,
+				total_amount: item.subtotal
+			}))
+		}
+	}
+
+	private mapMagaluStatus(status: string): IGetOrderDetailsResponse['status'] {
+		const normalized = status.toLowerCase()
+
+		switch (normalized) {
+			case 'paid':
+			case 'approved':
+				return 'paid'
+			case 'shipped':
+				return 'shipped'
+			case 'delivered':
+				return 'delivered'
+			case 'cancelled':
+				return 'cancelled'
+			case 'refunded':
+				return 'refunded'
+			default:
+				return 'pending'
+		}
+	}
+
+	private normalizeResourcePath({ base_url, resource }: INormalizeResourcePathParams): string {
+		if (resource.startsWith('/')) {
+			return resource
+		}
+
+		return resource.replace(base_url, '')
 	}
 
 	async getAttributes({ provider, credentials, product }: IGetAttributesParams): Promise<IGetAttributesResponse> {
@@ -558,3 +687,8 @@ type IGetUnauthenticatedClientParams = Pick<IMarketplaceProvider, 'base_url'>
 type IGetClientParams = {
 	credentials: Pick<IMarketplaceCredential, 'access_token' | 'token_type'>
 } & Pick<IMarketplaceProvider, 'base_url'>
+
+type INormalizeResourcePathParams = {
+	base_url: string
+	resource: string
+}

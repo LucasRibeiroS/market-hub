@@ -55,6 +55,19 @@ export type IFindByIdResponse = {
 	| 'sync_message'
 >
 
+export type IFindFirstByExternalReferencesParams = {
+	account_id: string
+	external_product_id?: string
+	external_variant_id?: string
+}
+
+export type IFindFirstByExternalReferencesResponse = Pick<IMarketplaceListing, 'id' | 'variant_id'>
+
+export type IFindAccountByExternalProductIdResponse = {
+	account_id: string
+	account: Pick<IMarketplaceAccount, 'user_id'>
+}
+
 export type ICountParams = {
 	user_id: string
 	account_id?: string
@@ -71,6 +84,8 @@ export interface IMarketplaceListingsRepository {
 	findMany(params: IFindManyParams): Promise<IFindManyResponse>
 	findManyForPublish(params: IFindManyForPublishParams): Promise<IFindManyForPublishResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
+	findFirstByExternalReferences(params: IFindFirstByExternalReferencesParams): Promise<IFindFirstByExternalReferencesResponse | null>
+	findAccountByExternalProductId(external_product_id: string): Promise<IFindAccountByExternalProductIdResponse | null>
 	count(params: ICountParams): Promise<number>
 	createMany(params: ICreateManyParams): Promise<IMarketplaceListing[]>
 	update(id: string, params: IUpdateParams): Promise<void>

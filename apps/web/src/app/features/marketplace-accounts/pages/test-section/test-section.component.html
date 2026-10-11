@@ -1,0 +1,308 @@
+<app-page-header
+	title="Área de testes"
+	description="Use este painel para validar, separadamente, o cadastro de produto e a simulação de webhooks de pedido dos provedores."
+	[showBackButton]="true"
+	(backClick)="goBack()"
+/>
+
+<div class="test-layout">
+	<section class="intro-banner">
+		<div class="intro-copy">
+			<span class="intro-badge">Dois testes independentes</span>
+			<h2>Cadastro de produto e simulação de pedido</h2>
+			<p>
+				Cada aba abaixo testa uma coisa diferente e <strong>não depende da outra</strong>.
+			</p>
+		</div>
+	</section>
+
+    <app-form-card [isLoading]="isAccountsLoading()" [skeletonRows]="3">
+        <ng-container formCardHeader>
+            <div class="card-header-info">
+                <span class="card-header-label">Selecione a integração ativa.</span>
+            </div>
+        </ng-container>
+
+        <div class="form-content">
+            <app-dropdown
+                label="Conta conectada"
+                placeholder="Selecione uma integração"
+                [options]="accountOptions()"
+                [control]="accountControl"
+            />
+
+            <div class="field-row account-details-row">
+                @if (selectedAccount()) {
+                    <div class="selected-account">
+                        <app-marketplace-provider-logo
+                            [provider]="selectedAccount()!.provider"
+                            [displayName]="selectedAccount()!.display_name"
+                            size="md"
+                        />
+
+                        <div class="selected-account-copy">
+                            <strong>{{ selectedAccount()!.display_name }}</strong>
+                            <span>{{ selectedAccount()!.external_id }}</span>
+                            <span class="selected-account-meta">Status: {{ selectedAccount()!.status }}</span>
+                        </div>
+                    </div>
+                }
+
+                <div class="endpoint-preview">
+                    <span class="endpoint-label">Endpoint de webhook</span>
+                    <app-code>{{ webhookEndpointLabel() }}</app-code>
+                    <small>Topic esperado: {{ webhookTopicLabel() }}</small>
+                </div>
+            </div>
+        </div>
+    </app-form-card>
+
+    <div class="test-tabs-card">
+        <p-tabs class="test-tabs" [value]="activeTab()" (valueChange)="onTabChange($event)">
+            <p-tablist>
+                <p-tab value="product">Cadastro de produto</p-tab>
+                <p-tab value="webhook">Simulação de pedido</p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                <p-tabpanel value="product" class="product-form">
+                    <div class="form-content stacked">
+                        <div class="field-row">
+                            <app-input-text label="Nome" [control]="productForm.controls.name" placeholder="Nome do produto" />
+                            <app-input-text label="SKU" [control]="productForm.controls.sku" placeholder="SKU único" />
+                            <app-input-text label="Preço" [control]="productForm.controls.price" placeholder="Em centavos" type="number" />
+                        </div>
+
+                        <div class="field-row">
+                            <app-input-text label="EAN" [control]="productForm.controls.ean" placeholder="Opcional" />
+                            <app-input-text label="Peso (kg)" [control]="productForm.controls.weightKg" type="number" />
+                            <app-input-text label="Imagem" [control]="productForm.controls.imageUrl" placeholder="https://..." />
+                        </div>
+
+                        <div class="field-row">
+                            <app-input-text label="Altura (cm)" [control]="productForm.controls.heightCm" type="number" />
+                            <app-input-text label="Largura (cm)" [control]="productForm.controls.widthCm" type="number" />
+                            <app-input-text label="Profundidade (cm)" [control]="productForm.controls.depthCm" type="number" />
+                        </div>
+
+                        <div class="description-field">
+                            <label for="product-description">Descrição</label>
+                            <textarea
+                                id="product-description"
+                                rows="4"
+                                [formControl]="productForm.controls.description"
+                                placeholder="Descrição curta para o produto de teste"
+                            ></textarea>
+                        </div>
+
+                        <div class="card-actions-inline">
+                            <app-button
+                                label="Carregar atributos"
+                                icon="pi pi-refresh"
+                                severity="secondary"
+                                [text]="true"
+                                [fluid]="false"
+                                [isLoading]="isAttributesLoading()"
+                                [disabled]="isAttributesLoading() || !selectedAccount() || !productForm.controls.name.value"
+                                (onClick)="loadRequiredAttributes()"
+                            />
+                            <small>Os campos são carregados com base no provedor selecionado e no nome do produto.</small>
+                        </div>
+
+                        <div class="attributes-stack">
+                            <div class="attributes-section">
+                                <div class="attributes-section-header">
+                                    <h4>Atributos do produto</h4>
+                                    <span>Obrigatórios.</span>
+                                </div>
+
+                                @if (productRequiredAttributes().length === 0) {
+                                    <p class="attribute-empty-state">Carregue os atributos para liberar os campos.</p>
+                                } @else {
+                                    <div class="attribute-list">
+                                        @for (attribute of productRequiredAttributes(); track attribute.id) {
+                                            <app-input-text
+                                                [label]="attribute.name"
+                                                [placeholder]="attribute.description ?? 'Valor do atributo'"
+                                                [control]="getProductAttributeControl(attribute.id)"
+                                            />
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="attributes-section">
+                                <div class="attributes-section-header">
+                                    <h4>Atributos da variante</h4>
+                                    <span>Obrigatórios.</span>
+                                </div>
+
+                                @if (variantRequiredAttributes().length === 0) {
+                                    <p class="attribute-empty-state">Sem atributos de variante para este provedor.</p>
+                                } @else {
+                                    <div class="attribute-list">
+                                        @for (attribute of variantRequiredAttributes(); track attribute.id) {
+                                            <app-input-text
+                                                [label]="attribute.name"
+                                                [placeholder]="attribute.description ?? 'Valor do atributo'"
+                                                [control]="getVariantAttributeControl(attribute.id)"
+                                            />
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="preview-block">
+                            <div class="preview-heading">
+                                <span>Payload de criação</span>
+                                <small>Confira o request completo antes de enviar</small>
+                            </div>
+                            <app-button
+                                label="Ver payload completo"
+                                icon="pi pi-code"
+                                severity="secondary"
+                                [text]="true"
+                                [fluid]="false"
+                                (onClick)="openProductPayloadPreview()"
+                            />
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <app-button
+                            label="Preencher exemplo"
+                            icon="pi pi-magic"
+                            severity="secondary"
+                            [text]="true"
+                            [fluid]="false"
+                            (onClick)="fillExampleProduct()"
+                        />
+                        <app-button
+                            label="Limpar"
+                            icon="pi pi-eraser"
+                            severity="secondary"
+                            [outlined]="true"
+                            [fluid]="false"
+                            (onClick)="resetExample()"
+                        />
+                        <app-button
+                            label="Criar produto de teste"
+                            icon="pi pi-box"
+                            [isLoading]="isProductSubmitting()"
+                            [disabled]="isProductSubmitting() || !canCreateProduct"
+                            [fluid]="false"
+                            (onClick)="createProduct()"
+                        />
+                    </div>
+                </p-tabpanel>
+
+                <p-tabpanel value="webhook">
+                    <div class="form-content webhook-layout">
+                        <p class="webhook-disclaimer">
+                            Pedido isolado — não usa o produto cadastrado na outra aba.
+                        </p>
+                        @if (selectedProvider() === 'mercado_livre') {
+                            <div class="field-row">
+                                <app-input-text label="ID do pedido" [control]="webhookForm.controls.orderId" placeholder="Ex.: 2000016588362532" />
+                                <app-dropdown
+                                    label="Status"
+                                    placeholder="Escolha um status"
+                                    [options]="mercadoLivreWebhookStatusOptions()"
+                                    [control]="mercadoLivreWebhookStatusControl"
+                                />
+                            </div>
+                        } @else {
+                            <div class="field-row">
+                                <app-input-text label="ID do pedido" [control]="webhookForm.controls.orderId" placeholder="Ex.: 123456789" />
+                                <app-input-text label="Status" [control]="webhookForm.controls.status" placeholder="approved" />
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-actions">
+                        <app-button
+                            label="Ver payload completo"
+                            icon="pi pi-code"
+                            severity="secondary"
+                            [text]="true"
+                            [disabled]="!selectedAccount()"
+                            [fluid]="false"
+                            (onClick)="openWebhookPayloadPreview()"
+                        />
+                        <app-button
+                            label="Simular webhook"
+                            icon="pi pi-send"
+                            [isLoading]="isWebhookSubmitting()"
+                            [disabled]="!canSubmitWebhook"
+                            [fluid]="false"
+                            (onClick)="simulateWebhook()"
+                        />
+                    </div>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </div>
+
+    <app-form-card [isLoading]="false" [skeletonRows]="3">
+        <ng-container formCardHeader>
+            <div class="card-header-info">
+                <span class="card-header-label">Histórico</span>
+            </div>
+        </ng-container>
+
+		<div class="history-content">
+            @if (history().length === 0) {
+                <div class="empty-history">
+                    <i class="pi pi-clock"></i>
+                    <p>Nenhuma execução ainda.</p>
+                </div>
+            } @else {
+                <div class="history-list">
+                    @for (item of history(); track item.id) {
+                        <article class="history-item" [class.history-item--error]="item.status === 'error'">
+                            <div class="history-item-header">
+                                <div>
+                                    <strong>{{ item.title }}</strong>
+                                    <span>{{ item.context }}</span>
+                                </div>
+                                <span class="history-status">{{ item.status }}</span>
+                            </div>
+                            <p>{{ item.message }}</p>
+                            <small>{{ item.created_at | date:'dd/MM/yyyy HH:mm:ss' }}</small>
+                            <app-button
+                                label="Ver payload completo"
+                                icon="pi pi-code"
+                                severity="secondary"
+                                [text]="true"
+                                [fluid]="false"
+                                (onClick)="openHistoryPayloadPreview(item)"
+                            />
+                        </article>
+                    }
+                </div>
+            }
+        </div>
+    </app-form-card>
+</div>
+
+<app-modal
+    [visible]="isPayloadPreviewVisible()"
+    (visibleChange)="isPayloadPreviewVisible.set($event)"
+    [header]="payloadPreviewTitle()"
+    width="min(720px, 92vw)"
+>
+    <ng-container modalBody>
+        <pre class="payload-preview">{{ payloadPreviewContent() }}</pre>
+    </ng-container>
+
+    <ng-container modalFooter>
+        <app-button
+            label="Fechar"
+            severity="secondary"
+            [text]="true"
+            [fluid]="false"
+            (onClick)="isPayloadPreviewVisible.set(false)"
+        />
+    </ng-container>
+</app-modal>

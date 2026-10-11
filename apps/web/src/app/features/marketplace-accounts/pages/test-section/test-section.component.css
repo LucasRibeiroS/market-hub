@@ -1,0 +1,445 @@
+.test-layout {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.intro-banner {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1.25rem;
+	border-radius: 1.25rem;
+	background: linear-gradient(135deg, var(--p-surface-0), var(--p-primary-50));
+	border: 1px solid var(--p-surface-200);
+}
+
+.intro-copy h2 {
+	margin: 0.75rem 0;
+	font-size: 1.5rem;
+	line-height: 1.15;
+	color: var(--p-surface-800);
+}
+
+.intro-copy p,
+.selected-account-copy span,
+.history-item p,
+.history-item small,
+.endpoint-preview small {
+	color: var(--p-surface-500);
+	line-height: 1.45;
+}
+
+.card-header-info {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.card-header-label {
+	font-size: 0.875rem;
+	color: var(--p-surface-500);
+}
+
+.intro-badge {
+	display: inline-flex;
+	align-items: center;
+	width: fit-content;
+	padding: 0.3rem 0.5rem;
+	border-radius: 999px;
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--p-primary-700);
+	background: var(--p-primary-100);
+}
+
+.test-tabs-card {
+	background-color: var(--p-surface-0);
+	border: 1px solid var(--p-surface-200);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-xs);
+	overflow: hidden;
+}
+
+.form-content {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding: 1rem 1.5rem;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	border-top: 1px solid var(--p-surface-200);
+	padding: 0.75rem 1.5rem;
+}
+
+/* ============================================================
+   TABS — align p-tabs to the app-form-card look (single surface,
+   tablist acting as the card header instead of PrimeNG's default
+   borderless/transparent style)
+============================================================ */
+.test-tabs-card ::ng-deep .p-tabs {
+	background: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tablist {
+	background: var(--p-surface-0) !important;
+	border-bottom: 1px solid var(--p-surface-200) !important;
+	padding: 0;
+}
+
+.test-tabs-card ::ng-deep .p-tablist-tab-list {
+	border-bottom: none !important;
+	padding: 0;
+	margin: 0;
+}
+
+.test-tabs-card ::ng-deep .p-tab {
+	padding: 0.85rem 1.1rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--p-surface-500) !important;
+	background: transparent !important;
+	border-color: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tab:not(.p-tab-active):hover {
+	color: var(--p-surface-800) !important;
+	background: var(--p-surface-100) !important;
+}
+
+.test-tabs-card ::ng-deep .p-tab-active {
+	color: var(--p-primary-700) !important;
+	background: var(--p-surface-0) !important;
+	border-color: transparent !important;
+}
+
+.test-tabs-card ::ng-deep .p-tablist-active-bar {
+	background: var(--p-primary-500) !important;
+	height: 2px !important;
+}
+
+.test-tabs-card ::ng-deep .p-tabpanels {
+	background: var(--p-surface-0) !important;
+	padding: 0 !important;
+}
+
+.test-tabs-card ::ng-deep .p-tabpanel {
+	background: var(--p-surface-0) !important;
+}
+
+.account-details-row .selected-account,
+.account-details-row .endpoint-preview {
+	height: 100%;
+}
+
+.card-actions-inline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.25rem 0 0.1rem;
+}
+
+.card-actions-inline small {
+	color: var(--p-surface-500);
+	font-size: 0.8rem;
+	line-height: 1.4;
+}
+
+.stacked {
+	gap: 1.15rem;
+}
+
+.field-row {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+}
+
+/* Product-specific layout: use 3 columns */
+.product-form .field-row {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.description-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+}
+
+.description-field label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--p-surface-600);
+}
+
+.description-field textarea {
+	width: 100%;
+	min-height: 6.5rem;
+	resize: vertical;
+	border-radius: 0.75rem;
+	border: 1px solid var(--p-surface-200);
+	background: var(--p-surface-0);
+	padding: 0.85rem 0.95rem;
+	font: inherit;
+	color: var(--p-surface-800);
+}
+
+.description-field textarea:focus {
+	outline: none;
+	border-color: var(--p-primary-300);
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-primary-200) 45%, transparent);
+}
+
+.attributes-stack {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.75rem;
+	padding-top: 0;
+}
+
+.attributes-section {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 0.95rem;
+	border-radius: 1rem;
+	border: 1px solid var(--p-surface-200);
+	background: var(--p-surface-50);
+}
+
+.attributes-section-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.attributes-section-header h4 {
+	margin: 0;
+	font-size: 0.95rem;
+	color: var(--p-surface-800);
+}
+
+.attributes-section-header span {
+	font-size: 0.78rem;
+	color: var(--p-surface-500);
+}
+
+.attribute-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.attribute-empty-state {
+	margin: 0;
+	font-size: 0.85rem;
+	color: var(--p-surface-500);
+}
+
+.selected-account {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.85rem 0.9rem;
+	border-radius: 1rem;
+	background: var(--p-surface-50);
+	border: 1px solid var(--p-surface-200);
+}
+
+.selected-account-copy {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	min-width: 0;
+}
+
+.selected-account-copy strong {
+	color: var(--p-surface-800);
+}
+
+.selected-account-meta {
+	font-size: 0.8rem;
+	font-weight: 600;
+}
+
+.endpoint-preview,
+.preview-block {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 0.85rem 0.9rem;
+	border-radius: 1rem;
+	border: 1px solid var(--p-surface-200);
+	background: var(--p-surface-0);
+}
+
+.endpoint-label {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--p-surface-600);
+}
+
+.preview-heading {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.preview-heading span {
+	font-size: 0.8125rem;
+	font-weight: 600;
+	color: var(--p-surface-600);
+}
+
+.preview-heading small {
+	font-size: 0.775rem;
+	color: var(--p-surface-500);
+}
+
+.payload-preview {
+	margin: 0;
+	max-height: 60vh;
+	overflow: auto;
+	padding: 0.9rem;
+	border-radius: 0.9rem;
+	background: var(--p-surface-50);
+	border: 1px solid var(--p-surface-200);
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+	font-size: 0.8rem;
+	line-height: 1.5;
+	color: var(--p-surface-700);
+}
+
+.webhook-layout {
+	padding-bottom: 0.15rem;
+}
+
+.webhook-disclaimer {
+	margin: 0 0 0.25rem;
+	padding: 0.7rem 0.9rem;
+	border-radius: 0.85rem;
+	background: var(--p-surface-50);
+	border: 1px solid var(--p-surface-200);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+	color: var(--p-surface-500);
+}
+
+.webhook-layout .field-row {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.history-content {
+    padding-top: 1rem;
+}
+
+.empty-history {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	padding: 1.5rem 0 0.25rem;
+	color: var(--p-surface-500);
+}
+
+.empty-history i {
+	font-size: 1.4rem;
+	color: var(--p-surface-300);
+}
+
+.history-list {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.9rem;
+	padding: 0 1.5rem 1rem;
+}
+
+.history-item {
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+	padding: 0.95rem;
+	border-radius: 1rem;
+	border: 1px solid var(--p-surface-200);
+	background: var(--p-surface-0);
+}
+
+.history-item--error {
+	border-color: var(--p-red-200, #f5c2c7);
+	background: color-mix(in srgb, var(--p-red-50, #fff5f5) 86%, white);
+}
+
+.history-item-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 0.75rem;
+}
+
+.history-item-header strong,
+.history-item-header span {
+	display: block;
+}
+
+.history-item-header strong {
+	color: var(--p-surface-800);
+}
+
+.history-item-header span {
+	font-size: 0.8rem;
+}
+
+.history-status {
+	padding: 0.2rem 0.5rem;
+	border-radius: 999px;
+	background: var(--p-surface-100);
+	font-size: 0.72rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--p-surface-600);
+}
+
+@media (max-width: 960px) {
+	.history-list {
+		grid-template-columns: 1fr;
+	}
+
+	.attribute-list,
+	.field-row {
+		grid-template-columns: 1fr;
+	}
+
+	.card-header-info {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.attributes-section-header {
+		flex-direction: column;
+	}
+}
+
+@media (max-width: 640px) {
+	.form-content,
+	.history-list {
+		padding-inline: 1rem;
+	}
+
+	.intro-banner {
+		padding: 1rem;
+	}
+}

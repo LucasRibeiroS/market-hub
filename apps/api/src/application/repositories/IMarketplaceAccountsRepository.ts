@@ -30,6 +30,8 @@ export type IFindByIdResponse = {
 
 export type IFindByIdSimplifiedResponse = Pick<IMarketplaceAccount, 'id' | 'user_id' | 'provider_id' | 'status'>
 
+export type IFindFirstByExternalIdResponse = Pick<IMarketplaceAccount, 'id' | 'user_id'>
+
 export type ICountParams = {
 	user_id: string
 }
@@ -48,6 +50,7 @@ export interface IMarketplaceAccountsRepository {
 	): Promise<IFindManyWithDistinctProvidersResponse>
 	findById(id: string): Promise<IFindByIdResponse | null>
 	findByIdSimplified(id: string): Promise<IFindByIdSimplifiedResponse | null>
+	findFirstByExternalId(external_id: string): Promise<IFindFirstByExternalIdResponse | null>
 	count(params: ICountParams): Promise<number>
 	create(params: ICreateParams): Promise<IMarketplaceAccount>
 	update(id: string, data: IUpdateParams): Promise<IMarketplaceAccount>

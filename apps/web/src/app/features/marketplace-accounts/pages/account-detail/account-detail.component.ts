@@ -1,4 +1,4 @@
-import { catchError, finalize, tap, throwError } from 'rxjs'
+import { catchError, EMPTY, finalize, ignoreElements, switchMap, tap, throwError } from 'rxjs'
 import { Component, inject, OnInit, signal } from '@angular/core'
 import { CommonModule, DatePipe } from '@angular/common'
 import { ActivatedRoute, Router } from '@angular/router'
@@ -81,30 +81,42 @@ export class AccountDetailComponent implements OnInit {
 
 		this.isUpdating.set(true)
 
-		this.providersService.list().pipe(
-			finalize(() => this.isUpdating.set(false))
-		).subscribe({
-			next: (providers) => {
-				const provider = providers.find(p => p.provider === account.provider.provider)
-				if (!provider) {
+		this.accountsService.refreshCredentials(account.id).pipe(
+			switchMap(() => this.accountsService.getById(account.id)),
+			tap(updated => {
+				this.account.set(updated)
+				this.messageService.add({
+					severity: 'success',
+					summary: 'Conta reconectada',
+					detail: 'As credenciais foram atualizadas com sucesso.'
+				})
+			}),
+			catchError(() => this.providersService.list().pipe(
+				tap(providers => {
+					const provider = providers.find(p => p.provider === account.provider.provider)
+					if (!provider) {
+						this.messageService.add({
+							severity: 'error',
+							summary: 'Erro',
+							detail: 'Não foi possível obter o link de autenticação do provedor.'
+						})
+						return
+					}
+					sessionStorage.setItem('reconnect_account_id', account.id)
+					window.location.href = provider.auth_url
+				}),
+				catchError(() => {
 					this.messageService.add({
 						severity: 'error',
 						summary: 'Erro',
-						detail: 'Não foi possível obter o link de autenticação do provedor.'
+						detail: 'Não foi possível carregar os provedores disponíveis.'
 					})
-					return
-				}
-				sessionStorage.setItem('reconnect_account_id', account.id)
-				window.location.href = provider.auth_url
-			},
-			error: () => {
-				this.messageService.add({
-					severity: 'error',
-					summary: 'Erro',
-					detail: 'Não foi possível carregar os provedores disponíveis.'
-				})
-			}
-		})
+					return EMPTY
+				}),
+				ignoreElements()
+			)),
+			finalize(() => this.isUpdating.set(false))
+		).subscribe()
 	}
 
 	disconnect(): void {
@@ -168,5 +180,14 @@ export class AccountDetailComponent implements OnInit {
 
 	goBack(): void {
 		this.router.navigate(['/integrations'])
+	}
+
+	openTest(): void {
+		const account = this.account()
+		if (!account) return
+
+		this.router.navigate(['/integrations/test'], {
+			queryParams: { accountId: account.id }
+		})
 	}
 }

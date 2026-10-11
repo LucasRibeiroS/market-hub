@@ -106,6 +106,13 @@
       "when": 1776890131265,
       "tag": "20260422203531_add_token_url_to_marketplace_providers_table",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1779650763505,
+      "tag": "20260524192603_create_orders_and_related_tables",
+      "breakpoints": true
     }
   ]
 }

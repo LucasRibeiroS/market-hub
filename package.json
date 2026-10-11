@@ -8,7 +8,8 @@
     "build:packages": "pnpm --filter @integrator-packages/* build",
     "build:adapters": "pnpm --filter @integrator-packages/adapters build",
     "build:database": "pnpm --filter @integrator-packages/database build",
-    "build:use-case": "pnpm --filter @integrator-packages/use-case build"
+    "build:use-case": "pnpm --filter @integrator-packages/use-case build",
+    "clean": "pnpm -r clean"
   },
   "type": "module",
   "keywords": [],
@@ -20,6 +21,7 @@
     "@types/bcrypt": "^5.0.2",
     "@types/node": "20.12",
     "concurrently": "^9.1.2",
+    "repomix": "^1.17.0",
     "tsc-alias": "^1.8.16",
     "typescript": "^5.8.3"
   }

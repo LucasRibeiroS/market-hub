@@ -13,13 +13,16 @@ import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } f
 
 import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
 
-import { accountStatusEnumSchema, marketplaceAccountJsonSchema } from '@utils/typebox'
+import { DeleteMarketplaceWebhook, DeleteMarketplaceWebhookSymbol } from '@use-cases/marketplace-webhooks/DeleteMarketplaceWebhook'
+
+import { ExtractStrict } from '@utils/types'
+import { marketplaceAccountJsonSchema } from '@utils/typebox'
 
 type UpdateMarketplaceAccountRequest = {
 	id: string
 	user_id: string
 	data: {
-		status: AccountStatus
+		status: ExtractStrict<AccountStatus, 'disconnected'>
 	}
 }
 type T = UpdateMarketplaceAccountRequest
@@ -43,7 +46,9 @@ export class UpdateMarketplaceAccount implements IUseCase<T, K> {
 		@inject(MarketplaceAccountsRepositorySymbol)
 		private marketplaceAccountsRepository: IMarketplaceAccountsRepository,
 		@inject(QueueAdapterSymbol)
-		private queueAdapter: IQueueAdapter
+		private queueAdapter: IQueueAdapter,
+		@inject(DeleteMarketplaceWebhookSymbol)
+		private deleteMarketplaceWebhook: DeleteMarketplaceWebhook
 	) {}
 
 	@Transactional()
@@ -56,7 +61,10 @@ export class UpdateMarketplaceAccount implements IUseCase<T, K> {
 		const account = await this.marketplaceAccountsRepository.update(id, data)
 
 		if (account.status !== AccountStatusEnum.active) {
-			await this.removeRefreshCredentialsJob({ account_id: id })
+			await Promise.all([
+				this.deleteMarketplaceWebhook.execute({ account_id: id }),
+				this.removeRefreshCredentialsJob({ account_id: id })
+			])
 		}
 
 		return { account }
@@ -78,7 +86,7 @@ class Validator extends BaseValidator<T, typeof Validator.schema> {
 		id: Type.String(),
 		user_id: Type.String(),
 		data: Type.Object({
-			status: Type.Ref(accountStatusEnumSchema.$id)
+			status: Type.Literal(AccountStatusEnum.disconnected)
 		})
 	})
 

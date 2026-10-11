@@ -9,7 +9,10 @@ import { Documentation } from '@integrator-packages/use-case/documentation'
 import { NotFoundException } from '@integrator-packages/use-case/exceptions'
 
 import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
+
 import { IQueueAdapter, QueueAdapterSymbol } from '@adapters/IQueueAadpter'
+
+import { DeleteMarketplaceWebhook, DeleteMarketplaceWebhookSymbol } from '@use-cases/marketplace-webhooks/DeleteMarketplaceWebhook'
 
 import { EmptyObject } from '@utils/types'
 
@@ -33,7 +36,9 @@ export class DeleteMarketplaceAccount implements IUseCase<T, K> {
 		@inject(MarketplaceAccountsRepositorySymbol)
 		private marketplaceAccountsRepository: IMarketplaceAccountsRepository,
 		@inject(QueueAdapterSymbol)
-		private queueAdapter: IQueueAdapter
+		private queueAdapter: IQueueAdapter,
+		@inject(DeleteMarketplaceWebhookSymbol)
+		private deleteMarketplaceWebhook: DeleteMarketplaceWebhook
 	) {}
 
 	@Transactional()
@@ -43,9 +48,12 @@ export class DeleteMarketplaceAccount implements IUseCase<T, K> {
 			throw new NotFoundException('Marketplace account not found')
 		}
 
-		await this.marketplaceAccountsRepository.delete(account.id)
+		await Promise.all([
+			this.deleteMarketplaceWebhook.execute({ account_id: account.id }),
+			this.removeRefreshCredentialsJob({ account_id: account.id })
+		])
 
-		await this.removeRefreshCredentialsJob({ account_id: account.id })
+		await this.marketplaceAccountsRepository.delete(account.id)
 
 		return {}
 	}

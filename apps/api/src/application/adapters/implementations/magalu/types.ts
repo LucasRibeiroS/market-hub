@@ -83,6 +83,55 @@ export type ITraceResponse = {
 	trace_id: string
 }
 
+export type IWebhookSignupPayload = {
+	webhook: string
+	topic_id: string
+}
+
+export type IWebhookSignupResponse = {
+	subscriptions: Array<{
+		id: string
+		topic: string
+	}>
+}
+
+export type IMagaluOrderResponse = {
+	id: string
+	status: string
+	created_at: string
+	updated_at: string
+	customer: {
+		id: string
+		name?: string
+		email?: string
+		phone?: string
+		document?: string
+	}
+	totals: {
+		amount: number // total in cents
+		shipping: number
+		discount: number
+		currency: string
+	}
+	fulfillment_status: string
+	payment_status: string
+	shipping_address?: {
+		state?: string
+	}
+	payment_method?: string
+	items: Array<{
+		id: string
+		sku: string
+		seller_sku: string
+		title: string
+		quantity: number
+		price: number // unit price in cents
+		subtotal: number // total for this item in cents
+		product: { id: string | number }
+		variant: { id: string | number }
+	}>
+}
+
 export enum Condition {
 	NEW = 'NEW',
 	USED = 'USED',

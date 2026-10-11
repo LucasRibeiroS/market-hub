@@ -1,6 +1,7 @@
 export { CreateMarketplaceAccount } from './CreateMarketplaceAccount'
 export { DeleteMarketplaceAccount } from './DeleteMarketplaceAccount'
 export { GetMarketplaceAccount } from './GetMarketplaceAccount'
+export { GetMarketplaceAccountRequiredAttributes } from './GetMarketplaceAccountRequiredAttributes'
 export { ListMarketplaceAccounts } from './ListMarketplaceAccounts'
 export { ReAuthenticateMarketplaceAccount } from './ReAuthenticateMarketplaceAccount'
 export { UpdateMarketplaceAccount } from './UpdateMarketplaceAccount'

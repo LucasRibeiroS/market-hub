@@ -32,7 +32,7 @@ export class AccountCallbackComponent implements OnInit {
 	errorMessage = signal<string | null>(null)
 
 	ngOnInit(): void {
-		const provider = this.route.snapshot.paramMap.get('provider')?.replace('-', '_') as Provider | null
+		const provider = this.route.snapshot.paramMap.get('provider')?.replace(/-/g, '_') as Provider | null
 		const code = this.route.snapshot.queryParamMap.get('code')
 
 		if (!code || !provider) {

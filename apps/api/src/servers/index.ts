@@ -31,5 +31,4 @@ if (cluster.isPrimary && env.NODE_ENV === 'production') {
 
 	process.on('SIGTERM', () => gracefulShutdown(servers))
 	process.on('SIGINT', () => gracefulShutdown(servers))
-
 }

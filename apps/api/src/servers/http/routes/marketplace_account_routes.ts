@@ -4,10 +4,12 @@ import {
 	CreateMarketplaceAccount,
 	DeleteMarketplaceAccount,
 	GetMarketplaceAccount,
+	GetMarketplaceAccountRequiredAttributes,
 	ListMarketplaceAccounts,
 	ReAuthenticateMarketplaceAccount,
 	UpdateMarketplaceAccount
 } from '@use-cases/marketplace-accounts'
+import { RefreshMarketplaceCredential } from '@use-cases/marketplace-credentials'
 
 export const marketplaceAccountRoutes = registerRoutes([
 	{
@@ -29,6 +31,12 @@ export const marketplaceAccountRoutes = registerRoutes([
 		use_case_class: GetMarketplaceAccount
 	},
 	{
+		method: 'get',
+		path: '/:id/required-attributes',
+		auth_method: 'any',
+		use_case_class: GetMarketplaceAccountRequiredAttributes
+	},
+	{
 		method: 'patch',
 		path: '/:id',
 		auth_method: 'jwt',
@@ -41,6 +49,13 @@ export const marketplaceAccountRoutes = registerRoutes([
 		auth_method: 'jwt',
 		use_case_class: ReAuthenticateMarketplaceAccount,
 		handler_options: { separate_request_data: true }
+	},
+	{
+		method: 'post',
+		path: '/:id/refresh-credentials',
+		auth_method: 'jwt',
+		use_case_class: RefreshMarketplaceCredential,
+		handler_options: { map_params: (params) => ({ account_id: params.id }) }
 	},
 	{
 		method: 'delete',

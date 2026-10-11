@@ -44,6 +44,10 @@ export class MarketplaceAccountsService {
 		return this.http.put<ReAuthenticateMarketplaceAccountResponse>(`${this.apiUrl}/${id}/credentials`, data).pipe(map(res => res.account))
 	}
 
+	refreshCredentials(id: string): Observable<void> {
+		return this.http.post<void>(`${this.apiUrl}/${id}/refresh-credentials`, {})
+	}
+
 	delete({ id }: DeleteMarketplaceAccountRequest): Observable<void> {
 		return this.http.delete<void>(`${this.apiUrl}/${id}`)
 	}

@@ -30,6 +30,8 @@ import { variantsRoutes } from '@http/routes/variants_routes'
 import { marketplaceAccountRoutes } from '@http/routes/marketplace_account_routes'
 import { marketplaceListingsRoutes } from '@http/routes/marketplace_listings_routes'
 import { marketplaceProviderRoutes } from '@http/routes/marketplace_provider_routes'
+import { ordersRoutes } from '@http/routes/orders_routes'
+import { orderWebhooksRoutes } from '@http/routes/order_webhooks_routes'
 
 import { ACCESS_TOKEN_COOKIE_NAME } from '@http/utils/cookies'
 import { defaultSchemas } from '@http/utils/schema'
@@ -141,6 +143,8 @@ export class HttpServer {
 		this.app.register(marketplaceAccountRoutes)
 		this.app.register(marketplaceListingsRoutes)
 		this.app.register(marketplaceProviderRoutes)
+		this.app.register(ordersRoutes)
+		this.app.register(orderWebhooksRoutes)
 	}
 
 	start() {

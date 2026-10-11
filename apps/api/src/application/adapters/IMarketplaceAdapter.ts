@@ -89,6 +89,65 @@ export type IPublishProductResponse = {
 	>
 }
 
+export type ISubscribeOrderWebhooksParams = {
+	credentials: IMarketplaceCredentials
+	provider: ProviderClientConfig
+	webhook_url: string
+}
+export type ISubscribeOrderWebhooksResponse = {
+	subscription?: {
+		topic: string
+		external_webhook_id: string
+	}
+}
+
+export type IUnsubscribeOrderWebhooksParams = {
+	credentials: IMarketplaceCredentials
+	provider: ProviderClientConfig
+	subscription: {
+		external_webhook_id: string
+	}
+}
+export type IUnsubscribeOrderWebhooksResponse = void
+
+export type IGetOrderDetailsParams = {
+	credentials: IMarketplaceCredentials
+	provider: Pick<IMarketplaceProvider, 'base_url'>
+	external_order_id: string
+	resource?: string
+}
+export type IGetOrderDetailsResponse = {
+	external_status: string
+	status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+	ordered_at: Date
+	approved_at: Date | null
+
+	// Financials — in cents
+	total_amount: number
+	shipping_amount: number
+	discount_amount: number
+
+	// Buyer
+	external_order_id: string
+	buyer: {
+		name: string | null
+		document: string | null
+		email: string | null
+		phone: string | null
+	}
+
+	// Items with snapshot data
+	items: Array<{
+		external_item_id: string
+		external_variant_id: string | null
+		title: string
+		sku: string | null
+		quantity: number
+		unit_amount: number // in cents
+		total_amount: number // in cents
+	}>
+}
+
 export interface IMarketplaceAdapter {
 	readonly provider: Provider
 
@@ -97,6 +156,11 @@ export interface IMarketplaceAdapter {
 	getUserInfo(params: IGetUserInfoParams): Promise<IGetUserInfoResponse>
 	refreshToken(params: IRefreshTokenParams): Promise<IRefreshTokenResponse>
 	revokeAuthorization(params: IRevokeAuthorizationParams): Promise<IRevokeAuthorizationResponse>
+
+	// Orders methods
+	subscribeOrderWebhooks(params: ISubscribeOrderWebhooksParams): Promise<ISubscribeOrderWebhooksResponse>
+	unsubscribeOrderWebhooks(params: IUnsubscribeOrderWebhooksParams): Promise<IUnsubscribeOrderWebhooksResponse>
+	getOrderDetails(params: IGetOrderDetailsParams): Promise<IGetOrderDetailsResponse>
 
 	// Products methods
 	getAttributes(params: IGetAttributesParams): Promise<IGetAttributesResponse>

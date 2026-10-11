@@ -7,7 +7,10 @@ import { IMarketplaceListing } from '@integrator-packages/database/entities'
 import {
 	ICountParams,
 	ICreateManyParams,
+	IFindAccountByExternalProductIdResponse,
 	IFindByIdResponse,
+	IFindFirstByExternalReferencesParams,
+	IFindFirstByExternalReferencesResponse,
 	IFindManyForPublishParams,
 	IFindManyForPublishResponse,
 	IFindManyParams,
@@ -127,6 +130,48 @@ export class DrizzleMarketplaceListingsRepository
 
 	async findById(id: string): Promise<IFindByIdResponse | null> {
 		return await this.findByIdQuery.execute({ id }) || null
+	}
+
+	async findFirstByExternalReferences({
+		account_id,
+		external_product_id,
+		external_variant_id
+	}: IFindFirstByExternalReferencesParams): Promise<IFindFirstByExternalReferencesResponse | null> {
+		const where: SQL[] = [eq(marketplaceListings.account_id, account_id)]
+
+		if (external_variant_id !== undefined) {
+			where.push(eq(marketplaceListings.external_variant_id, external_variant_id))
+		}
+		if (external_product_id !== undefined) {
+			where.push(eq(marketplaceListings.external_product_id, external_product_id))
+		}
+
+		if (where.length === 1) {
+			return null
+		}
+
+		const listing = await this.drizzleClient.query.marketplaceListings.findFirst({
+			columns: {
+				id: true,
+				variant_id: true
+			},
+			where: and(...where)
+		})
+
+		return listing || null
+	}
+
+	async findAccountByExternalProductId(external_product_id: string): Promise<IFindAccountByExternalProductIdResponse | null> {
+		const result = await this.drizzleClient.query.marketplaceListings.findFirst({
+			where: eq(marketplaceListings.external_product_id, external_product_id),
+			columns: { account_id: true },
+			with: {
+				account: {
+					columns: { user_id: true }
+				}
+			}
+		})
+		return result ?? null
 	}
 
 	async createMany(data: ICreateManyParams): Promise<IMarketplaceListing[]> {

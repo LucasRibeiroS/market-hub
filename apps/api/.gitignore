@@ -1,6 +1,7 @@
 **/pgdata
 
 **/.env
+**/.env.docker
 
 **/node_modules
 

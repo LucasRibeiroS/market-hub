@@ -1,6 +1,6 @@
 import { boolean, index, integer, jsonb, numeric, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core'
 
-import { accountStatus, listingStatus, provider } from '@drizzle/enums'
+import { accountStatus, listingStatus, orderStatus, provider, shipmentStatus } from '@drizzle/enums'
 
 import { generateId } from '@utils/helpers'
 
@@ -52,7 +52,7 @@ export const products = pgTable('products', {
 	description: text().notNull(),
 	attributes: jsonb().$type<Record<string, unknown>>().notNull().default({}), // Specific attributes. Ex: NBM, Origem de Fabricação, Gênero
 	...timestamps
-}, (table) => [index().using('btree', table.user_id)])
+}, table => [index().using('btree', table.user_id)])
 
 export const variants = pgTable('variants', {
 	id: text().primaryKey().$defaultFn(() => `var_${generateId()}`),
@@ -69,7 +69,7 @@ export const variants = pgTable('variants', {
 	attributes: jsonb().$type<Record<string, unknown>>().notNull().default({}), // Specific attributes. Ex: { "Color": "Red", "Size": "42", "Voltage": "220V" }
 	is_primary: boolean().default(false).notNull(), // Indicates the main variant of a product. A product can have multiple variants, but only one primary variant.
 	...timestamps
-}, (table) => [uniqueIndex().on(table.user_id, table.sku), index().on(table.product_id)])
+}, table => [uniqueIndex().on(table.user_id, table.sku), index().on(table.product_id)])
 
 // Marketplace management
 export const marketplaceProviders = pgTable('marketplace_providers', {
@@ -113,7 +113,7 @@ export const marketplaceWebhooks = pgTable('marketplace_webhooks', {
 	topic: text().notNull(),
 	is_active: boolean().notNull().default(true),
 	...timestamps
-}, (table) => [uniqueIndex().on(table.account_id, table.topic)])
+}, table => [uniqueIndex().on(table.account_id, table.topic)])
 
 // The listings represent the variants listed on different marketplace accounts
 export const marketplaceListings = pgTable('marketplace_listings', {
@@ -126,7 +126,97 @@ export const marketplaceListings = pgTable('marketplace_listings', {
 	last_sync_at: timestamp(timestampConfig),
 	sync_message: text(),
 	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}) // Provider-specific metadata. Ex: { listing_type_id: "gold_pro", category_id: "MLB123" }
-}, (table) => [
+}, table => [
 	uniqueIndex().on(table.variant_id, table.account_id),
 	index().on(table.external_product_id)
+])
+
+// Orders management
+export const orders = pgTable('orders', {
+	id: text().primaryKey().$defaultFn(() => `ord_${generateId()}`),
+	user_id: text().notNull().references(() => users.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	account_id: text().notNull().references(() => marketplaceAccounts.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	external_order_id: text().notNull(),
+	status: orderStatus().notNull().default('pending'),
+	external_status: text().notNull(), // raw provider status for auditability
+	// Financials
+	total_amount: integer().notNull(),
+	shipping_amount: integer().notNull().default(0),
+	discount_amount: integer().notNull().default(0),
+	// Buyer
+	buyer_name: text(),
+	buyer_document: text(),
+	buyer_email: text(),
+	buyer_phone: text(),
+	// Lifecycle dates
+	ordered_at: timestamp(timestampConfig).notNull(),
+	approved_at: timestamp(timestampConfig),
+	// Provider-specific fields (e.g. Meli pack_id)
+	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}),
+	...timestamps
+}, table => [
+	uniqueIndex().on(table.account_id, table.external_order_id),
+	index().on(table.user_id)
+])
+
+export const orderItems = pgTable('order_items', {
+	id: text().primaryKey().$defaultFn(() => `ordit_${generateId()}`),
+	order_id: text().notNull().references(() => orders.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	variant_id: text().references(() => variants.id, { onUpdate: 'cascade', onDelete: 'set null' }),
+	listing_id: text().references(() => marketplaceListings.id, { onUpdate: 'cascade', onDelete: 'set null' }),
+	external_item_id: text().notNull(),
+	external_variant_id: text(),
+	// Snapshot data to avoid depending on future changes to the product/variant
+	title: text().notNull(),
+	quantity: integer().notNull(),
+	unit_amount: integer().notNull(),
+	total_amount: integer().notNull(), // May differ from unit_amount * quantity due to per-item discounts
+	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}),
+	...timestamps
+}, table => [
+	index().using('btree', table.order_id),
+	index().using('btree', table.variant_id)
+])
+
+export const orderShipments = pgTable('order_shipments', {
+	id: text().primaryKey().$defaultFn(() => `oship_${generateId()}`),
+	order_id: text().notNull().references(() => orders.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	external_shipment_id: text().notNull(),
+	status: shipmentStatus().notNull().default('pending'),
+	// Logistic info
+	carrier: text(),
+	tracking_number: text(),
+	tracking_url: text(),
+	// Delivery address
+	shipping_street: text(),
+	shipping_number: text(),
+	shipping_complement: text(),
+	shipping_district: text(),
+	shipping_city: text(),
+	shipping_state: text(),
+	shipping_zip_code: text(),
+	// Delivery lifecycle dates
+	shipped_at: timestamp(timestampConfig),
+	estimated_delivery_at: timestamp(timestampConfig),
+	delivered_at: timestamp(timestampConfig),
+	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}),
+	...timestamps
+}, table => [index().on(table.order_id)])
+
+export const orderInvoices = pgTable('order_invoices', {
+	id: text().primaryKey().$defaultFn(() => `ordinv_${generateId()}`),
+	order_id: text().notNull().references(() => orders.id, { onUpdate: 'cascade', onDelete: 'cascade' }),
+	// In split fulfillment, each invoice is tied to its specific shipment.
+	shipment_id: text().references(() => orderShipments.id, { onUpdate: 'cascade', onDelete: 'set null' }),
+	// Invoice details
+	invoice_number: text().notNull(),
+	invoice_key: text(), // NF-e 44-digit access key
+	invoice_url: text(),
+	issued_at: timestamp(timestampConfig),
+	metadata: jsonb().$type<Record<string, unknown>>().notNull().default({}),
+	...timestamps
+}, table => [
+	index().on(table.order_id),
+	index().on(table.shipment_id),
+	uniqueIndex().on(table.order_id, table.invoice_number)
 ])
