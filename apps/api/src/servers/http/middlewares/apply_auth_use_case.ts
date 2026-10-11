@@ -71,6 +71,10 @@ export const applyAuthUseCase = (
 	return res.status(status_code).send({ process, body })
 }
 
+// When the API is served behind a path prefix (e.g. APP_URL=https://example.com/api), the browser only
+// sends the refresh token if the cookie path includes that prefix
+const REFRESH_TOKEN_COOKIE_PATH = `${new URL(env.APP_URL).pathname.replace(/\/+$/, '')}/auth`
+
 const setAuthCookies = (res: FastifyReply, body: unknown) => {
 	const tokens = getTokens(body)
 	if (tokens === null) {
@@ -92,7 +96,7 @@ const setAuthCookies = (res: FastifyReply, body: unknown) => {
 	if (tokens.refresh_token !== undefined) {
 		res.setCookie(REFRESH_TOKEN_COOKIE_NAME, tokens.refresh_token, {
 			...cookieConfig,
-			path: '/auth',
+			path: REFRESH_TOKEN_COOKIE_PATH,
 			expires: refreshExpiration
 		})
 	}
@@ -115,7 +119,7 @@ const unsetAuthCookies = (res: FastifyReply) => {
 		domain: new URL(env.APP_URL).hostname
 	}
 
-	res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { ...cookieConfig, path: '/auth' })
+	res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, { ...cookieConfig, path: REFRESH_TOKEN_COOKIE_PATH })
 		.clearCookie(ACCESS_TOKEN_COOKIE_NAME, cookieConfig)
 		.clearCookie(IS_AUTHENTICATED_COOKIE_NAME, cookieConfig)
 }

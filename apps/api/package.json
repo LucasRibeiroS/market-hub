@@ -9,6 +9,7 @@
     "start": "node dist/servers/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed": "node --env-file=.env.seed dist/scripts/seed.js",
     "lint": "eslint '**/src/**/*.{ts,tsx}' --fix",
     "test": "vitest -c vitest.config.ts",
     "email:dev": "email dev --dir src/views --port 7652",

@@ -17,6 +17,7 @@ type IEnv = {
 	APPLICATION_NAME: string
 	PORT: number
 	QUEUE_MONITORING_PORT: number
+	CLUSTER_WORKERS?: number
 	APP_URL: string
 	DATABASE_URL: string
 	REDIS_HOST: string
@@ -50,6 +51,8 @@ const schema = Type.Object({
 	APPLICATION_NAME: Type.String({ default: 'integrator' }),
 	PORT: Type.Number({ default: 3000 }),
 	QUEUE_MONITORING_PORT: Type.Number({ default: 13000 }),
+	// Defaults to one worker per CPU. Containers with CPU quotas still report the host CPUs, so set it explicitly there
+	CLUSTER_WORKERS: Type.Optional(Type.Number({ minimum: 1 })),
 	APP_URL: Type.String({ default: 'http://localhost' }),
 	DATABASE_URL: Type.String(),
 	REDIS_HOST: Type.String(),

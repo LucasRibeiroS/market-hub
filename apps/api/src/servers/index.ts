@@ -14,7 +14,7 @@ if (cluster.isPrimary && env.NODE_ENV === 'production') {
 	console.log(`[${env.APPLICATION_NAME}] Primary cluster with pid ${process.pid} is running`)
 
 	// Fork workers.
-	for (let i = 0; i < cpus().length; i++) {
+	for (let i = 0; i < (env.CLUSTER_WORKERS ?? cpus().length); i++) {
 		cluster.fork()
 	}
 

@@ -1,4 +1,4 @@
 export const environment = {
-	apiUrl: 'http://localhost:3333',
+	apiUrl: '/api',
 	startingRoute: '/integrations'
 }
