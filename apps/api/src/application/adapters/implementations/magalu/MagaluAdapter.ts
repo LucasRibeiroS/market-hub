@@ -203,6 +203,14 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		}
 
 		const subscription = res.subscriptions[0]
+		if (subscription === undefined || !('id' in subscription)) {
+			const reason = subscription === undefined
+				? 'no subscription returned'
+				: `${subscription.status_code} ${subscription.description}`
+
+			this.loggerAdapter.error(`Magalu subscribe order webhook error: ${reason}`)
+			throw new FailedDependencyException('Failed to subscribe order webhook on Magalu')
+		}
 
 		return {
 			subscription: {

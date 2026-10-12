@@ -88,11 +88,19 @@ export type IWebhookSignupPayload = {
 	topic_id: string
 }
 
+export type IWebhookSignupSubscription = {
+	id: string
+	topic: string
+}
+
+/** Magalu answers 201 even when a subscription is refused, reporting the failure inside the list */
+export type IWebhookSignupFailure = {
+	status_code: number
+	description: string
+}
+
 export type IWebhookSignupResponse = {
-	subscriptions: Array<{
-		id: string
-		topic: string
-	}>
+	subscriptions: Array<IWebhookSignupSubscription | IWebhookSignupFailure>
 }
 
 export type IMagaluOrderResponse = {
