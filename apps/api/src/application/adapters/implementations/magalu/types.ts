@@ -103,41 +103,64 @@ export type IWebhookSignupResponse = {
 	subscriptions: Array<IWebhookSignupSubscription | IWebhookSignupFailure>
 }
 
-export type IMagaluOrderResponse = {
-	id: string
-	status: string
-	created_at: string
-	updated_at: string
-	customer: {
-		id: string
-		name?: string
-		email?: string
-		phone?: string
-		document?: string
-	}
-	totals: {
-		amount: number // total in cents
-		shipping: number
-		discount: number
+/** Monetary value: the real amount is `total / normalizer` (normalizer 100 means the value is already in cents) */
+export type IMagaluAmount = {
+	currency: string
+	normalizer: number
+	total: number
+}
+
+export type IMagaluOrderAmounts = {
+	discount?: IMagaluAmount
+	freight?: IMagaluAmount
+	tax?: IMagaluAmount
+	commission?: IMagaluAmount
+} & IMagaluAmount
+
+export type IMagaluOrderItem = {
+	sequencial: number
+	quantity: number
+	amounts: IMagaluOrderAmounts
+	unit_price: {
 		currency: string
+		normalizer: number
+		value: number
 	}
-	fulfillment_status: string
-	payment_status: string
-	shipping_address?: {
-		state?: string
-	}
-	payment_method?: string
-	items: Array<{
+	info: {
 		id: string
 		sku: string
-		seller_sku: string
-		title: string
-		quantity: number
-		price: number // unit price in cents
-		subtotal: number // total for this item in cents
-		product: { id: string | number }
-		variant: { id: string | number }
-	}>
+		name: string
+		brand?: string
+		description?: string
+	}
+}
+
+export type IMagaluOrderDelivery = {
+	id: string
+	code: string
+	status: string
+	amounts: IMagaluOrderAmounts
+	items: IMagaluOrderItem[]
+}
+
+/** Shape returned by GET /seller/v1/orders/{code} (captured from a sandbox order) */
+export type IMagaluOrderResponse = {
+	id: string
+	code: string
+	status: string
+	created_at: string
+	purchased_at?: string | null
+	approved_at?: string | null
+	updated_at?: string | null
+	customer: {
+		customer_type?: string
+		name?: string | null
+		document_number?: string | null
+		email?: string | null
+		phone?: string | null
+	}
+	amounts: IMagaluOrderAmounts
+	deliveries: IMagaluOrderDelivery[]
 }
 
 export enum Condition {
@@ -225,8 +248,8 @@ export type IMagaluErrorResponse = {
 }
 
 export type IMagaluErrorDetail = {
-	field: string
-	location: string
+	field: string | null
+	location: string | null
 	slug: string
 	message: string
 }

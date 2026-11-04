@@ -67,7 +67,8 @@ export class MagaluClient extends BaseHttpClient {
 					return null
 				}
 
-				const path = [detail.location, detail.field].filter(item => item.length > 0).join('.')
+				// Magalu sends location/field as null on errors that are not tied to a request field (e.g. ORDER_NOT_FOUND)
+				const path = [detail.location, detail.field].filter(item => typeof item === 'string' && item.length > 0).join('.')
 				if (path.length > 0) {
 					return `${path}: ${message}`
 				}

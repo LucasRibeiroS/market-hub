@@ -17,6 +17,7 @@ import {
 	IAttributeResponse,
 	ICategoryResponse,
 	IJwtPayload,
+	IMagaluAmount,
 	IMagaluOrderResponse,
 	IOAuthTokenPayload,
 	IOAuthTokenResponse,
@@ -255,35 +256,42 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			throw new FailedDependencyException(`Failed to fetch order details on Magalu - ${message}`)
 		}
 
-		// Map Magalu status to internal status
-		const status = this.mapMagaluStatus(res.status)
-		const approved_at = status === 'paid' ? new Date(res.updated_at) : null
-
 		return {
 			external_order_id: external_order_id,
 			external_status: res.status,
-			status,
-			ordered_at: new Date(res.created_at),
-			approved_at,
-			total_amount: res.totals.amount,
-			shipping_amount: res.totals.shipping,
-			discount_amount: res.totals.discount,
+			status: this.mapMagaluStatus(res.status),
+			ordered_at: new Date(res.purchased_at || res.created_at),
+			approved_at: res.approved_at ? new Date(res.approved_at) : null,
+			total_amount: this.toCents(res.amounts),
+			shipping_amount: this.toCents(res.amounts.freight),
+			discount_amount: this.toCents(res.amounts.discount),
 			buyer: {
-				name: res.customer.name || null,
-				document: res.customer.document || null,
-				email: res.customer.email || null,
-				phone: res.customer.phone || null
+				name: res.customer?.name || null,
+				document: res.customer?.document_number || null,
+				email: res.customer?.email || null,
+				phone: res.customer?.phone || null
 			},
-			items: res.items.map(item => ({
-				external_item_id: item.id,
-				external_variant_id: item.variant.id.toString() || item.seller_sku,
-				title: item.title,
-				sku: item.seller_sku || item.sku || null,
+			// Magalu groups items by delivery (one delivery per seller package)
+			items: (res.deliveries ?? []).flatMap(delivery => delivery.items.map(item => ({
+				external_item_id: `${delivery.id}:${item.sequencial}`,
+				// Listings store the seller SKU as external_variant_id, so this links the item to its listing
+				external_variant_id: item.info.sku,
+				title: item.info.name,
+				sku: item.info.sku,
 				quantity: item.quantity,
-				unit_amount: item.price,
-				total_amount: item.subtotal
-			}))
+				unit_amount: this.toCents({ total: item.unit_price.value, normalizer: item.unit_price.normalizer }),
+				total_amount: this.toCents(item.amounts)
+			})))
 		}
+	}
+
+	/** Converts a Magalu amount (value / normalizer) to cents */
+	private toCents(amount?: Pick<IMagaluAmount, 'total' | 'normalizer'>): number {
+		if (amount === undefined) {
+			return 0
+		}
+
+		return Math.round(amount.total * 100 / (amount.normalizer || 100))
 	}
 
 	private mapMagaluStatus(status: string): IGetOrderDetailsResponse['status'] {
@@ -292,12 +300,14 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 		switch (normalized) {
 			case 'paid':
 			case 'approved':
+			case 'invoiced':
 				return 'paid'
 			case 'shipped':
 				return 'shipped'
 			case 'delivered':
 				return 'delivered'
 			case 'cancelled':
+			case 'canceled':
 				return 'cancelled'
 			case 'refunded':
 				return 'refunded'
@@ -362,7 +372,8 @@ export class MagaluAdapter implements IMarketplaceAdapter {
 			description: attr.example || undefined,
 			required: attr.required === 'required',
 			allowed_in_variants: type === 'variation',
-			allowed_values: attr.choices !== null ? attr.choices : undefined
+			// An empty choice list means free text, not "no value allowed"
+			allowed_values: attr.choices !== null && attr.choices.length > 0 ? attr.choices : undefined
 		}))
 	}
 

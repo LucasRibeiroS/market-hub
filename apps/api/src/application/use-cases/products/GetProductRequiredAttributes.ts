@@ -11,7 +11,7 @@ import { ConflictException, NotFoundException } from '@integrator-packages/use-c
 import { IProductsRepository, ProductsRepositorySymbol } from '@repositories/IProductsRepository'
 import { IMarketplaceAccountsRepository, MarketplaceAccountsRepositorySymbol } from '@repositories/IMarketplaceAccountsRepository'
 
-import { MarketplaceAdapterFactory } from '@factories/implementations/MarketplaceAdapterFactory'
+import { IMarketplaceAdapterFactory, MarketplaceAdapterFactorySymbol } from '@factories/IMarketplaceAdapterFactory'
 
 import { CustomOmit } from '@utils/types'
 import { providerEnumSchema } from '@utils/typebox'
@@ -67,8 +67,8 @@ export class GetProductRequiredAttributes implements IUseCase<T, K> {
 		private readonly productsRepository: IProductsRepository,
 		@inject(MarketplaceAccountsRepositorySymbol)
 		private readonly marketplaceAccountsRepository: IMarketplaceAccountsRepository,
-		@inject(MarketplaceAdapterFactory)
-		private readonly marketplaceAdapterFactory: MarketplaceAdapterFactory
+		@inject(MarketplaceAdapterFactorySymbol)
+		private readonly marketplaceAdapterFactory: IMarketplaceAdapterFactory
 	) {}
 
 	async execute({ id, user_id, provider }: T): Promise<K> {
